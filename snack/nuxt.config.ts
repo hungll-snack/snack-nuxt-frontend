@@ -6,6 +6,7 @@ export default defineNuxtConfig({
   extends: [
     './home/nuxt.config.ts',
     './account/nuxt.config.ts',
+    './kakaoAuthentication/nuxt.config.ts',
   ],
 
   css: [
@@ -41,6 +42,7 @@ export default defineNuxtConfig({
     '@pinia/nuxt', 
     '~/home/index.ts',
     '~/account/index.ts',
+    '~/kakaoAuthentication/index.ts',
   ],
 
   imports: {
