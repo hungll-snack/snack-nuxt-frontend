@@ -1,88 +1,88 @@
 <template>
-    <!-- v-app-bar의 경우 Vuetify에서 App Bar를 정의함
-         color="primary"는 기본 색상을 설정하고 dark로 텍스트 색상(흰색) 지정 -->
-    <v-app-bar app color="orange-darken-2" dark>
-        <!-- v-btn은 Vuetify에서의 버튼
-             @click="goToHome"을 통해 버튼 클릭 시 goToHome 동작 -->
-        <v-btn @click="goToHome">
-            <!-- v-toolbar-title을 통해 툴바 제목을 지정 -->
-            <v-toolbar-title>SNACK</v-toolbar-title>
-        </v-btn>
-        <!-- 툴바에서 남은 공간을 차지해 다른 요소들이 오른쪽으로 밀리도록 만듬 -->
-        <v-spacer></v-spacer>
-
-        <!-- v-menu는 Vuetify에서 메뉴를 만들 때 사용
-             메뉴 외부를 클릭하면 닫힘 (close-on-content-click) -->
-        <v-menu close-on-content-click>
-            <!-- v-slot:activator는 메뉴 버튼을 설정함 -->
-            <template v-slot:activator="{ props }">
-                <!-- v-btn을 통해 메뉴 버튼을 만들고
-                     v-bind="props"로 메뉴 활성화 시점의 버튼의 동작을 연결함
-                     현재 관점에선 Drop Down Menu 구성은 하지 않았음 -->
-                <v-btn color="white" v-bind="props">
-                    <b>About Us</b>
-                </v-btn>
-            </template>
-        </v-menu>
-
-        <!-- 로그인 버튼 -->
-        <template v-if="!kakaoAuthentication.isAuthenticated">
-            <v-btn text @click="signIn" class="btn-text">
-                <!-- 아이콘 설정 (mdi-login은 로그인 아이콘) -->
-                <v-icon left>mdi-login</v-icon>
-                <span>로그인</span>
-            </v-btn>
-        </template>
-
-        <template v-else>
-            <v-btn text @click="signOut" class="btn-text">
-                <v-icon left>mdi-logout</v-icon>
-                <span>로그아웃</span>
-            </v-btn>
-        </template>
-    </v-app-bar>
+  <v-app-bar app color="white" elevation="0" class="nav-bar">
+      <!-- 로그인 페이지에서는 로고 중앙 정렬, 다른 페이지에서는 기존 네비바 유지 -->
+      <div v-if="isLoginPage" class="logo-container">
+          <v-btn @click="goToHome" plain>
+              <img src="/assets/images/logo/logo_pont_web.png" alt="로고" class="logo">
+          </v-btn>
+      </div>
+      <template v-else>
+          <v-btn @click="goToHome" plain>
+              <img src="/assets/images/logo/logo_pont_web.png" alt="로고" class="logo">
+          </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn class="nav-btn download-btn">앱 다운로드</v-btn>
+          <v-btn class="nav-btn">맛집 찾기</v-btn>
+          <v-btn class="nav-btn">밥 친구 찾기</v-btn>
+          <template v-if="!kakaoAuthentication.isAuthenticated">
+              <v-btn icon @click="signIn" :style="{ color: '#E76200' }">
+                  <v-icon>mdi-login</v-icon>
+              </v-btn>
+          </template>
+          <template v-else>
+              <v-btn icon @click="signOut">
+                  <v-icon>mdi-logout</v-icon>
+              </v-btn>
+          </template>
+      </template>
+  </v-app-bar>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import { useRouter } from 'vue-router'
+import { computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { useKakaoAuthenticationStore } from '~/kakaoAuthentication/stores/kakaoAuthenticationStore';
 
-const router = useRouter()
+const router = useRouter();
+const route = useRoute();
 const kakaoAuthentication = useKakaoAuthenticationStore();
 
+const isLoginPage = computed(() => route.path === '/account/login');
+
 const goToHome = () => {
-  router.push('/')
-}
+  router.push('/');
+};
 
-
-// 기존 Domain/index.ts에 등록한 라우터 URL로 맵핑
 const signIn = () => {
-  console.log('로그인 클릭')
-  router.push('/account/login')
-}
+  router.push('/account/login');
+};
 
 const signOut = () => {
-  console.log('로그아웃 클릭')
-  const userToken = localStorage.getItem("userToken")
+  localStorage.removeItem('userToken');
+  kakaoAuthentication.isAuthenticated = false;
+  router.push('/');
+};
+</script>
 
-  if (userToken != null) {
-    kakaoAuthentication.requestLogout(userToken)
-  } else {
-    console.log('userToken이 없습니다')
-  }
-
-  localStorage.removeItem("userToken")
-  kakaoAuthentication.isAuthenticated = false
-  router.push('/')
+<style scoped>
+.nav-bar {
+  display: flex;
+  align-items: center;
+  height: 64px;
+  padding: 0 16px;
 }
 
-onMounted(async () => {
-  const userToken = localStorage.getItem('userToken');
-  
-  if (userToken) {
-    const isValid = await kakaoAuthentication.requestValidationUserToken(userToken)
-    kakaoAuthentication.isAuthenticated = isValid;
-  }
-});
-</script>
+.logo-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.logo {
+  height: 60px;
+}
+
+.nav-btn {
+  font-size: 1rem;
+  color: #d35400;
+  text-transform: none;
+  background-color: #f5ebe0;
+  border-radius: 8px;
+  padding: 8px 16px;
+  margin: 0 8px;
+}
+
+.download-btn {
+  background-color: #e1f5c4;
+}
+</style>

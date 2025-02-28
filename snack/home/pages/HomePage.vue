@@ -2,17 +2,16 @@
     <v-container fluid class="pa-4">
         <!-- 배경 이미지와 텍스트를 포함한 Hero 섹션 -->
         <v-row>
-            <v-col cols="12">
-                <v-img
-                        src='@/assets/images/Logo.jpg'
-                        height="400"
-                        class="rounded-xl"
+            <v-col 
+                cols="12" 
+                style="
+                    align-content: center;
+                    height: 600px; 
+                    text-align: center;
+                    background-color: aqua;
+                "
                 >
-                    <v-row class="fill-height ma-0" align="center" justify="center">
-                        <v-col class="text-center">
-                        </v-col>
-                    </v-row>
-                </v-img>
+              홈페이지 (추후 작업)
             </v-col>
         </v-row>
 
