@@ -1,139 +1,155 @@
 <template>
-  <v-container fluid class="d-flex justify-center align-center pa-0" 
-  		:style="{ backgroundImage: `url(${loginBgImage})`, backgroundSize: 'cover', backgroundPosition: 'center', height: '100vh' }">
+  <v-container fluid class="d-flex justify-center align-center fill-height pa-0">
     <v-row justify="center" align="center" class="fill-height ma-0">
       <v-col cols="12" sm="8" md="6" class="text-center">
-        <v-btn class="kakao-login-btn" @click="goToKakaoLogin" block>
-          <!-- 카카오 로그인 -->
-        </v-btn>
+        <!-- 연한 회색 테두리 박스 -->
+        <div class="login-container">
+          <!-- 말풍선 -->
+          <div class="speech-bubble">
+            ⚡ 3초만에 빠른 회원가입
+          </div>
+
+          <!-- 카카오 로그인 버튼 -->
+          <v-btn class="kakao-login-btn" @click="goToKakaoLogin">
+            <v-icon class="kakao-icon">mdi-message</v-icon>
+            <span class="kakao-text">카카오로 시작하기</span>
+          </v-btn>
+
+          <!-- 로그인 문제 텍스트 -->
+          <p class="login-issue-text">로그인에 문제가 있으신가요?</p>
+        </div>
+
+        <!-- 박스 아래 버튼들 -->
+        <div class="bottom-buttons">
+          <v-btn class="app-download-btn">앱 다운로드</v-btn>
+          <p class="back-text" @click="goToHome">돌아가기</p>
+        </div>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script setup>
-import loginBgImage from '@/assets/images/fixed/login_page.png';
-
-import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAccountStore } from '@/stores/accountStore';
-import { useKakaoAuthenticationStore } from '../../../kakaoAuthentication/stores/kakaoAuthenticationStore'
+import { useKakaoAuthenticationStore } from '../../../kakaoAuthentication/stores/kakaoAuthenticationStore';
 
 const router = useRouter();
-
-const form = ref(false);
-const email = ref(null);
-const password = ref(null);
-const visible = ref(false);
-const loading = ref(false);
-const login_flag = ref(true);
-const isEmailCollect = ref(false);
-const isPasswordCollect = ref(false);
-
-// Pinia store 상태
-const account = useAccountStore();
 const kakaoAuthentication = useKakaoAuthenticationStore();
 
-// Google, Kakao, Naver 로그인 함수들
+// 카카오 로그인 함수
 const goToKakaoLogin = async () => {
-  // sessionStorage.setItem("loginType", "KAKAO");
   await kakaoAuthentication.requestKakaoLoginToDjango();
 };
 
+// 홈으로 이동
+const goToHome = () => {
+  router.push('/');
+};
 </script>
 
 <style scoped>
-/* 로그인 및 회원가입 버튼 설정 */
-.v-btn {
+/* 전체 로그인 박스 스타일 */
+.login-container {
+  background: white;
+  padding: 20px;
+  height: 220px;
+  border: 1px solid #E0E0E0; /* 연한 회색 테두리 */
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  text-align: center;
   width: 100%;
-  height: 50px;
-  margin: 1.3vh auto;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: auto; /* 중앙 정렬 */
 }
 
-.introduction {
-  color: rgb(255, 255, 255);
-  word-break: break-word;
-}
-
-@media (max-width: 768px) {
-  .v-btn {
-    height: 45px; /* 모바일 환경에서는 높이를 줄임 */
-  }
-  .login_logo {
-    height: 19vh;
-  }
-}
-
-@media (max-width: 480px) {
-  .v-btn {
-    height: 33px; /* 작은 모바일 환경에서는 더 작게 설정 */
-  }
-  .login_logo {
-    height: 13vh;
-  }
-  .introduction {
-  white-space: pre-wrap;
-}
-
-}
-
-/* Kakao 로그인 버튼 설정 */
-.kakao-login-btn {
+/* 말풍선 스타일 */
+.speech-bubble {
+  display: inline-block;
+  background: white;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: relative;
-  top: 40vh;
-  width: 200px !important;
-  height: 150px !important; /* Force height change */
-  background-image: url("@/assets/images/fixed/btn_login_kakao.png");
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
+  margin-bottom: 10px;
+}
+
+.speech-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 10px;
+  border-style: solid;
+  border-color: white transparent transparent transparent;
+}
+
+/* 카카오 로그인 버튼 */
+.kakao-login-btn {
+  width: 300px;
+  height: 50px;
+  background-color: #FFEA00;
+  color: #3C1E1E;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #FFEA00;
-  border-radius: 1.4vh;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 10px auto;
+}
+
+.kakao-icon {
+  font-size: 24px;
+  margin-right: 8px;
+}
+
+.kakao-text {
+  font-size: 16px;
+}
+
+/* 로그인 문제 텍스트 */
+.login-issue-text {
+  color: #B0B0B0;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+/* 박스 아래 버튼 컨테이너 */
+.bottom-buttons {
+  margin-top: 20px;
+  text-align: center;
+}
+
+/* 앱 다운로드 버튼 */
+.app-download-btn {
+  background: #FFB08E;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 12px;
+  padding: 12px 30px;
+  margin-bottom: 10px;
+}
+
+/* 돌아가기 텍스트 (클릭 가능) */
+.back-text {
+  font-size: 14px;
+  color: #666;
   cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.2s;
 }
 
-.v-text-field input {
-  background-color: transparent !important;
-  color: black !important;
-  /* 입력값을 검정색으로 설정 */
-}
-
-.v-label {
-  color: black !important;
-  /* 레이블을 검정색으로 설정 */
-}
-
-
-/* 로그인 폼의 텍스트 필드 라벨 색상 설정 */
-:deep(.v-label.v-field-label) {
-  color: rgba(255, 255, 255, 0.8) !important;
-}
-
-/* 로그인 폼의 텍스트 필드 입력값 색상 설정 */
-:deep(.v-text-field input) {
-  color: #fff;
-}
-
-/* 눈 아이콘 색상 설정 */
-:deep(.mdi-eye::before),
-:deep(.mdi-eye-off::before) {
-  color: rgba(255, 255, 255, 0.8) !important;
-}
-
-/* 오류 메시지 스타일링 */
-:deep(.v-messages__message) {
-  color: rgb(0, 0, 255) !important;
-  /* 메시지 색상 */
-  font-size: 12px;
-  /* 메시지 폰트 크기 */
-}
-
-/* 텍스트 필드 에러 상태의 레이블 색상을 초록색으로 변경 */
-:deep(.v-field--error:not(.v-field--disabled) .v-label.v-field-label) {
-  color: rgba(0, 0, 255) !important;
-  /* 에러 상태의 레이블 색상을 초록색으로 변경 */
+.back-text:hover {
+  color: #333;
 }
 </style>
