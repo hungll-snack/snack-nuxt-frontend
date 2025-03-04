@@ -14,7 +14,7 @@
           <v-btn class="nav-btn download-btn">앱 다운로드</v-btn>
           <v-btn class="nav-btn">맛집 찾기</v-btn>
           <v-btn class="nav-btn">밥 친구 찾기</v-btn>
-          <template v-if="!kakaoAuthentication.isAuthenticated">
+          <template v-if="!kakaoAuthentication.isAuthenticated && !naverAuthentication.isAuthenticated">
               <v-btn icon @click="signIn" :style="{ color: '#E76200' }">
                   <v-icon>mdi-login</v-icon>
               </v-btn>
@@ -32,10 +32,12 @@
 import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useKakaoAuthenticationStore } from '~/kakaoAuthentication/stores/kakaoAuthenticationStore';
+import { useNaverAuthenticationStore } from '~/naverAuthentication/stores/naverAuthenticationStore';
 
 const router = useRouter();
 const route = useRoute();
 const kakaoAuthentication = useKakaoAuthenticationStore();
+const naverAuthentication = useNaverAuthenticationStore();
 
 const isLoginPage = computed(() => route.path === '/account/login');
 
@@ -50,6 +52,7 @@ const signIn = () => {
 const signOut = () => {
   localStorage.removeItem('userToken');
   kakaoAuthentication.isAuthenticated = false;
+  naverAuthentication.isAuthenticated = false;
   router.push('/');
 };
 </script>
