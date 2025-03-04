@@ -7,6 +7,7 @@ export default defineNuxtConfig({
     './home/nuxt.config.ts',
     './account/nuxt.config.ts',
     './kakaoAuthentication/nuxt.config.ts',
+    './naverAuthentication/nuxt.config.ts',
   ],
 
   css: [
@@ -43,6 +44,7 @@ export default defineNuxtConfig({
     '~/home/index.ts',
     '~/account/index.ts',
     '~/kakaoAuthentication/index.ts',
+    '~/naverAuthentication/index.ts',
   ],
 
   imports: {

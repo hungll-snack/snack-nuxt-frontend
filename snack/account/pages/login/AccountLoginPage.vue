@@ -15,6 +15,12 @@
             <span class="kakao-text">카카오로 시작하기</span>
           </v-btn>
 
+          <!-- 네이버 로그인 버튼 -->
+          <v-btn class="naver-login-btn" @click="goToNaverLogin">
+            <v-icon class="naver-icon">mdi-message</v-icon>
+            <span class="naver-text">네이버로로 시작하기</span>
+          </v-btn>
+
           <!-- 로그인 문제 텍스트 -->
           <p class="login-issue-text">로그인에 문제가 있으신가요?</p>
         </div>
@@ -32,14 +38,21 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { useKakaoAuthenticationStore } from '../../../kakaoAuthentication/stores/kakaoAuthenticationStore';
+import { useNaverAuthenticationStore } from '../../../naverAuthentication/stores/naverAuthenticationStore';
 
 const router = useRouter();
 const kakaoAuthentication = useKakaoAuthenticationStore();
+const naverAuthentication = useNaverAuthenticationStore();
 
 // 카카오 로그인 함수
 const goToKakaoLogin = async () => {
   await kakaoAuthentication.requestKakaoLoginToDjango();
 };
+
+//네이버 로그인 함수
+const goToNaverLogin = async () => {
+  await naverAuthentication.requestNaverLoginToDjango();
+}
 
 // 홈으로 이동
 const goToHome = () => {
