@@ -50,6 +50,23 @@ const signIn = () => {
 };
 
 const signOut = () => {
+  const userToken = localStorage.getItem("userToken");
+
+  if (userToken) {
+    if (userToken.startsWith("kakao-")) {
+      console.log("🟡 카카오 로그아웃 실행");
+      kakaoAuthentication.requestLogout(userToken);
+    } else if (userToken.startsWith("naver-")) {
+      console.log("🟢 네이버 로그아웃 실행");
+      naverAuthentication.requestLogout(userToken);
+    } else {
+      console.log("❌ 알 수 없는 userToken 형식");
+    }
+  } else {
+    console.log('⚠️ userToken이 없습니다.');
+  }
+
+  // 로컬 스토리지 및 인증 상태 초기화
   localStorage.removeItem('userToken');
   kakaoAuthentication.isAuthenticated = false;
   naverAuthentication.isAuthenticated = false;

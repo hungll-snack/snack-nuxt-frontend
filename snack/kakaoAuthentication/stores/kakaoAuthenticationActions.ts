@@ -27,7 +27,7 @@ export const kakaoAuthenticationAction = {
         const { djangoAxiosInstance } = axiosUtility.createAxiosInstances()
 
         try {
-            await djangoAxiosInstance.post('/authentication/logout', { userToken })
+            await djangoAxiosInstance.post('/authentication/kakao-logout', { userToken })
         } catch (error) {
             console.log('requestLogout() 중 에러:', error)
         }

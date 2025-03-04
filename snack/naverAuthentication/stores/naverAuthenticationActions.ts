@@ -27,7 +27,7 @@ export const naverAuthenticationAction = {
         const { djangoAxiosInstance } = axiosUtility.createAxiosInstances()
 
         try {
-            await djangoAxiosInstance.post('/authentication/logout', { userToken })
+            await djangoAxiosInstance.post('/authentication/naver-logout', { userToken })
         } catch (error) {
             console.log('requestLogout() 중 에러:', error)
         }
