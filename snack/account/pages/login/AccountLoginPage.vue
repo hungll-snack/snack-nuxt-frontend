@@ -10,7 +10,7 @@
           </div>
 
           <!-- 카카오 로그인 버튼 -->
-          <v-btn class="kakao-login-btn" @click="goToKakaoLogin">
+          <v-btn class="kakao-login-btn" @click="handleKakaoLogin">
             <v-img 
               src="/assets/images/fixed/btn_kakao_login.png" 
               class="login-btn" 
@@ -19,13 +19,15 @@
           </v-btn>
 
           <!-- 네이버 로그인 버튼 -->
-          <v-btn class="naver-login-btn" @click="goToNaverLogin">
+          <v-btn class="naver-login-btn" @click="handleNaverLogin">
             <v-img 
-              src="/assets/images/fixed/btnG_완성형.png" 
+              src="/assets/images/fixed/btn_naver_login.png" 
               class="login-btn" 
               alt="네이버 로그인 버튼"
             />
           </v-btn>
+
+          <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
 
           <!-- 로그인 문제 텍스트 -->
           <p class="login-issue-text">로그인에 문제가 있으신가요?</p>
@@ -45,24 +47,79 @@
 import { useRouter } from 'vue-router';
 import { useKakaoAuthenticationStore } from '@/kakaoAuthentication/stores/kakaoAuthenticationStore';
 import { useNaverAuthenticationStore } from '@/naverAuthentication/stores/naverAuthenticationStore';
+import { ref } from "vue";
 
 const router = useRouter();
 const kakaoAuthentication = useKakaoAuthenticationStore();
 const naverAuthentication = useNaverAuthenticationStore();
+const errorMessage = ref("");
+const redirectLoginPath = ref("");
 
-// 카카오 로그인 함수
-const goToKakaoLogin = async () => {
-  await kakaoAuthentication.requestKakaoLoginToDjango();
+const handleKakaoLogin = async () => {
+  try {
+    const response = await kakaoAuthentication.requestKakaoLoginToDjango();
+    
+    console.log("📌 원본 응답:", response);
+
+    // ✅ 응답 데이터를 `JSON` 형태로 변환 (Axios의 경우 자동으로 `data` 속성을 사용해야 함)
+    const data = response.data || response;
+
+    console.log("📌 변환된 응답:", data);
+
+    if (!data.success && data.error_message) {
+      console.warn("🚨 로그인 차단됨:", data.error_message);
+      errorMessage.value = data.error_message;
+      redirectLoginPath.value = "네이버"; // 기존 가입된 경로 표시
+      return;  // 🚨 로그인 중단 (여기가 중요!)
+    }
+
+    // ✅ 로그인 성공 시 홈으로 이동
+    errorMessage.value = "";
+    router.push("/home");
+  } catch (error) {
+    console.error("🔥 로그인 중 오류 발생:", error);
+
+    // 🚨 Axios 요청이 실패할 경우, `error.response` 값이 있는지 확인 후 처리
+    if (error.response) {
+      console.warn("❗ 서버 응답 오류:", error.response.data);
+      errorMessage.value = error.response.data.error_message || "로그인 중 오류가 발생했습니다.";
+    } else {
+      errorMessage.value = "네트워크 오류 또는 서버 문제로 인해 로그인에 실패했습니다.";
+    }
+  }
 };
 
-// 네이버 로그인 함수
-const goToNaverLogin = async () => {
-  await naverAuthentication.requestNaverLoginToDjango();
-};
+const handleNaverLogin = async () => {
+  try {
+    const response = await naverAuthentication.requestNaverLoginToDjango();
+    
+    console.log("📌 원본 응답:", response);
 
-// 홈으로 이동
-const goToHome = () => {
-  router.push('/');
+    // ✅ 응답 데이터를 `JSON` 형태로 변환 (Axios의 경우 자동으로 `data` 속성을 사용해야 함)
+    const data = response.data || response;
+
+    console.log("📌 변환된 응답:", data);
+
+    if (!data.success && data.error_message) {
+      console.warn("🚨 로그인 차단됨:", data.error_message);
+      errorMessage.value = data.error_message;
+      redirectLoginPath.value = "카카오"; // 기존 가입된 경로 표시
+      return;  // 🚨 로그인 중단 (여기가 중요!)
+    }
+
+    // ✅ 로그인 성공 시 홈으로 이동
+    errorMessage.value = "";
+    router.push("/home");
+  } catch (error) {
+    console.error("🔥 로그인 중 오류 발생:", error);
+
+    if (error.response) {
+      console.warn("❗ 서버 응답 오류:", error.response.data);
+      errorMessage.value = error.response.data.error_message || "로그인 중 오류가 발생했습니다.";
+    } else {
+      errorMessage.value = "네트워크 오류 또는 서버 문제로 인해 로그인에 실패했습니다.";
+    }
+  }
 };
 </script>
 
