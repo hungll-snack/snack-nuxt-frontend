@@ -2,26 +2,31 @@ import { defineNuxtModule } from "@nuxt/kit";
 import { resolve } from "path";
 
 export default defineNuxtModule({
-	meta: {
-		name: "account",
-		configKey: "account",
-	},
+  meta: {
+    name: "account",
+    configKey: "account",
+  },
 
-	setup(moduleOptions, nuxt) {
-		const themeDir = resolve(__dirname, "..");
+  setup(moduleOptions, nuxt) {
+    const themeDir = resolve(__dirname, "..");
 
-		nuxt.hook("pages:extend", (pages) => {
-			pages.push(
-				{
-					name: "AccountLoginPage",
-					path: '/account/login',
-					file: resolve(themeDir, "account/pages/login/AccountLoginPage.vue"),
-				},
-			);
-		});
+    nuxt.hook("pages:extend", (pages) => {
+      pages.push(
+        {
+          name: "AccountLoginPage",
+          path: "/account/login",
+          file: resolve(themeDir, "account/pages/login/AccountLoginPage.vue"),
+        },
+        {
+          name: "AccountMyPage",
+          path: "/account/myPage",
+          file: resolve(themeDir, "account/pages/myPage/AccountMyPage.vue"),
+        }
+      );
+    });
 
-		nuxt.hook("imports:dirs", (dirs) => {
-			dirs.push(resolve(__dirname, "store"));
-		});
-	},
+    nuxt.hook("imports:dirs", (dirs) => {
+      dirs.push(resolve(__dirname, "store"));
+    });
+  },
 });
