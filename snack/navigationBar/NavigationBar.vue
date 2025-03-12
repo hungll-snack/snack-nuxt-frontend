@@ -23,6 +23,7 @@
               <v-btn icon @click="signOut">
                   <v-icon>mdi-logout</v-icon>
               </v-btn>
+              <v-btn class="nav-btn" @click="goToMyPage">마이페이지</v-btn>
           </template>
       </template>
   </v-app-bar>
@@ -43,6 +44,10 @@ const isLoginPage = computed(() => route.path === '/account/login');
 
 const goToHome = () => {
   router.push('/');
+};
+
+const goToMyPage = () => {
+  router.push('/account/myPage');
 };
 
 const signIn = () => {
