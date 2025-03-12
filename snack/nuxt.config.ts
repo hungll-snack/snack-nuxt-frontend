@@ -61,6 +61,7 @@ export default defineNuxtConfig({
       AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
       AWS_REGION: process.env.AWS_REGION,
       AWS_BUCKET_NAME: process.env.AWS_BUCKET_NAME,
+      KAKAO_JAVASCRIPT_APP_KEY: process.env.KAKAO_JAVASCRIPT_APP_KEY,
     }
   },
 })

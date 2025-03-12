@@ -10,16 +10,24 @@
           </div>
 
           <!-- 카카오 로그인 버튼 -->
-          <v-btn class="kakao-login-btn" @click="goToKakaoLogin">
-            <v-icon class="kakao-icon">mdi-message</v-icon>
-            <span class="kakao-text">카카오로 시작하기</span>
+          <v-btn class="kakao-login-btn" @click="handleKakaoLogin">
+            <v-img 
+              src="/assets/images/fixed/btn_kakao_login.png" 
+              class="login-btn" 
+              alt="카카오 로그인 버튼"
+            />
           </v-btn>
 
           <!-- 네이버 로그인 버튼 -->
-          <v-btn class="naver-login-btn" @click="goToNaverLogin">
-            <v-icon class="naver-icon">mdi-message</v-icon>
-            <span class="naver-text">네이버로로 시작하기</span>
+          <v-btn class="naver-login-btn" @click="handleNaverLogin">
+            <v-img 
+              src="/assets/images/fixed/btn_naver_login.png" 
+              class="login-btn" 
+              alt="네이버 로그인 버튼"
+            />
           </v-btn>
+
+          <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
 
           <!-- 로그인 문제 텍스트 -->
           <p class="login-issue-text">로그인에 문제가 있으신가요?</p>
@@ -37,26 +45,81 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
-import { useKakaoAuthenticationStore } from '../../../kakaoAuthentication/stores/kakaoAuthenticationStore';
-import { useNaverAuthenticationStore } from '../../../naverAuthentication/stores/naverAuthenticationStore';
+import { useKakaoAuthenticationStore } from '@/kakaoAuthentication/stores/kakaoAuthenticationStore';
+import { useNaverAuthenticationStore } from '@/naverAuthentication/stores/naverAuthenticationStore';
+import { ref } from "vue";
 
 const router = useRouter();
 const kakaoAuthentication = useKakaoAuthenticationStore();
 const naverAuthentication = useNaverAuthenticationStore();
+const errorMessage = ref("");
+const redirectLoginPath = ref("");
 
-// 카카오 로그인 함수
-const goToKakaoLogin = async () => {
-  await kakaoAuthentication.requestKakaoLoginToDjango();
+const handleKakaoLogin = async () => {
+  try {
+    const response = await kakaoAuthentication.requestKakaoLoginToDjango();
+    
+    console.log("📌 원본 응답:", response);
+
+    // ✅ 응답 데이터를 `JSON` 형태로 변환 (Axios의 경우 자동으로 `data` 속성을 사용해야 함)
+    const data = response.data || response;
+
+    console.log("📌 변환된 응답:", data);
+
+    if (!data.success && data.error_message) {
+      console.warn("🚨 로그인 차단됨:", data.error_message);
+      errorMessage.value = data.error_message;
+      redirectLoginPath.value = "네이버"; // 기존 가입된 경로 표시
+      return;  // 🚨 로그인 중단 (여기가 중요!)
+    }
+
+    // ✅ 로그인 성공 시 홈으로 이동
+    errorMessage.value = "";
+    router.push("/home");
+  } catch (error) {
+    console.error("🔥 로그인 중 오류 발생:", error);
+
+    // 🚨 Axios 요청이 실패할 경우, `error.response` 값이 있는지 확인 후 처리
+    if (error.response) {
+      console.warn("❗ 서버 응답 오류:", error.response.data);
+      errorMessage.value = error.response.data.error_message || "로그인 중 오류가 발생했습니다.";
+    } else {
+      errorMessage.value = "네트워크 오류 또는 서버 문제로 인해 로그인에 실패했습니다.";
+    }
+  }
 };
 
-//네이버 로그인 함수
-const goToNaverLogin = async () => {
-  await naverAuthentication.requestNaverLoginToDjango();
-}
+const handleNaverLogin = async () => {
+  try {
+    const response = await naverAuthentication.requestNaverLoginToDjango();
+    
+    console.log("📌 원본 응답:", response);
 
-// 홈으로 이동
-const goToHome = () => {
-  router.push('/');
+    // ✅ 응답 데이터를 `JSON` 형태로 변환 (Axios의 경우 자동으로 `data` 속성을 사용해야 함)
+    const data = response.data || response;
+
+    console.log("📌 변환된 응답:", data);
+
+    if (!data.success && data.error_message) {
+      console.warn("🚨 로그인 차단됨:", data.error_message);
+      errorMessage.value = data.error_message;
+      redirectLoginPath.value = "카카오"; // 기존 가입된 경로 표시
+      return;  // 🚨 로그인 중단 (여기가 중요!)
+    }
+
+    // ✅ 로그인 성공 시 홈으로 이동
+    errorMessage.value = "";
+    router.push("/home");
+  } catch (error) {
+    console.error("🔥 로그인 중 오류 발생:", error);
+
+    if (error.response) {
+      console.warn("❗ 서버 응답 오류:", error.response.data);
+      errorMessage.value = error.response.data.error_message || "로그인 중 오류가 발생했습니다.";
+    } else {
+      errorMessage.value = "네트워크 오류 또는 서버 문제로 인해 로그인에 실패했습니다.";
+    }
+  }
 };
 </script>
 
@@ -66,7 +129,7 @@ const goToHome = () => {
   background: white;
   padding: 20px;
   height: 220px;
-  border: 1px solid #E0E0E0; /* 연한 회색 테두리 */
+  border: 1px solid #E0E0E0;
   border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   text-align: center;
@@ -76,7 +139,8 @@ const goToHome = () => {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin: auto; /* 중앙 정렬 */
+  margin: auto;
+  margin: 30px auto; /* 버튼 간격 조정 */
 }
 
 /* 말풍선 스타일 */
@@ -90,7 +154,7 @@ const goToHome = () => {
   color: #333;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: relative;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 .speech-bubble::after {
@@ -104,30 +168,31 @@ const goToHome = () => {
   border-color: white transparent transparent transparent;
 }
 
-/* 카카오 로그인 버튼 */
-.kakao-login-btn {
-  width: 300px;
-  height: 50px;
-  background-color: #FFEA00;
-  color: #3C1E1E;
-  font-size: 18px;
-  font-weight: bold;
-  border-radius: 10px;
+/* 로그인 버튼 */
+.login-btn {
+  width: 200px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin: 10px auto;
+  background: none;
+  box-shadow: none;
+  border: none;
+  padding: 0;
+  overflow: hidden;
+  margin: 0 auto; /* 중앙 정렬 */
+  margin-bottom: 16px;
 }
 
-.kakao-icon {
-  font-size: 24px;
-  margin-right: 8px;
+/* 이미지 크기 맞추기 */
+.login-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  margin: 0 auto; /* 중앙 정렬 */
+  margin-bottom: 50px; /* 버튼 크기에 맞게 이미지 조정 */
 }
 
-.kakao-text {
-  font-size: 16px;
-}
 
 /* 로그인 문제 텍스트 */
 .login-issue-text {
@@ -138,7 +203,7 @@ const goToHome = () => {
 
 /* 박스 아래 버튼 컨테이너 */
 .bottom-buttons {
-  margin-top: 20px;
+  margin-top: 30px;
   text-align: center;
 }
 
@@ -165,4 +230,7 @@ const goToHome = () => {
 .back-text:hover {
   color: #333;
 }
+
+
+
 </style>
