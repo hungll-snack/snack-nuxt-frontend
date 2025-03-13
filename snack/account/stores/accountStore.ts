@@ -1,10 +1,11 @@
-import { defineStore } from 'pinia';
-import { accountState } from './accountState';
-import { accountAction } from './accountActions';
+import { defineStore } from "pinia";
+import { accountAction } from "./accountActions";
 
-export const useAccountStore = defineStore('accountStore', {
+export const useAccountStore = defineStore("accountStore", {
   state: () => ({
-    ...accountState()
+    email: "",
+    accountRegister: "",
+    accountPath: "",
   }),
   actions: accountAction,
 });
