@@ -9,6 +9,9 @@ export function createAxiosInstances() {
     const mainApiUrl: string = config.public.MAIN_API_URL as string;
     const aiBaseUrl: string = config.public.AI_BASE_URL as string;
 
+    console.log('mainApiUrl : ' ,mainApiUrl)
+    console.log('aiBaseUrl : ' ,aiBaseUrl)
+
     if (!djangoAxiosInstance) {
         djangoAxiosInstance = axios.create({
             baseURL: mainApiUrl,

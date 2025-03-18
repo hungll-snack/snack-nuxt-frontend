@@ -1,4 +1,16 @@
 import { defineNuxtConfig } from "nuxt/config"
+import dotenv from 'dotenv';
+import { existsSync } from 'fs';
+
+// NODE_ENV에 따라 로드할 .env 파일 결정
+const envFileName = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development';
+const envFilePath = `${process.cwd()}/${envFileName}`;
+
+// .env 파일이 존재하면 로드
+if (existsSync(envFilePath)) {
+  dotenv.config({ path: envFilePath });
+}
+
 
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
