@@ -1,13 +1,21 @@
 <template>
     <v-container fluid class="pa-4">
-        <!-- Kakao Map을 표시할 Hero 섹션 -->
+        <!-- ✅ 채팅 입력 효과 적용된 텍스트 -->
+        <v-row justify="center" class="text-section">
+            <h2>
+                {{ location }}에서 
+                <span style="color: #E76200" class="typing-text">{{ displayedText }}</span>찾고 계신가요?
+            </h2>
+        </v-row>
+
+        <!-- Kakao Map -->
         <v-row>
             <v-col cols="12">
-                <div id="map" style="width: 100%; height: 600px;"></div>
+                <div id="map" class="map-container"></div>
             </v-col>
         </v-row>
 
-        <!-- Footer 섹션 -->
+        <!-- Footer -->
         <v-row>
             <v-col cols="12" class="text-center">
                 <v-divider></v-divider>
@@ -17,71 +25,72 @@
     </v-container>
 </template>
 
-<script setup>
-import { useRuntimeConfig } from '#imports'
-import { ref, onMounted } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
 
+const location = ref("독산동"); // ✅ 원하는 지역명
+const words = ["맛집을 ", "동네친구를 ", "에디 아카데미를 "]; // ✅ 타이핑될 단어들
+const displayedText = ref(""); // 현재 표시되는 텍스트
+let currentWordIndex = 0;
+let isDeleting = false;
+let charIndex = 0;
 
-const config = useRuntimeConfig();
-const restaurants = ref([]);
+const typeEffect = () => {
+    const currentWord = words[currentWordIndex];
 
-onMounted(async () => {
-    await loadRestaurants();
-    loadKakaoMap();
-});
-
-const loadRestaurants = async () => {
-    try {
-        const response = await fetch('http://localhost:8000/restaurants/list/');
-        restaurants.value = await response.json();
-    } catch (error) {
-        console.error("API 로딩 실패:", error);
-    }
-};
-
-const loadKakaoMap = () => {
-    const KAKAO_API_KEY = config.public.KAKAO_JAVASCRIPT_APP_KEY;
-    if (window.kakao && window.kakao.maps) {
-        initMap();
+    if (isDeleting) {
+        // 글자 삭제
+        displayedText.value = currentWord.substring(0, charIndex--);
     } else {
-        const script = document.createElement("script");
-        script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_API_KEY}&autoload=false`;
-        script.onload = () => {
-            kakao.maps.load(initMap);
-        };
-        document.head.appendChild(script);
+        // 글자 추가
+        displayedText.value = currentWord.substring(0, charIndex++);
     }
+
+    let speed = isDeleting ? 100 : 150; // 삭제 속도는 더 빠르게
+    if (!isDeleting && charIndex === currentWord.length) {
+        speed = 1000; // 단어가 다 입력되면 잠시 멈춤
+        isDeleting = true;
+    } else if (isDeleting && charIndex === 0) {
+        isDeleting = false;
+        currentWordIndex = (currentWordIndex + 2) % words.length; // 다음 단어로 변경
+    }
+
+    setTimeout(typeEffect, speed);
 };
 
-const initMap = () => {
-    const container = document.getElementById("map");
-    if (!container) return;
-
-    const map = new kakao.maps.Map(container, {
-        center: new kakao.maps.LatLng(37.496486063, 127.028361548),
-        level: 3,
-    });
-
-    addMarkers(map);
-};
-
-const addMarkers = (map) => {
-    restaurants.value.forEach(({ name, latitude, longitude, address }) => {
-        const marker = new kakao.maps.Marker({
-            position: new kakao.maps.LatLng(latitude, longitude),
-            map: map
-        });
-
-        const infoWindow = new kakao.maps.InfoWindow({
-            content: `<div style="padding:5px;font-size:14px;">${name}<br>${address}</div>`
-        });
-
-        kakao.maps.event.addListener(marker, "click", () => {
-            infoWindow.open(map, marker);
-        });
-    });
-};
+onMounted(() => {
+    typeEffect();
+});
 </script>
 
 <style scoped>
+/* ✅ 텍스트 스타일 */
+.text-section {
+    text-align: center;
+    margin-bottom: 16px;
+    font-size: 24px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ✅ 타이핑 효과 (커서 깜빡임) */
+.typing-text::after {
+    content: "|";
+    display: inline-block;
+    animation: blink 0.7s infinite;
+}
+
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* ✅ 카카오 맵 스타일 */
+.map-container {
+    width: 100%;
+    height: 600px;
+}
 </style>
