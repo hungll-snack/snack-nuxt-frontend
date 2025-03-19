@@ -14,6 +14,7 @@
           <v-btn class="nav-btn download-btn">앱 다운로드</v-btn>
           <v-btn class="nav-btn">맛집 찾기</v-btn>
           <v-btn class="nav-btn">밥 친구 찾기</v-btn>
+          <v-btn class="nav-btn">게시판</v-btn>
           <template v-if="!kakaoAuthentication.isAuthenticated && !naverAuthentication.isAuthenticated">
               <v-btn icon @click="signIn" :style="{ color: '#E76200' }">
                   <v-icon>mdi-login</v-icon>
@@ -53,6 +54,10 @@ const goToMyPage = () => {
 const signIn = () => {
   router.push('/account/login');
 };
+
+const goToBoardList = () => {
+    router.push('/board/list');
+}
 
 const signOut = () => {
   const userToken = localStorage.getItem("userToken");
