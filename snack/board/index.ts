@@ -1,3 +1,4 @@
+
 import { defineNuxtModule } from '@nuxt/kit';
 import { resolve } from 'path';
 
@@ -13,9 +14,11 @@ export default defineNuxtModule({
         nuxt.hook('pages:extend', (pages) => {
             pages.push({
                 name: 'BoardList',
-                path: '/board/list',
+                path: '/board/all',
                 file: resolve(themeDir, 'board/pages/list/List.vue'),
             });
+
+            
         });
 
         nuxt.hook('imports:dirs', (dirs) => {
@@ -23,5 +26,4 @@ export default defineNuxtModule({
         });
     },
 });
-
 
