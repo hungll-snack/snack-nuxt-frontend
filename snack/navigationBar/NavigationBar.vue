@@ -46,8 +46,8 @@ const kakaoAuthentication = useKakaoAuthenticationStore();
 const naverAuthentication = useNaverAuthenticationStore();
 
 const menus = ref([
-    { label: "맛집 찾기", route: "/find-food" },
-    { label: "밥 친구 찾기", route: "/find-friend" },
+    { label: "맛집 찾기", route: "/restaurant/all" },
+    { label: "밥 친구 찾기", route: "/board/all" },
 ]);
 
 const activeMenu = ref("맛집 찾기");
