@@ -2,6 +2,7 @@ import * as axiosUtility from "../../../utility/axiosInstance";
 import type { BoardModify } from "./BoardModifyType";
 import { useBoardModifyStore } from "./BoardModifyStore"; 
 
+//여러 개의 데이터 전달해야해서 boardDetails로 묶음
 export const boardModifyAction = {
   async requestModifyBoard(boardId: number, boardDetails: BoardModify) {
     const store = useBoardModifyStore(); 
