@@ -2,7 +2,7 @@ import * as axiosUtility from "../../../utility/axiosInstance";
 import { useBoardDeleteStore } from "./BoardDeleteStore";
 
 export const boardDeleteAction = {
-    async requestDeleteBoard(boardId: number, userId: string) {
+    async requestDeleteBoard(boardId: number, userId: number) {
         const store = useBoardDeleteStore();
       
         try {
