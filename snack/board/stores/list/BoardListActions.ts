@@ -33,23 +33,23 @@ export const boardAction = {
         }
     },
 
-    async requestCreateBoard(payload) {
-        const { djangoAxiosInstance } = axiosUtility.createAxiosInstances();
-        const { title, content, userToken } = payload;
+    // async requestCreateBoard(payload) {
+    //     const { djangoAxiosInstance } = axiosUtility.createAxiosInstances();
+    //     const { title, content, userToken } = payload;
 
-        try {
-            const res = await djangoAxiosInstance.post(`/create/`, { 
-                title, content, userToken
-            });
+    //     try {
+    //         const res = await djangoAxiosInstance.post(`/create/`, { 
+    //             title, content, userToken
+    //         });
 
-            console.log("✅ Create Board Response Data:", res.data);
+    //         console.log("✅ Create Board Response Data:", res.data);
 
-            return res.data;
-        } catch (error) {
-            console.error("❌ requestCreateBoard() 중 에러:", error);
-            throw error;
-        }
-    },
+    //         return res.data;
+    //     } catch (error) {
+    //         console.error("❌ requestCreateBoard() 중 에러:", error);
+    //         throw error;
+    //     }
+    // },
 
     async requestReadBoard(boardId) {
         try {

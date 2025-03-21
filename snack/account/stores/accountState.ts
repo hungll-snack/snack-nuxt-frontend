@@ -1,4 +1,5 @@
 export const accountState = () => ({
+    accountId: null,
     email: '',
     name: '',
     nickname: '',
@@ -11,4 +12,5 @@ export const accountState = () => ({
     subscribe: false,
     accountRegister: '',
     accountPath: '',
-});
+  });
+  
