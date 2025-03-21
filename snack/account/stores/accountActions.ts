@@ -3,7 +3,6 @@ import type { AxiosResponse } from "axios";
 import { useAccountStore } from "./accountStore";
 
 export const accountAction = {
-
   async requestEmail(userToken: string): Promise<string | null> {
     const { djangoAxiosInstance } = axiosUtility.createAxiosInstances();
     try {
@@ -27,6 +26,8 @@ export const accountAction = {
     }
 
     const { djangoAxiosInstance } = axiosUtility.createAxiosInstances();
+    const accountStore = useAccountStore(); // ✅ 여기서 store 인스턴스 고정
+
     try {
       console.log(`🚀 getAccount API 호출: /account/get/${email}/`);
       const accountRes: AxiosResponse = await djangoAxiosInstance.get(
@@ -34,11 +35,15 @@ export const accountAction = {
       );
 
       console.log("✅ 백엔드 응답 확인 (계정):", accountRes.data);
-      useAccountStore().$patch({
+
+      accountStore.$patch({
+        accountId: accountRes.data.account_id, // ✅ account_id 저장
         email: accountRes.data.email,
         accountPath: accountRes.data.account_path,
         accountRegister: accountRes.data.account_register,
       });
+
+      console.log("🟢 저장된 accountId:", accountStore.accountId);
 
     } catch (error) {
       console.error("❌ getAccount() 오류:", error);
@@ -52,15 +57,16 @@ export const accountAction = {
     }
 
     const { djangoAxiosInstance } = axiosUtility.createAxiosInstances();
+    const accountStore = useAccountStore(); // ✅ 중복 호출 방지
+
     try {
-      const encodedEmail = encodeURIComponent(email);
       console.log(`🚀 getProfile API 호출: /account-profile/get/${email}/`);
       const profileRes: AxiosResponse = await djangoAxiosInstance.get(
         `/account-profile/get/${email}/`
       );
 
       console.log("✅ 백엔드 응답 확인 (프로필):", profileRes.data);
-      useAccountStore().$patch({
+      accountStore.$patch({
         name: profileRes.data.account_name,
         nickname: profileRes.data.account_nickname,
         phoneNum: profileRes.data.phone_num,
@@ -70,6 +76,8 @@ export const accountAction = {
         payment: profileRes.data.account_pay,
         subscribe: profileRes.data.account_sub,
       });
+
+      console.log("✅ accountStore.accountId (프로필 내부):", accountStore.accountId);
 
     } catch (error) {
       console.error("❌ getProfile() 오류:", error);
@@ -83,6 +91,10 @@ export const accountAction = {
 
       await this.getAccount(email);
       await this.getProfile(email);
+
+      const accountStore = useAccountStore();
+      console.log("🟢 최종 저장된 accountId:", accountStore.accountId);
+
     } catch (error) {
       console.error("❌ getAccountAndProfile() 오류:", error);
     }

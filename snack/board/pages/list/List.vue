@@ -94,7 +94,7 @@
                     </v-card>
 
                     <!-- 모임 등록 버튼 -->
-                    <v-btn color="primary" block class="mt-2" @click="router.push('/board/register')">모임 등록</v-btn>
+                    <v-btn color="primary" block class="mt-2" @click="router.push('/board/create')">모임 등록</v-btn>
                 </v-card>
             </v-col>
 
@@ -106,7 +106,7 @@
                         <div v-if="boardList.length === 0">
                             <v-alert type="info">
                                 등록한 게시글이 없습니다.
-                                <v-btn color="primary" small class="ml-2" @click="router.push('/board/register')">
+                                <v-btn color="primary" small class="ml-2" @click="router.push('/board/create')">
                                     모임 등록하기
                                 </v-btn>
                             </v-alert>
