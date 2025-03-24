@@ -101,7 +101,7 @@ const submitBoard = async () => {
     });
 
     console.log("✅ 게시글 등록 성공");
-    router.push('/board/all/');
+    router.push('/board/all');
   } catch (error) {
     console.error("❌ 게시글 등록 실패", error);
   }
