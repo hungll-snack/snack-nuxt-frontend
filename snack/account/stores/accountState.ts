@@ -1,5 +1,5 @@
 export const accountState = () => ({
-    accountId: null,
+    accountId: '',
     email: '',
     name: '',
     nickname: '',

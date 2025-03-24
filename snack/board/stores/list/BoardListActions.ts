@@ -6,7 +6,7 @@ export const boardAction = {
         const { page, perPage, title, author } = payload; 
 
         try {
-            const res = await djangoAxiosInstance.get(`/all/`, { 
+            const res = await djangoAxiosInstance.get(`board/all/`, { 
                 params: { page, per_page: perPage, title, author }, 
             });
 

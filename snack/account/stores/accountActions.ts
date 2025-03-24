@@ -45,6 +45,9 @@ export const accountAction = {
 
       console.log("🟢 저장된 accountId:", accountStore.accountId);
 
+      const accountId = accountRes.data.account_id
+      localStorage.setItem('account_id', accountId)
+
     } catch (error) {
       console.error("❌ getAccount() 오류:", error);
     }

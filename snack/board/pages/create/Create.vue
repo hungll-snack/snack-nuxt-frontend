@@ -97,10 +97,11 @@ const submitBoard = async () => {
       content: content.value,
       image: thumbnail.value,
       end_time: selectedDate.value || new Date().toISOString().slice(0, 10),
+      author_id: localStorage.getItem("account_id"),
     });
 
     console.log("✅ 게시글 등록 성공");
-    router.push('/board/all');
+    router.push('/board/all/');
   } catch (error) {
     console.error("❌ 게시글 등록 실패", error);
   }
