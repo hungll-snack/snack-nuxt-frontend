@@ -17,7 +17,7 @@ export function createAxiosInstances() {
             baseURL: mainApiUrl,
             timeout: 5000,
             headers: {
-                'Content-Type': 'application/json',
+                //'Content-Type': 'application/json',
             },
         });
     }

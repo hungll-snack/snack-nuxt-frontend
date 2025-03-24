@@ -1,5 +1,6 @@
 import * as axiosUtility from "../../../utility/axiosInstance";
 import {useAccountStore} from "../../../account/stores/accountStore";
+import { format } from 'date-fns'
 
 
 export const boardAction = { // ✅ `export const` 확인
@@ -17,13 +18,8 @@ export const boardAction = { // ✅ `export const` 확인
 
         payload.selectedDate = new Date(payload.end_time);
 
-        
-
         // formData.append('end_time', payload.selectedDate.value);
         // console.log("🟢 formData 확인:", Object.fromEntries(formData.entries()));
-
-
-
 
         try {
             const formData = new FormData();
@@ -34,9 +30,9 @@ export const boardAction = { // ✅ `export const` 확인
 
           
             if (image instanceof File || image instanceof Blob) {
-              formData.append("image", image);
-            } else if (image) {
-              console.warn("⚠️ 잘못된 이미지 타입:", image);
+              formData.append("image", image); // ✅ 이게 정상 작동하려면 image는 File이어야 함
+            } else {
+              console.warn("⚠️ image가 File이 아닙니다", image);
             }
           
             if (restaurant_id) {
@@ -50,7 +46,9 @@ export const boardAction = { // ✅ `export const` 확인
 
             console.log("📤 게시글 생성 요청 데이터:", Object.fromEntries(formData.entries()));
 
-            const res = await djangoAxiosInstance.post(`/board/create/`, formData);
+            const res = await djangoAxiosInstance.post(`/board/create/`, formData, {
+              headers: {}
+            });
 
             console.log("✅ 게시글 생성 성공:", res.data);
             return res.data;
