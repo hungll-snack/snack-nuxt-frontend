@@ -17,42 +17,32 @@
           ></v-file-input>
           <v-img v-if="previewImage" :src="previewImage" class="thumbnail-preview mt-2"></v-img>
 
-          <!-- 날짜 선택 -->
+          <!-- 날짜 + 시간 선택기 -->
           <v-card class="mt-3 pa-2">
-            <v-card-title class="text-subtitle1">날짜 선택 (선택사항)</v-card-title>
-            <v-text-field
-              v-model="selectedDate"
-              label="날짜 선택"
-              prepend-icon="mdi-calendar"
-              readonly
-              @click="menu = true"
-            ></v-text-field>
-
-            <v-dialog v-model="menu" max-width="340px">
-              <v-card>
-                <v-card-title class="d-flex justify-space-between">
-                  날짜 선택
-                  <v-btn icon @click="menu = false">
-                    <v-icon>mdi-close</v-icon>
-                  </v-btn>
-                </v-card-title>
-                <v-date-picker v-model="selectedDate"></v-date-picker>
-                <v-card-actions>
-                  <v-btn text color="primary" @click="menu = false">확인</v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
+            <v-card-title class="text-subtitle1">모임 날짜 및 시간</v-card-title>
+            <Datepicker
+              v-model="datetime"
+              locale="ko"
+              :enable-time-picker="true"
+              format="yyyy-MM-dd HH:mm"
+              :clearable="true"
+              auto-apply
+              :teleport="true"
+              placeholder="날짜와 시간을 선택하세요"
+              :min-date="new Date()"
+              class="mt-2"
+            />
           </v-card>
 
           <!-- 등록 버튼 -->
-          <v-btn color="primary" block class="mt-2" @click="submitBoard">등록</v-btn>
+          <v-btn color="primary" block class="mt-4" @click="submitBoard">등록</v-btn>
         </v-card>
       </v-col>
 
       <!-- 오른쪽 패널 -->
       <v-col cols="12" md="8">
         <v-card class="pa-4">
-          <v-text-field v-model="title" label="모임 제목" outlined dense hide-details></v-text-field>
+          <v-text-field v-model="title" label="모임 제목" outlined dense hide-details class="mb-4"></v-text-field>
           <v-textarea v-model="content" label="모임 소개" outlined dense hide-details rows="6"></v-textarea>
         </v-card>
       </v-col>
@@ -61,9 +51,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useBoardStore } from '~/board/stores/create/BoardCreateStore';
+import Datepicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css';
 
 const router = useRouter();
 const boardStore = useBoardStore();
@@ -72,34 +64,37 @@ const title = ref('');
 const content = ref('');
 const thumbnail = ref<File | null>(null);
 const previewImage = ref('');
-const selectedDate = ref(null);
-const menu = ref(false);
+const datetime = ref<Date | null>(null);
+
+onMounted(() => {
+  datetime.value = new Date(); // 기본값: 현재 시간
+});
 
 const handleImageUpload = (file: File | File[]) => {
-  const realFile = Array.isArray(file) ? file[0] : file
-  if (!realFile) return
+  const realFile = Array.isArray(file) ? file[0] : file;
+  if (!realFile) return;
 
-  thumbnail.value = realFile
+  thumbnail.value = realFile;
 
-  const reader = new FileReader()
+  const reader = new FileReader();
   reader.onload = (e) => {
-    previewImage.value = e.target?.result as string
-  }
-  reader.readAsDataURL(realFile)
-}
+    previewImage.value = e.target?.result as string;
+  };
+  reader.readAsDataURL(realFile);
+};
 
 const submitBoard = async () => {
   console.log("📦 전송 전 확인");
   console.log("🟢 title:", title.value);
   console.log("🟢 content:", content.value);
-  console.log("🟢 end_time:", selectedDate.value);
+  console.log("🟢 end_time:", datetime.value?.toISOString());
 
   try {
     await boardStore.requestCreateBoard({
       title: title.value,
       content: content.value,
       image: thumbnail.value,
-      end_time: selectedDate.value || new Date().toISOString().slice(0, 10),
+      end_time: datetime.value?.toISOString() || new Date().toISOString(),
       author_id: localStorage.getItem("account_id"),
     });
 

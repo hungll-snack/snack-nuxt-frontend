@@ -32,54 +32,37 @@
                     <v-card class="mt-3 pa-2">
                         <v-card-title class="text-subtitle1">날짜 검색</v-card-title>
 
+
                         <!-- 시작 날짜 -->
                         <v-text-field
+                        label="시작 날짜"
+                        prepend-icon="mdi-calendar"
+                        readonly
+                        :value="s_date"
+                        @click="menu1 = true"
+                        />
+
+                        <v-dialog v-model="menu1" width="290px">
+                        <v-date-picker
                             v-model="s_date"
-                            label="시작 날짜"
-                            prepend-icon="mdi-calendar"
-                            readonly
-                            @click="menu1 = true"
-                        ></v-text-field>
+                            @input="menu1 = false"
+                        ></v-date-picker>
+                        </v-dialog>
 
                         <!-- 종료 날짜 -->
                         <v-text-field
+                        label="종료 날짜"
+                        prepend-icon="mdi-calendar"
+                        readonly
+                        :value="e_date"
+                        @click="menu2 = true"
+                        />
+
+                        <v-dialog v-model="menu2" width="290px">
+                        <v-date-picker
                             v-model="e_date"
-                            label="종료 날짜"
-                            prepend-icon="mdi-calendar"
-                            readonly
-                            @click="menu2 = true"
-                        ></v-text-field>
-
-                        <!-- 시작 날짜 달력 -->
-                        <v-dialog v-model="menu1" width="340px">
-                            <v-card>
-                                <v-card-title class="d-flex justify-space-between">
-                                    시작 날짜 선택
-                                    <v-btn icon @click="menu1 = false">
-                                        <v-icon>mdi-close</v-icon>
-                                    </v-btn>
-                                </v-card-title>
-                                <v-date-picker v-model="s_date" :max="e_date"></v-date-picker>
-                                <v-card-actions>
-                                    <v-btn color="primary" block @click="menu1 = false">확인</v-btn>
-                                </v-card-actions>
-                            </v-card>
-                        </v-dialog>
-
-                        <!-- 종료 날짜 달력 -->
-                        <v-dialog v-model="menu2" width="340px">
-                            <v-card>
-                                <v-card-title class="d-flex justify-space-between">
-                                    종료 날짜 선택
-                                    <v-btn icon @click="menu2 = false">
-                                        <v-icon>mdi-close</v-icon>
-                                    </v-btn>
-                                </v-card-title>
-                                <v-date-picker v-model="e_date" :min="s_date"></v-date-picker>
-                                <v-card-actions>
-                                    <v-btn color="primary" block @click="menu2 = false">확인</v-btn>
-                                </v-card-actions>
-                            </v-card>
+                            @input="menu2 = false"
+                        ></v-date-picker>
                         </v-dialog>
 
                         <!-- 검색 버튼 -->
