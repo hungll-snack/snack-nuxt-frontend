@@ -139,12 +139,6 @@ const onSearchRestaurant = async (searchText: string) => {
 };
 
 const submitBoard = async () => {
-  console.log("📦 전송 전 확인");
-  console.log("🟢 title:", title.value);
-  console.log("🟢 content:", content.value);
-  console.log("🟢 end_time:", datetime.value?.toISOString());
-  console.log("🟢 restaurant_id:", selectedRestaurant.value);
-
   try {
     await boardStore.requestCreateBoard({
       title: title.value,
@@ -154,8 +148,6 @@ const submitBoard = async () => {
       author_id: localStorage.getItem("account_id"),
       restaurant_id: selectedRestaurant.value,
     });
-
-    console.log("✅ 게시글 등록 성공");
     router.push('/board/all');
   } catch (error) {
     console.error("❌ 게시글 등록 실패", error);
