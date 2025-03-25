@@ -153,13 +153,24 @@ import { useBoardStore } from '~/board/stores/list/BoardListStore';
 const router = useRouter();
 const boardStore = useBoardStore();
 
+const fetchBoardList = async () => {
+  await boardStore.requestBoardList({
+    page: currentPage.value,
+    perPage: 10,
+    title: searchTitle.value,
+    author: searchAuthor.value,
+    start_date: s_date.value,
+    end_date: e_date.value,
+  });
+};
+
+
 const searchTitle = ref('');
 const searchAuthor = ref('');
 const date = ref(new Date().toISOString().substr(0, 10));  // 오늘 날짜
 const s_date = ref(new Date().toISOString().substr(0, 10));  // 시작 날짜
 const e_date = ref(new Date().toISOString().substr(0, 10));  // 종료 날짜
-const menu1 = ref(false);
-const menu2 = ref(false);
+
 
 const boardList = computed(() => boardStore.boardList);
 const currentPage = computed({
@@ -204,11 +215,22 @@ const fetchBoardListByDate = async () => {
 const resetDateFilter = () => {
     s_date.value = date.value;
     e_date.value = date.value;
+    
+    s_date.value = today;
+    e_date.value = today;
+    fetchBoardList(); // ✅ 초기화 후 리스트 재요청
 };
 
-onMounted(() => fetchBoardListByTitle());
+// 상세보기
+const goToDetail = (boardId) => {
+  router.push(`/board/${boardId}`); // 👉 예: /board/15 로 이동
+};
 
-watch(currentPage, fetchBoardListByTitle);
+
+onMounted(() => fetchBoardList());
+
+
+watch(currentPage, fetchBoardList);
 </script>
 
 <style scoped>

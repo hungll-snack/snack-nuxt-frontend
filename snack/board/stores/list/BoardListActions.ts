@@ -3,11 +3,19 @@ import * as axiosUtility from "../../../utility/axiosInstance";
 export const boardAction = {
     async requestBoardList(payload) {
         const { djangoAxiosInstance } = axiosUtility.createAxiosInstances();
-        const { page, perPage, title, author } = payload; 
+        const { page, perPage, title, author, start_date, end_date } = payload;
+
 
         try {
-            const res = await djangoAxiosInstance.get(`/all/`, { 
-                params: { page, per_page: perPage, title, author }, 
+            const res = await djangoAxiosInstance.get(`board/all/`, {
+                params: {
+                    page,
+                    per_page: perPage,
+                    title,
+                    author,
+                    start_date,
+                    end_date, 
+                },
             });
 
             console.log("✅ Response Data:", res.data);
@@ -33,24 +41,6 @@ export const boardAction = {
         }
     },
 
-    // async requestCreateBoard(payload) {
-    //     const { djangoAxiosInstance } = axiosUtility.createAxiosInstances();
-    //     const { title, content, userToken } = payload;
-
-    //     try {
-    //         const res = await djangoAxiosInstance.post(`/create/`, { 
-    //             title, content, userToken
-    //         });
-
-    //         console.log("✅ Create Board Response Data:", res.data);
-
-    //         return res.data;
-    //     } catch (error) {
-    //         console.error("❌ requestCreateBoard() 중 에러:", error);
-    //         throw error;
-    //     }
-    // },
-
     async requestReadBoard(boardId) {
         try {
             const { djangoAxiosInstance } = axiosUtility.createAxiosInstances();
@@ -65,34 +55,4 @@ export const boardAction = {
         }
     },
 
-    // async requestModifyBoard(boardId, boardDetails) {
-    //     try {
-    //         const { djangoAxiosInstance } = axiosUtility.createAxiosInstances();
-    //         const response = await djangoAxiosInstance.put(`/update/${boardId}/`, { 
-    //             content: boardDetails.content,
-    //             userToken: boardDetails.userToken,  
-    //         });
-
-    //         console.log("✅ 게시글 수정 성공:", response.data);
-    //         return response.data;
-    //     } catch (error) {
-    //         console.error("❌ 게시글 수정 요청 중 에러 발생:", error);
-    //         throw error;
-    //     }
-    // },
-
-    // async requestDeleteBoard(boardId, userToken) {
-    //     try {
-    //         const { djangoAxiosInstance } = axiosUtility.createAxiosInstances();
-    //         const response = await djangoAxiosInstance.delete(`/delete/${boardId}/`, { 
-    //             data: { userToken }
-    //         });
-
-    //         console.log("✅ 게시글 삭제 성공:", response.data);
-    //         return response.data;
-    //     } catch (error) {
-    //         console.error("❌ 게시글 삭제 요청 중 에러 발생:", error);
-    //         throw error;
-    //     }
-    // },
 };

@@ -5,4 +5,5 @@ export const boardState = {
     image: null,
     end_time: "",
     restaurant_id: null,
+    selectedDate: "",
 };

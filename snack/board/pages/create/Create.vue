@@ -13,7 +13,7 @@
             accept="image/*"
             outlined
             dense
-            @change="handleImageUpload"
+            @update:modelValue="handleImageUpload"
           ></v-file-input>
           <v-img v-if="previewImage" :src="previewImage" class="thumbnail-preview mt-2"></v-img>
 
@@ -60,7 +60,7 @@
   </v-container>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useBoardStore } from '~/board/stores/create/BoardCreateStore';
@@ -70,20 +70,23 @@ const boardStore = useBoardStore();
 
 const title = ref('');
 const content = ref('');
-const thumbnail = ref(null);
+const thumbnail = ref<File | null>(null);
 const previewImage = ref('');
 const selectedDate = ref(null);
 const menu = ref(false);
 
-const handleImageUpload = (file) => {
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      previewImage.value = e.target.result;
-    };
-    reader.readAsDataURL(file);
+const handleImageUpload = (file: File | File[]) => {
+  const realFile = Array.isArray(file) ? file[0] : file
+  if (!realFile) return
+
+  thumbnail.value = realFile
+
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    previewImage.value = e.target?.result as string
   }
-};
+  reader.readAsDataURL(realFile)
+}
 
 const submitBoard = async () => {
   console.log("📦 전송 전 확인");
@@ -97,6 +100,7 @@ const submitBoard = async () => {
       content: content.value,
       image: thumbnail.value,
       end_time: selectedDate.value || new Date().toISOString().slice(0, 10),
+      author_id: localStorage.getItem("account_id"),
     });
 
     console.log("✅ 게시글 등록 성공");
