@@ -13,17 +13,9 @@ export const useBoardStore = defineStore("boardStore", {
             this.totalPages = response.totalPages;
         },
 
-        // async requestCreateBoard(payload: { title: string; content: string; userToken: string }) {
-        //     return await boardAction.requestCreateBoard(payload);
-        // },
-
         async requestReadBoard(boardId: number | string) {
             return await boardAction.requestReadBoard(boardId);
         },
-
-        // async requestModifyBoard(boardId: number | string, boardDetails: { title: string; content: string; userToken: string }) {
-        //     return await boardAction.requestModifyBoard(boardId, boardDetails);
-        // },
 
         async requestDeleteBoard(boardId: number | string, userToken: string) {
             return await boardAction.requestDeleteBoard(boardId, userToken);
