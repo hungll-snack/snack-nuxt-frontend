@@ -120,6 +120,10 @@
                   </v-list-item-subtitle>
                 </v-list-item-content>
 
+                <v-list-item-action class="d-flex flex-column align-end mr-4">
+                  <v-btn color="red darken-1" x-small @click.stop="deleteBoard(board.board_id)">삭제</v-btn>
+                </v-list-item-action>
+
                 <v-list-item-action>
                   <span class="text-grey">{{ board.author_nickname }}</span>
                 </v-list-item-action>
@@ -138,9 +142,11 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useBoardStore } from '~/board/stores/list/BoardListStore';
+import { useBoardDeleteStore } from '~/board/stores/delete/BoardDeleteStore';
 
 const router = useRouter();
 const boardStore = useBoardStore();
+const deleteStore = useBoardDeleteStore();
 
 const searchTitle = ref('');
 const searchAuthor = ref('');
@@ -193,6 +199,17 @@ const fetchBoardList = async () => {
 const goToDetail = (boardId) => {
   router.push(`/board/${boardId}`);
 };
+
+const deleteBoard = async (boardId) => {
+  const userId = localStorage.getItem('account_id');
+  try {
+    await deleteStore.requestDeleteBoard(Number(boardId), Number(userId));
+  } catch (error) {
+    console.error("❌ 삭제 실패:", error);
+  }
+};
+
+
 
 const formatDate = (datetimeStr) => {
   return datetimeStr?.split(' ')[0] || '';
