@@ -11,16 +11,22 @@ export default defineNuxtModule({
     const themeDir = resolve(__dirname, "..");
 
     nuxt.hook("pages:extend", (pages) => {
+      
       pages.push(
+        {
+          name: "OAuthRedirection",
+          path: "/:provider-oauth/redirect-access-token",
+          file: resolve(themeDir, "account/login/pages/OAuthRedirection.vue"),
+        },
         {
           name: "AccountLoginPage",
           path: "/account/login",
-          file: resolve(themeDir, "account/pages/login/AccountLoginPage.vue"),
+          file: resolve(themeDir, "account/login/pages/AccountLoginPage.vue"),
         },
         {
-          name: "AccountMyPage",
-          path: "/account/myPage",
-          file: resolve(themeDir, "account/pages/myPage/AccountMyPage.vue"),
+          name: "UserModal",
+          path: "/account/userModal",
+          file: resolve(themeDir, "account/userModal/pages/UserModal.vue"),
         }
       );
     });
@@ -28,5 +34,5 @@ export default defineNuxtModule({
     nuxt.hook("imports:dirs", (dirs) => {
       dirs.push(resolve(__dirname, "store"));
     });
-  },
+  }
 });

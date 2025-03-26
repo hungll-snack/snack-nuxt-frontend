@@ -18,8 +18,6 @@ export default defineNuxtConfig({
   extends: [
     './home/nuxt.config.ts',
     './account/nuxt.config.ts',
-    './kakaoAuthentication/nuxt.config.ts',
-    './naverAuthentication/nuxt.config.ts',
     './board/nuxt.config.ts',
   ],
 
@@ -56,8 +54,6 @@ export default defineNuxtConfig({
     '@pinia/nuxt', 
     '~/home/index.ts',
     '~/account/index.ts',
-    '~/kakaoAuthentication/index.ts',
-    '~/naverAuthentication/index.ts',
     '~/board/index.ts',
   ],
 
