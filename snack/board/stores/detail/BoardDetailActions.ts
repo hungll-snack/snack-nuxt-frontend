@@ -1,6 +1,6 @@
 import * as axiosUtility from "../../../utility/axiosInstance";
 import {useAccountStore} from "../../../account/stores/accountStore";
-import { BoardDetailState } from "../detail/BoardDetailState";
+import { boardDetailState } from "./BoardDetailState";
 
 
 export const boardDetailAction = {

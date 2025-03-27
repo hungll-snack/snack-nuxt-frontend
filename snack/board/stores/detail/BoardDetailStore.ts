@@ -5,7 +5,7 @@ import { boardDetailAction } from "./BoardDetailActions";
 export const useBoardDetailStore = defineStore("boardDetailStore", {
   state: boardDetailState,
   actions: {
-    async requestDeleteBoard(boardId: number) {
+    async requestDetailBoard(boardId: number) {
       return await boardDetailAction.requestDetailBoard(boardId);
     }
   },
