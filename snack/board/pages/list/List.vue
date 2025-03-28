@@ -94,15 +94,20 @@ const formatTime = (datetimeStr) => {
 
 onMounted(async () => {
   console.log('🌀 onMounted 진입');
-  if (!accountStore.accountProfile?.account_id) {
-    console.log('✅ 프로필 정보 요청');
+
+  const userToken = localStorage.getItem("userToken");
+
+  if (userToken && accountStore.accountProfile?.account_id) {
+    console.log('✅ 로그인 상태, 프로필 정보 요청');
     await accountStore.getProfile();
+  } else {
+    console.log('⛔ 비로그인 상태 or 프로필 이미 존재');
   }
-  console.log('📌 accountProfile (초기):', accountStore.accountProfile);
+
+  console.log('📌 accountProfile:', accountStore.accountProfile);
   await fetchBoardList();
 });
 
-watch(currentPage, fetchBoardList);
 </script>
 
 <template>
