@@ -45,20 +45,8 @@ watch(
   () => props.show,
   async (visible) => {
     if (visible) {
-      try {
-        console.log("🚀 모달 열림 → 계정 정보 로딩 시작");
-
-        const userToken = localStorage.getItem("userToken");
-        if (!userToken) {
-          console.error("❌ userToken이 없습니다.");
-          return;
-        }
-
-        await accountAction.getAccountAndProfile(userToken);
-        console.log("✅ 계정 정보 로딩 완료");
-      } catch (error) {
-        console.error("❌ 계정 정보 불러오기 오류:", error);
-      }
+      console.log("🚀 모달 열림 → 사용자 정보 로딩");
+      await accountAction.getAccountAndProfile();
     }
   }
 );

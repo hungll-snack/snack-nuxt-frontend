@@ -16,8 +16,15 @@ const setRedirectAuthData = async () => {
     const provider = route.path.includes("kakao") ? "kakao" : "naver";
 
     try {
-        const userToken = await authenticationStore.requestAccessToken(provider, code);
-        localStorage.setItem("userToken", userToken);
+        const result = await authenticationStore.requestAccessToken(provider, code);
+        if (result){
+            const { userToken, accountId } = result;
+
+            localStorage.setItem("userToken", userToken);
+            localStorage.setItem("account_id", accountId);
+
+            console.log("로그인 토큰 저장")
+        }
         authenticationStore.isAuthenticated = true;
         router.push("/");
     } catch (error) {

@@ -19,7 +19,7 @@ export const authenticationAction = {
         }
     },
 
-    async requestAccessToken(provider: "kakao" | "naver", code: string): Promise<string | null> {
+    async requestAccessToken(provider: "kakao" | "naver", code: string): Promise<{ userToken: string, accountId: string } | null> {
         const { djangoAxiosInstance } = axiosUtility.createAxiosInstances();
 
         try {
@@ -28,7 +28,18 @@ export const authenticationAction = {
                 : "/naver-oauth/redirect-access-token";
 
             const response = await djangoAxiosInstance.post(url, { code });
-            return response.data.userToken;
+
+            console.log("🧪 OAuth 응답 전체:", response);
+            console.log("🧪 response.headers:", response.headers);
+            console.log("🧪 response.data:", response.data);
+
+            const userToken = response.headers["usertoken"] || response.data.userToken;
+            const accountId = response.headers["account_id"] || response.data.account_id;
+
+            if (!userToken || !accountId) {
+            throw new Error("로그인 응답에 필요한 정보가 없습니다.");
+            }
+            return { userToken, accountId};
         } catch (error) {
             console.log(`${provider.toUpperCase()} Access Token 요청 중 문제 발생:`, error);
             throw error;
@@ -44,6 +55,9 @@ export const authenticationAction = {
                 : "/authentication/naver-logout";
 
             await djangoAxiosInstance.post(url, { userToken });
+
+            localStorage.removeItem("userToken");
+            localStorage.removeItem("account_id");
         } catch (error) {
             console.log(`requestLogout(${provider}) 중 에러:`, error);
         }
