@@ -20,6 +20,24 @@ export function createAxiosInstances() {
                 //'Content-Type': 'application/json',
             },
         });
+        djangoAxiosInstance.interceptors.request.use(
+            (config) => {
+              if (typeof window !== "undefined") {
+                const userToken = localStorage.getItem("userToken");
+                const accountId = localStorage.getItem("account_id");
+          
+                if (userToken) {
+                  config.headers["userToken"] = userToken;
+                }
+                if (accountId) {
+                  config.headers["Account-Id"] = String(accountId);
+                }
+              }
+          
+              return config;
+            },
+            (error) => Promise.reject(error)
+          );
     }
 
     if (!fastapiAxiosInst) {
