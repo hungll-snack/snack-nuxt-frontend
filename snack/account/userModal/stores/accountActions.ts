@@ -37,6 +37,7 @@ export const accountAction = {
         birth: profileRes.data.account_birth,
         payment: profileRes.data.account_pay,
         subscribe: profileRes.data.account_sub,
+        age: profileRes.data.account_age,
       });
 
     } catch (error) {
