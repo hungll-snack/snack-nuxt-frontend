@@ -14,6 +14,7 @@
         <p>생년월일: {{ account.birth }}</p>
         <p>결제수단: {{ account.payment }}</p>
         <p>구독여부: {{ account.subscribe ? "구독" : "미구독" }}</p>
+        <p>나이: {{ account.age }}</p>
       </v-card-text>
       <v-card-actions>
         <v-btn color="red" @click="emit('logout')">로그아웃</v-btn>
