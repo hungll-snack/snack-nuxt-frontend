@@ -5,7 +5,7 @@
         <v-col cols="12" md="3">
           <v-card class="pa-4">
             <v-card-title class="text-h6">맛모임 검색</v-card-title>
-  
+
             <v-text-field
               v-model="searchTitle"
               label="제목 검색"
@@ -15,7 +15,7 @@
               append-inner-icon="mdi-magnify"
               @click:append-inner="fetchBoardListByTitle"
             />
-  
+
             <v-text-field
               v-model="searchAuthor"
               label="작성자 검색"
@@ -25,11 +25,11 @@
               append-inner-icon="mdi-magnify"
               @click:append-inner="fetchBoardListByAuthor"
             />
-  
+
             <!-- 날짜 검색 -->
             <v-card class="mt-3 pa-2">
               <v-card-title class="text-subtitle1">날짜 검색</v-card-title>
-  
+
               <v-text-field
                 label="시작 날짜"
                 prepend-icon="mdi-calendar"
@@ -37,14 +37,14 @@
                 :value="s_date"
                 @click="menu1 = true"
               />
-  
+
               <v-dialog v-model="menu1" width="290px">
                 <v-date-picker
                   v-model="s_date"
                   @input="menu1 = false"
                 ></v-date-picker>
               </v-dialog>
-  
+
               <v-text-field
                 label="종료 날짜"
                 prepend-icon="mdi-calendar"
@@ -52,29 +52,29 @@
                 :value="e_date"
                 @click="menu2 = true"
               />
-  
+
               <v-dialog v-model="menu2" width="290px">
                 <v-date-picker
                   v-model="e_date"
                   @input="menu2 = false"
                 ></v-date-picker>
               </v-dialog>
-  
+
               <v-btn color="primary" block class="mt-2" @click="fetchBoardListByDate">
                 <v-icon left>mdi-magnify</v-icon> 검색
               </v-btn>
-  
+
               <v-btn color="grey" block class="mt-2" @click="resetDateFilter">
                 초기화
               </v-btn>
             </v-card>
-  
+
             <v-btn color="primary" block class="mt-2" @click="router.push('/board/create')">
               모임 등록
             </v-btn>
           </v-card>
         </v-col>
-  
+
         <!-- 게시글 리스트 -->
         <v-col cols="12" md="9">
         <v-card>
@@ -143,10 +143,21 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useBoardStore } from '~/board/stores/list/BoardListStore';
 import { useBoardDeleteStore } from '~/board/stores/delete/BoardDeleteStore';
+import { accountAction } from '~/account/stores/accountActions';
 
 const router = useRouter();
 const boardStore = useBoardStore();
 const deleteStore = useBoardDeleteStore();
+
+onMounted(async () => {
+  const userToken = localStorage.getItem("userToken");
+  if (userToken) {
+    console.log("🌐 로그인된 상태, 사용자 정보 가져오기");
+    await accountAction.getAccountAndProfile(userToken);
+  } else {
+    console.log("🔒 로그인되지 않음");
+  }
+});
 
 const searchTitle = ref('');
 const searchAuthor = ref('');
@@ -208,8 +219,6 @@ const deleteBoard = async (boardId) => {
     console.error("❌ 삭제 실패:", error);
   }
 };
-
-
 
 const formatDate = (datetimeStr) => {
   return datetimeStr?.split(' ')[0] || '';

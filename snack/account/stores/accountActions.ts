@@ -4,13 +4,29 @@ import { useAccountStore } from "./accountStore";
 
 export const accountAction = {
   async requestEmail(userToken: string): Promise<string | null> {
+    if (!userToken) {
+      console.error("❌ requestEmail() 호출 시 userToken이 없습니다.");
+      return null;
+    }
+  
     const { djangoAxiosInstance } = axiosUtility.createAxiosInstances();
+    const accountId = localStorage.getItem("account_id");
+  
+    if (!accountId) {
+      console.error("❌ account_id가 없습니다. 이메일 요청 불가.");
+      return null;
+    }
+  
+    const payload = {
+      userToken,
+      account_id: accountId,
+    };
+  
+    console.log("📦 requestEmail 보낼 payload:", payload); // ✅ 실제로 어떤 데이터를 보내는지 확인
+  
     try {
-      const res: AxiosResponse = await djangoAxiosInstance.post(
-        "/account/email/",
-        { userToken }
-      );
-
+      const res: AxiosResponse = await djangoAxiosInstance.post("/account/email/", payload);
+  
       console.log("✅ requestEmail 응답:", res.data);
       return res.data.email;
     } catch (error) {
@@ -18,7 +34,8 @@ export const accountAction = {
       return null;
     }
   },
-
+  
+  
   async getAccount(email: string): Promise<void> {
     if (!email) {
       console.error("❌ 이메일 값이 없습니다. API 요청을 중단합니다.");

@@ -1,5 +1,6 @@
 import axios, { type AxiosInstance } from "axios";
 import { useRuntimeConfig } from "nuxt/app";
+
 export let djangoAxiosInstance: AxiosInstance | null = null;
 export let fastapiAxiosInst: AxiosInstance | null = null;
 
@@ -9,16 +10,20 @@ export function createAxiosInstances() {
     const mainApiUrl: string = config.public.MAIN_API_URL as string;
     const aiBaseUrl: string = config.public.AI_BASE_URL as string;
 
-    console.log('mainApiUrl : ' ,mainApiUrl)
-    console.log('aiBaseUrl : ' ,aiBaseUrl)
+    console.log('mainApiUrl :', mainApiUrl);
+    console.log('aiBaseUrl :', aiBaseUrl);
+
+    const token = typeof window !== 'undefined' ? localStorage.getItem('userToken') : null;
 
     if (!djangoAxiosInstance) {
         djangoAxiosInstance = axios.create({
             baseURL: mainApiUrl,
             timeout: 5000,
             headers: {
-                //'Content-Type': 'application/json',
+                "Content-Type": "application/json",
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
             },
+            withCredentials: true,
         });
     }
 
