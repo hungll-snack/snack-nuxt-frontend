@@ -14,9 +14,10 @@
         <p>생년월일: {{ account.birth }}</p>
         <p>결제수단: {{ account.payment }}</p>
         <p>구독여부: {{ account.subscribe ? "구독" : "미구독" }}</p>
+        <p>나이: {{ account.age }}</p>
       </v-card-text>
       <v-card-actions>
-        <v-btn color="red" @click="emit('logout')">로그아웃</v-btn> <!-- ✅ 직접 이벤트만 emit -->
+        <v-btn color="red" @click="emit('logout')">로그아웃</v-btn>
         <v-btn @click="updateShow(false)">닫기</v-btn>
       </v-card-actions>
     </v-card>
@@ -24,43 +25,32 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, onMounted } from "vue";
+import { defineProps, defineEmits, watch } from "vue";
 import { useAccountStore } from "@/account/userModal/stores/accountStore";
 import { accountAction } from "@/account/userModal/stores/accountActions";
 
-const props = defineProps({ 
-  show: Boolean,  // ✅ 부모에서 전달받는 `show`
+const props = defineProps({
+  show: Boolean,
 });
 
 const emit = defineEmits(["update:show", "logout"]);
-const account = useAccountStore(); // ✅ Pinia Store 사용
+const account = useAccountStore();
 
-// ✅ 모달 상태 업데이트
+// ✅ 모달 상태 변경 시 show 값을 업데이트
 const updateShow = (value) => {
   emit("update:show", value);
 };
 
-// ✅ 계정 데이터 불러오기
-const loadAccountData = async () => {
-  try {
-    console.log("🚀 계정 정보 로딩 시작");
-
-    const userToken = localStorage.getItem("userToken");
-    if (!userToken) {
-      console.error("❌ userToken이 없습니다.");
-      return;
+// ✅ show가 true일 때만 계정 정보 불러오기
+watch(
+  () => props.show,
+  async (visible) => {
+    if (visible) {
+      console.log("🚀 모달 열림 → 사용자 정보 로딩");
+      await accountAction.getAccountAndProfile();
     }
-
-    await accountAction.getAccountAndProfile(userToken);
-    console.log("✅ 계정 정보 로딩 완료");
-  } catch (error) {
-    console.error("❌ 계정 정보 불러오기 오류:", error);
   }
-};
-
-onMounted(() => {
-  loadAccountData();
-});
+);
 </script>
 
 <style scoped>
