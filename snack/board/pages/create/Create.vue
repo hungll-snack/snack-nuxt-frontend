@@ -87,6 +87,7 @@ import { useBoardStore } from '~/board/stores/create/BoardCreateStore';
 import Datepicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 import * as axiosUtility from '~/utility/axiosInstance';
+import { accountAction } from '~/account/stores/accountActions';
 
 const router = useRouter();
 const boardStore = useBoardStore();
@@ -100,8 +101,13 @@ const selectedRestaurant = ref(null);
 const restaurantList = ref([]);
 const loadingRestaurants = ref(false);
 
-onMounted(() => {
+onMounted(async () => {
   datetime.value = new Date();
+
+  const userToken = localStorage.getItem("userToken");
+  if (userToken) {
+    await accountAction.getAccountAndProfile(userToken);
+  }
 });
 
 const handleImageUpload = (file: File | File[]) => {
@@ -139,15 +145,30 @@ const onSearchRestaurant = async (searchText: string) => {
 };
 
 const submitBoard = async () => {
+  const token = localStorage.getItem("userToken");
+  const accountId = localStorage.getItem("account_id");
+
+  if (!token || !accountId) {
+    alert("로그인 후 이용해주세요");
+    return;
+  }
+
   try {
-    await boardStore.requestCreateBoard({
-      title: title.value,
-      content: content.value,
-      image: thumbnail.value,
-      end_time: datetime.value?.toISOString() || new Date().toISOString(),
-      author_id: localStorage.getItem("account_id"),
-      restaurant_id: selectedRestaurant.value,
+    const formData = new FormData();
+    formData.append("title", title.value);
+    formData.append("content", content.value);
+    formData.append("author_id", accountId);
+    formData.append("end_time", datetime.value?.toISOString() || new Date().toISOString());
+    if (thumbnail.value) formData.append("image", thumbnail.value);
+    if (selectedRestaurant.value) formData.append("restaurant_id", selectedRestaurant.value);
+
+    const { djangoAxiosInstance } = axiosUtility.createAxiosInstances();
+    await djangoAxiosInstance.post('/board/create/', formData, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     });
+
     router.push('/board/all');
   } catch (error) {
     console.error("❌ 게시글 등록 실패", error);
