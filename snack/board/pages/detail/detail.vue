@@ -43,7 +43,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { useBoardDetailStore } from '~/board/stores/detail/BoardDetailStore';
+// import { useBoardDetailStore } from '~/board/stores/detail/BoardDetailStore';
 
 const route = useRoute();
 const boardStore = useBoardDetailStore();
