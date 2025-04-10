@@ -76,23 +76,45 @@
   const restaurantList = ref([]);
   const loadingRestaurants = ref(false);
   
-  onMounted(async () => {
-    await loadBoardDetail();
+  onMounted(() => {
+    const token = localStorage.getItem("userToken");
+    if (!token) {
+      alert("로그인 후 이용해주세요");
+      router.push("/account/login");
+      return;
+    }
+    loadBoardDetail(token);
   });
   
-  const loadBoardDetail = async () => {
+  const loadBoardDetail = async (token: string) => {
     try {
       const { djangoAxiosInstance } = axiosUtility.createAxiosInstances();
-      const res = await djangoAxiosInstance.get(`/board/${boardId}/`);
+      const res = await djangoAxiosInstance.get(`/board/${boardId}/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const board = res.data;
   
       title.value = board.title;
       content.value = board.content;
-      datetime.value = new Date(board.end_time);
+  
+      const parsed = board.end_time?.includes('T')
+        ? new Date(board.end_time)
+        : new Date(board.end_time.replace(' ', 'T'));
+  
+      if (!isNaN(parsed.getTime())) {
+        datetime.value = parsed;
+      } else {
+        console.warn('⚠️ 날짜 파싱 실패:', board.end_time);
+        datetime.value = new Date();
+      }
+  
       previewImage.value = board.image_url;
       selectedRestaurant.value = board.restaurant_id || null;
     } catch (error) {
       console.error('❌ 게시글 상세 불러오기 실패:', error);
+      alert('게시글 정보를 불러오는 데 실패했습니다.');
     }
   };
   
