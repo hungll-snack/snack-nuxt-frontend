@@ -1,27 +1,26 @@
 import * as axiosUtility from "../../../utility/axiosInstance";
-import {useAccountStore} from "../../../account/stores/accountStore";
-import { boardDetailState } from "./BoardDetailState";
 
+export const useBoardDeleteActions = () => {
+  const requestDeleteBoard = async (boardId: number): Promise<boolean> => {
+    try {
+      const response = await axiosUtility.djangoAxiosInstance?.delete(
+        `/board/delete/${boardId}/`
+      );
 
-export const boardDetailAction = {
-    async requestDetailBoard(boardId: number) {
-        console.log("🧪 payload 내용 확인:", boardId);
+      if (response?.data?.success) {
+        console.log("✅ 게시글 삭제 성공");
+        return true;
+      } else {
+        console.warn("⚠️ 게시글 삭제 실패: ", response?.data?.message || "응답 없음");
+        return false;
+      }
+    } catch (error) {
+      console.error("❌ 게시글 삭제 중 예외 발생:", error);
+      throw error;
+    }
+  };
 
-        const { djangoAxiosInstance } = axiosUtility.createAxiosInstances();
-        
-        const accountStore = useAccountStore();
-        console.log("account_id=", accountStore.accountId);
-
-        try {
-            const response = await djangoAxiosInstance.get(`/board/detail/${boardId}`, {
-              headers: {}
-            });
-
-            console.log("✅ 게시글 상세 조회 성공:", response.data);
-            return response.data;
-        } catch (error) {
-            console.error("❌ requestDetailBoard() 중 에러:", error.response ? error.response.data : error.message);
-            throw error;
-        }
-    },
+  return {
+    requestDeleteBoard,
+  };
 };

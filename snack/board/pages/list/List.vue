@@ -212,24 +212,23 @@ const goToDetail = (boardId) => {
 };
 
 const deleteBoard = async (boardId) => {
-  const userId = localStorage.getItem('account_id');
   const isConfirmed = confirm("정말 이 게시글을 삭제하시겠습니까?");
   if (!isConfirmed) return;
 
   try {
-    const success = await deleteStore.requestDeleteBoard(Number(boardId), Number(userId));
+    const success = await deleteStore.requestDeleteBoard(Number(boardId));
     if (success) {
-      // 삭제 성공 → 리스트에서 제거
       boardStore.boardList = boardStore.boardList.filter(b => b.board_id !== boardId);
       alert("✅ 게시글이 삭제되었습니다.");
     } else {
-      alert("❌ 삭제 권한이 없습니다.");
+      alert("❌ 삭제 실패: 권한이 없거나 이미 삭제됨");
     }
   } catch (error) {
-    console.error("❌ 삭제 실패:", error);
-    alert("⚠ 삭제 중 오류가 발생했습니다.");
+    alert("🚨 삭제 중 오류가 발생했습니다");
   }
 };
+
+
 
 
 const formatDate = (datetimeStr) => {
