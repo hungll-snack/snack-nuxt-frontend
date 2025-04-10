@@ -5,7 +5,6 @@
       <v-col cols="12" md="4">
         <v-card class="pa-4">
           <v-img :src="boardStore.board?.image_url" class="thumbnail-preview" />
-
           <v-list>
             <v-list-item>
               <v-list-item-content>
@@ -13,14 +12,12 @@
                 <v-list-item-subtitle class="text-h6 orange--text">{{ boardStore.board?.title }}</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
-
             <v-list-item>
               <v-list-item-content>
                 <v-list-item-title class="text-subtitle-1 font-weight-bold">📅 모임 날짜</v-list-item-title>
                 <v-list-item-subtitle>{{ formattedDate }}</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
-
             <v-list-item>
               <v-list-item-content>
                 <v-list-item-title class="text-subtitle-1 font-weight-bold">📍 맛집 장소</v-list-item-title>
@@ -28,11 +25,7 @@
               </v-list-item-content>
             </v-list-item>
           </v-list>
-
-          <v-btn v-if="boardStore.board?.is_author" color="primary" class="mt-4" @click="goToModify">
-            ✏️ 수정
-          </v-btn>
-
+          <v-btn v-if="boardStore.board?.is_author" color="primary" class="mt-4" @click="goToModify">✏️ 수정</v-btn>
           <v-btn class="mt-2" color="grey" @click="router.back()">⬅️ 이전 페이지</v-btn>
         </v-card>
       </v-col>
@@ -45,43 +38,36 @@
         </v-card>
       </v-col>
 
-      <!-- 오른쪽: 댓글 -->
+      <!-- 오른쪽: 댓글 영역 -->
       <v-col cols="12" md="4">
-        <v-card class="pa-4" style="height: 100%; overflow-y: auto;">
+        <v-card class="pa-4 comment-box">
           <v-card-title class="text-h6 font-weight-bold">💬 댓글</v-card-title>
 
-          <!-- 댓글 입력 -->
-          <v-textarea v-model="newComment" label="댓글을 입력해주세요" outlined dense rows="2" />
-          <v-btn color="orange" class="mt-2" @click="submitComment">등록</v-btn>
+          <v-textarea
+            v-model="newComment"
+            label="댓글을 입력해주세요"
+            outlined
+            dense
+            rows="2"
+            class="text-sm"
+          />
+          <div class="d-flex justify-end">
+            <v-btn color="orange" size="x-small" variant="text" @click="submitComment">등록</v-btn>
+          </div>
 
-          <v-divider class="my-4" />
+          <v-divider class="my-3" />
 
-          <!-- 댓글 목록 -->
-          <v-list v-if="comments.length">
-            <v-list-item
-              v-for="comment in comments"
+          <v-list v-if="groupedComments.length">
+            <Comment
+              v-for="comment in groupedComments"
               :key="comment.comment_id"
-              class="d-flex justify-space-between"
-            >
-              <v-list-item-content>
-                <div class="d-flex flex-column">
-                  <span class="font-weight-bold text-orange">{{ comment.author_nickname }}</span>
-                  <span class="grey--text text--darken-1 text-sm">{{ comment.created_at }}</span>
-                  <span v-if="comment.deleted" class="grey--text mt-1 font-italic">메세지가 삭제되었습니다</span>
-                  <span v-else class="mt-1">{{ comment.content }}</span>
-                </div>
-              </v-list-item-content>
-
-              <v-btn
-                icon
-                v-if="comment.is_author && !comment.deleted"
-                @click="deleteComment(comment.comment_id)"
-              >
-                <v-icon color="red">mdi-delete</v-icon>
-              </v-btn>
-            </v-list-item>
+              :comment="comment"
+              :level="0"
+              @delete="deleteComment"
+              @like="toggleLike"
+              @reply="submitReply"
+            />
           </v-list>
-
           <p v-else class="grey--text">댓글이 없습니다.</p>
         </v-card>
       </v-col>
@@ -90,10 +76,11 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useBoardDetailStore } from '~/board/stores/detail/BoardDetailStore';
 import * as axiosUtility from '~/utility/axiosInstance';
+import Comment from '~/comment/pages/Comment.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -102,8 +89,43 @@ const boardId = route.params.id;
 
 const newComment = ref('');
 const comments = ref([]);
+const accountId = Number(localStorage.getItem('account_id'));
+const token = localStorage.getItem('userToken');
 
-// 게시글 불러오기
+// ✅ 대댓글 트리 구성 함수
+function buildCommentTree(flatComments) {
+  const map = {};
+  const tree = [];
+
+  flatComments.forEach(c => {
+    c.children = [];
+    c.is_author = c.author_account_id === accountId;
+    map[c.comment_id] = c;
+  });
+
+  flatComments.forEach(c => {
+    if (c.parent_id) {
+      map[c.parent_id]?.children.push(c);
+    } else {
+      tree.push(c);
+    }
+  });
+
+  return tree;
+}
+
+// ✅ 댓글 가져오기
+const fetchComments = async () => {
+  try {
+    const { djangoAxiosInstance } = axiosUtility.createAxiosInstances();
+    const res = await djangoAxiosInstance.get(`/comment/board/${boardId}/`);
+    const flat = res.data.comments;
+    comments.value = buildCommentTree(flat);
+  } catch (err) {
+    console.error('❌ 댓글 조회 실패:', err);
+  }
+};
+
 onMounted(async () => {
   await boardStore.requestDetailBoard(Number(boardId));
   await fetchComments();
@@ -121,43 +143,20 @@ const formattedDate = computed(() => {
   });
 });
 
-const goToModify = () => {
-  router.push(`/board/modify/${boardId}`);
-};
+const goToModify = () => router.push(`/board/modify/${boardId}`);
 
-const fetchComments = async () => {
-  try {
-    const { djangoAxiosInstance } = axiosUtility.createAxiosInstances();
-    const res = await djangoAxiosInstance.get(`/comment/board/${boardId}/`);
-    comments.value = res.data.comments.map(comment => ({
-      ...comment,
-      deleted: comment.content === null,
-      is_author: checkIfCommentAuthor(comment),
-    }));
-  } catch (error) {
-    console.error('❌ 댓글 조회 실패:', error);
-  }
-};
+const groupedComments = computed(() => comments.value);
 
+// ✅ 댓글 등록
 const submitComment = async () => {
-  const token = localStorage.getItem('userToken');
-  const account_id = localStorage.getItem('account_id');
-
-  if (!newComment.value.trim()) return;
-  if (!token || !account_id) {
-    alert('로그인 후 이용해주세요');
-    return;
-  }
-
+  if (!newComment.value.trim() || !token || !accountId) return;
   try {
     const { djangoAxiosInstance } = axiosUtility.createAxiosInstances();
     await djangoAxiosInstance.post('/comment/create/', {
       board_id: boardId,
-      author_id: Number(account_id),
+      author_id: accountId,
       content: newComment.value,
-    }, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    }, { headers: { Authorization: `Bearer ${token}` } });
 
     newComment.value = '';
     await fetchComments();
@@ -166,14 +165,31 @@ const submitComment = async () => {
   }
 };
 
-const deleteComment = async (commentId) => {
-  const token = localStorage.getItem('userToken');
-  const account_id = localStorage.getItem('account_id');
+// ✅ 대댓글 등록
+const submitReply = async ({ parentId, content }) => {
+  if (!content.trim() || !token || !accountId) return;
+  try {
+    const { djangoAxiosInstance } = axiosUtility.createAxiosInstances();
+    await djangoAxiosInstance.post('/comment/createReply/', {
+      board_id: boardId,
+      author_id: accountId,
+      content,
+      parent_id: parentId
+    }, { headers: { Authorization: `Bearer ${token}` } });
 
+    await fetchComments();
+  } catch (error) {
+    console.error('❌ 대댓글 등록 실패:', error);
+  }
+};
+
+// ✅ 댓글 삭제
+const deleteComment = async (commentId) => {
+  if (!confirm('정말로 삭제하시겠습니까?')) return;
   try {
     const { djangoAxiosInstance } = axiosUtility.createAxiosInstances();
     await djangoAxiosInstance.delete(`/comment/delete/${commentId}/`, {
-      data: { user_id: Number(account_id) },
+      data: { user_id: accountId },
       headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -183,16 +199,15 @@ const deleteComment = async (commentId) => {
   }
 };
 
-const checkIfCommentAuthor = (comment) => {
-  const account_id = localStorage.getItem('account_id');
-  return Number(account_id) === comment.author_account_id;
+// ✅ 좋아요 토글 (추후 서버 연동 필요 시 POST /comment/like/)
+const toggleLike = async (commentId) => {
+  try {
+    // 예: await axios.post('/comment/like/', { comment_id, user_id });
+    console.log('좋아요 토글:', commentId);
+    // 서버 동기화 후 다시 fetch
+    await fetchComments();
+  } catch (err) {
+    console.error('❌ 좋아요 실패:', err);
+  }
 };
 </script>
-
-<style scoped>
-.thumbnail-preview {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-}
-</style>

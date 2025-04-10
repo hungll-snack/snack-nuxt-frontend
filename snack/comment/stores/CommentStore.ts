@@ -21,9 +21,18 @@ export const useCommentStore = defineStore("commentStore", {
     async addComment(payload: { board_id: number; content: string }) {
       try {
         const newComment = await useCommentActions().createComment(payload);
-        this.comments.push(newComment);
+        await this.loadComments(payload.board_id); // 트리 구조 위해 전체 리로드
       } catch (error) {
         console.error("댓글 등록 실패:", error);
+      }
+    },
+
+    async addReply(payload: { board_id: number; content: string; parent_id: number }) {
+      try {
+        const newReply = await useCommentActions().createReply(payload);
+        await this.loadComments(payload.board_id); // 대댓글도 트리 갱신 위해 전체 fetch
+      } catch (error) {
+        console.error("답글 등록 실패:", error);
       }
     },
 
@@ -31,9 +40,11 @@ export const useCommentStore = defineStore("commentStore", {
       try {
         const success = await useCommentActions().deleteComment(commentId);
         if (success) {
-          const target = this.comments.find(c => c.comment_id === commentId);
-          if (target) target.content = "메세지가 삭제되었습니다.";
-          if (target) target.is_deleted = true;
+          this.comments = this.comments.map(c =>
+            c.comment_id === commentId
+              ? { ...c, content: "메세지가 삭제되었습니다.", is_deleted: true }
+              : c
+          );
         }
       } catch (error) {
         console.error("댓글 삭제 실패:", error);

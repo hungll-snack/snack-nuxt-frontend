@@ -12,10 +12,15 @@ export const useCommentActions = () => {
     return response?.data;
   };
 
+  const createReply = async (payload: { board_id: number; content: string; parent_id: number }): Promise<Comment> => {
+    const response = await djangoAxiosInstance?.post(`/comment/reply/`, payload);
+    return response?.data;
+  };
+
   const deleteComment = async (commentId: number): Promise<boolean> => {
     const response = await djangoAxiosInstance?.delete(`/comment/delete/${commentId}/`);
     return response?.data.success === true;
   };
 
-  return { fetchCommentsByBoard, createComment, deleteComment };
+  return { fetchCommentsByBoard, createComment, createReply, deleteComment };
 };
