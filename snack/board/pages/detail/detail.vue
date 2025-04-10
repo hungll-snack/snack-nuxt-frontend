@@ -4,13 +4,13 @@
       <!-- 왼쪽 패널: 이미지와 기본 정보 표시 -->
       <v-col cols="12" md="4">
         <v-card class="pa-4">
-          <v-img :src="boardDetails.image" class="thumbnail-preview" />
+          <v-img :src="boardStore.board?.image_url" class="thumbnail-preview" />
 
           <v-list>
             <v-list-item>
               <v-list-item-content>
                 <v-list-item-title class="headline">모임 제목</v-list-item-title>
-                <v-list-item-subtitle>{{ boardDetails.title }}</v-list-item-subtitle>
+                <v-list-item-subtitle>{{ boardStore.board?.title }}</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
             <v-list-item>
@@ -22,10 +22,20 @@
             <v-list-item>
               <v-list-item-content>
                 <v-list-item-title>맛집 장소</v-list-item-title>
-                <v-list-item-subtitle>{{ boardDetails.restaurant }}</v-list-item-subtitle>
+                <v-list-item-subtitle>{{ boardStore.board?.restaurant }}</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
           </v-list>
+
+          <!-- ✅ 작성자만 수정 버튼 노출 -->
+          <v-btn
+            v-if="boardStore.board?.is_author"
+            color="primary"
+            class="mt-4"
+            @click="goToModify"
+          >
+            수정
+          </v-btn>
         </v-card>
       </v-col>
 
@@ -33,7 +43,7 @@
       <v-col cols="12" md="8">
         <v-card class="pa-4">
           <v-card-title class="text-h5">모임 소개</v-card-title>
-          <v-card-text>{{ boardDetails.description }}</v-card-text>
+          <v-card-text>{{ boardStore.board?.content }}</v-card-text>
         </v-card>
       </v-col>
     </v-row>
@@ -41,36 +51,34 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import { useRoute } from 'vue-router';
-// import { useBoardDetailStore } from '~/board/stores/detail/BoardDetailStore';
+import { computed, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useBoardDetailStore } from '~/board/stores/detail/BoardDetailStore';
 
 const route = useRoute();
+const router = useRouter();
 const boardStore = useBoardDetailStore();
-const boardDetails = ref({
-  title: '',
-  image: '',
-  date: '',
-  restaurant: '',
-  description: ''
-});
 
 onMounted(async () => {
   const boardId = route.params.id;
-  await boardStore.requestDetailBoard(boardId);
-  const { title, image, date, restaurant, description } = boardStore.board;
-  boardDetails.value = { title, image, date, restaurant, description };
+  await boardStore.requestDetailBoard(Number(boardId));
 });
 
 const formattedDate = computed(() => {
-  return new Date(boardDetails.value.date).toLocaleDateString('ko-KR', {
+  const dateStr = boardStore.board?.end_time;
+  if (!dateStr) return '';
+  return new Date(dateStr).toLocaleDateString('ko-KR', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   });
 });
+
+const goToModify = () => {
+  router.push(`/board/modify/${route.params.id}`);
+};
 </script>
 
 <style scoped>
