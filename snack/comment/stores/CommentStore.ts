@@ -5,10 +5,12 @@ import { useCommentActions } from "./CommentActions";
 export const useCommentStore = defineStore("commentStore", {
   state: commentState,
   actions: {
-    async loadComments(boardId: number) {
+    async loadComments(boardId: number, page: number = 1) {
       this.isLoading = true;
       try {
-        this.comments = await useCommentActions().fetchCommentsByBoard(boardId);
+        const res = await useCommentActions().fetchCommentsByBoard(boardId, page);
+        this.comments = res.comments;
+        this.total = res.total;
         this.isSuccess = true;
       } catch (error) {
         this.errorMessage = "댓글 불러오기 실패";
@@ -20,8 +22,11 @@ export const useCommentStore = defineStore("commentStore", {
 
     async addComment(payload: { board_id: number; content: string }) {
       try {
-        const newComment = await useCommentActions().createComment(payload);
-        await this.loadComments(payload.board_id); // 트리 구조 위해 전체 리로드
+        await useCommentActions().createComment({
+          board_id: payload.board_id,
+          content: payload.content,
+          author_id: Number(localStorage.getItem("account_id"))
+        });
       } catch (error) {
         console.error("댓글 등록 실패:", error);
       }
@@ -29,8 +34,12 @@ export const useCommentStore = defineStore("commentStore", {
 
     async addReply(payload: { board_id: number; content: string; parent_id: number }) {
       try {
-        const newReply = await useCommentActions().createReply(payload);
-        await this.loadComments(payload.board_id); // 대댓글도 트리 갱신 위해 전체 fetch
+        await useCommentActions().createReply({
+          board_id: payload.board_id,
+          content: payload.content,
+          parent_id: payload.parent_id,
+          author_id: Number(localStorage.getItem("account_id"))
+        });
       } catch (error) {
         console.error("답글 등록 실패:", error);
       }
@@ -38,17 +47,10 @@ export const useCommentStore = defineStore("commentStore", {
 
     async removeComment(commentId: number) {
       try {
-        const success = await useCommentActions().deleteComment(commentId);
-        if (success) {
-          this.comments = this.comments.map(c =>
-            c.comment_id === commentId
-              ? { ...c, content: "메세지가 삭제되었습니다.", is_deleted: true }
-              : c
-          );
-        }
+        await useCommentActions().deleteComment(commentId);
       } catch (error) {
         console.error("댓글 삭제 실패:", error);
       }
-    }
-  }
+    },
+  },
 });
