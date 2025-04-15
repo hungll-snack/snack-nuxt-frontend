@@ -10,7 +10,7 @@
   
           <!-- 댓글 내용 -->
           <div>
-            <span v-if="comment.deleted" class="grey--text font-italic text-sm">메세지가 삭제되었습니다</span>
+            <span v-if="comment.is_deleted" class="grey--text font-italic text-sm">메세지가 삭제되었습니다</span>
             <span v-else class="text-sm">{{ comment.content }}</span>
           </div>
   
@@ -22,7 +22,7 @@
             <span class="text-sm">{{ likeCount }}</span>
   
             <v-icon
-              v-if="comment.is_author && !comment.deleted"
+              v-if="(comment.is_author || comment.is_admin) && !comment.is_deleted"
               size="16"
               color="red"
               class="cursor-pointer"
@@ -60,37 +60,59 @@
         </v-list-item-content>
       </v-list-item>
   
-      <!-- 대댓글 재귀 렌더링 -->
-      <Comment
-        v-for="child in comment.children"
-        v-if="isExpanded"
-        :key="child.comment_id"
-        :comment="child"
-        :level="level + 1"
-        @delete="$emit('delete', $event)"
-        @like="$emit('like', $event)"
-        @reply="$emit('reply', $event)"
-      />
+      <!-- 대댓글 -->
+      <template v-if="isExpanded && visibleReplies.length">
+        <Comment
+          v-for="reply in visibleReplies"
+          :key="reply.comment_id"
+          :comment="reply"
+          :level="level + 1"
+          @delete="$emit('delete', $event)"
+          @like="$emit('like', $event)"
+          @reply="$emit('reply', $event)"
+        />
+      </template>
+  
+      <!-- 대댓글 더보기 버튼 -->
+      <div v-if="isExpanded && comment.replies_count > replyLimitState" class="mt-1 text-right text-sm pr-1">
+        <v-btn
+            size="x-small"
+            variant="text"
+            color="grey"
+            @click="showMoreReplies"
+        >답글 더보기</v-btn>
+      </div>
     </div>
   </template>
   
   <script setup>
-  import { ref, defineProps, defineEmits, watch } from 'vue';
+  import { ref, defineProps, defineEmits, computed, watch } from 'vue';
   
   const props = defineProps({
-    comment: Object,
+    comment: {
+      type: Object,
+      required: true
+    },
     level: {
       type: Number,
       default: 0
     }
   });
+  
   const emit = defineEmits(['delete', 'like', 'reply']);
   
   const isExpanded = ref(true);
   const showReplyInput = ref(false);
   const replyContent = ref('');
+  
+  const replyLimit = 5;
+  const replyLimitState = ref(replyLimit);
+  
   const liked = ref(props.comment.is_liked || false);
   const likeCount = ref(props.comment.like_count || 0);
+  
+  const replies = computed(() => props.comment.replies || []);
+  const visibleReplies = computed(() => replies.value.slice(0, replyLimitState.value));
   
   const toggleExpand = () => {
     isExpanded.value = !isExpanded.value;
@@ -113,7 +135,10 @@
     emit('like', props.comment.comment_id);
   };
   
-  // props 변경 시 업데이트
+  const showMoreReplies = () => {
+    replyLimitState.value += 5;
+  };
+  
   watch(() => props.comment.is_liked, val => liked.value = val);
   watch(() => props.comment.like_count, val => likeCount.value = val);
   </script>

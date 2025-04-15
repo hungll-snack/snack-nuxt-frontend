@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row>
-      <!-- 왼쪽: 썸네일 및 기본 정보 -->
+      <!-- 왼쪽: 썸네일 -->
       <v-col cols="12" md="4">
         <v-card class="pa-4">
           <v-img :src="boardStore.board?.image_url" class="thumbnail-preview" />
@@ -30,7 +30,7 @@
         </v-card>
       </v-col>
 
-      <!-- 가운데: 소개 내용 -->
+      <!-- 가운데: 소개 -->
       <v-col cols="12" md="4">
         <v-card class="pa-4">
           <v-card-title class="text-h5 font-weight-bold">모임 소개</v-card-title>
@@ -38,7 +38,7 @@
         </v-card>
       </v-col>
 
-      <!-- 오른쪽: 댓글 영역 -->
+      <!-- 오른쪽: 댓글 -->
       <v-col cols="12" md="4">
         <v-card class="pa-4 comment-box">
           <v-card-title class="text-h6 font-weight-bold">💬 댓글</v-card-title>
@@ -68,7 +68,16 @@
               @reply="submitReply"
             />
           </v-list>
+
           <p v-else class="grey--text">댓글이 없습니다.</p>
+
+          <v-pagination
+            v-model="commentPage"
+            :length="totalPages"
+            @update:modelValue="onPageChange"
+            color="orange"
+            class="mt-4"
+          />
         </v-card>
       </v-col>
     </v-row>
@@ -79,57 +88,20 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useBoardDetailStore } from '~/board/stores/detail/BoardDetailStore';
-import * as axiosUtility from '~/utility/axiosInstance';
+import { useCommentStore } from '~/comment/stores/CommentStore';
 import Comment from '~/comment/pages/Comment.vue';
 
 const route = useRoute();
 const router = useRouter();
 const boardStore = useBoardDetailStore();
-const boardId = route.params.id;
+const commentStore = useCommentStore();
+const boardId = Number(route.params.id);
+
 
 const newComment = ref('');
-const comments = ref([]);
-const accountId = Number(localStorage.getItem('account_id'));
-const token = localStorage.getItem('userToken');
-
-// ✅ 대댓글 트리 구성 함수
-function buildCommentTree(flatComments) {
-  const map = {};
-  const tree = [];
-
-  flatComments.forEach(c => {
-    c.children = [];
-    c.is_author = c.author_account_id === accountId;
-    map[c.comment_id] = c;
-  });
-
-  flatComments.forEach(c => {
-    if (c.parent_id) {
-      map[c.parent_id]?.children.push(c);
-    } else {
-      tree.push(c);
-    }
-  });
-
-  return tree;
-}
-
-// ✅ 댓글 가져오기
-const fetchComments = async () => {
-  try {
-    const { djangoAxiosInstance } = axiosUtility.createAxiosInstances();
-    const res = await djangoAxiosInstance.get(`/comment/board/${boardId}/`);
-    const flat = res.data.comments;
-    comments.value = buildCommentTree(flat);
-  } catch (err) {
-    console.error('❌ 댓글 조회 실패:', err);
-  }
-};
-
-onMounted(async () => {
-  await boardStore.requestDetailBoard(Number(boardId));
-  await fetchComments();
-});
+const commentPage = ref(1);
+const totalPages = computed(() => Math.ceil(commentStore.total / 10));
+const groupedComments = computed(() => commentStore.comments || []);
 
 const formattedDate = computed(() => {
   const dateStr = boardStore.board?.end_time;
@@ -145,69 +117,67 @@ const formattedDate = computed(() => {
 
 const goToModify = () => router.push(`/board/modify/${boardId}`);
 
-const groupedComments = computed(() => comments.value);
+const loadPage = async (page = 1) => {
+  await commentStore.loadComments(boardId, page);
+};
 
-// ✅ 댓글 등록
+onMounted(async () => {
+  await boardStore.requestDetailBoard(boardId);
+  await loadPage(commentPage.value);
+});
+
 const submitComment = async () => {
+  const accountId = Number(localStorage.getItem('account_id'));
+  const token = localStorage.getItem('userToken');
   if (!newComment.value.trim() || !token || !accountId) return;
-  try {
-    const { djangoAxiosInstance } = axiosUtility.createAxiosInstances();
-    await djangoAxiosInstance.post('/comment/create/', {
-      board_id: boardId,
-      author_id: accountId,
-      content: newComment.value,
-    }, { headers: { Authorization: `Bearer ${token}` } });
 
-    newComment.value = '';
-    await fetchComments();
-  } catch (error) {
-    console.error('❌ 댓글 등록 실패:', error);
-  }
+  await commentStore.addComment({ board_id: boardId, content: newComment.value });
+  newComment.value = '';
+  await loadPage(1); // 최신 댓글 보기 위해 1페이지 리셋
 };
 
-// ✅ 대댓글 등록
 const submitReply = async ({ parentId, content }) => {
+  const accountId = Number(localStorage.getItem('account_id'));
+  const token = localStorage.getItem('userToken');
   if (!content.trim() || !token || !accountId) return;
-  try {
-    const { djangoAxiosInstance } = axiosUtility.createAxiosInstances();
-    await djangoAxiosInstance.post('/comment/createReply/', {
-      board_id: boardId,
-      author_id: accountId,
-      content,
-      parent_id: parentId
-    }, { headers: { Authorization: `Bearer ${token}` } });
 
-    await fetchComments();
-  } catch (error) {
-    console.error('❌ 대댓글 등록 실패:', error);
-  }
+  await commentStore.addReply({ board_id: boardId, content, parent_id: parentId });
+  await loadPage(commentPage.value); // 현재 페이지 유지
 };
 
-// ✅ 댓글 삭제
 const deleteComment = async (commentId) => {
+  const accountId = Number(localStorage.getItem('account_id'));
+  const token = localStorage.getItem('userToken');
   if (!confirm('정말로 삭제하시겠습니까?')) return;
-  try {
-    const { djangoAxiosInstance } = axiosUtility.createAxiosInstances();
-    await djangoAxiosInstance.delete(`/comment/delete/${commentId}/`, {
-      data: { user_id: accountId },
-      headers: { Authorization: `Bearer ${token}` },
-    });
 
-    await fetchComments();
-  } catch (error) {
-    console.error('❌ 댓글 삭제 실패:', error);
-  }
+  await commentStore.removeComment(commentId);
+  await loadPage(commentPage.value); // 현재 페이지 유지
 };
 
-// ✅ 좋아요 토글 (추후 서버 연동 필요 시 POST /comment/like/)
 const toggleLike = async (commentId) => {
-  try {
-    // 예: await axios.post('/comment/like/', { comment_id, user_id });
-    console.log('좋아요 토글:', commentId);
-    // 서버 동기화 후 다시 fetch
-    await fetchComments();
-  } catch (err) {
-    console.error('❌ 좋아요 실패:', err);
-  }
+  console.log("좋아요 토글:", commentId);
+  // 서버 연동 시 POST/DELETE 처리
+  await loadPage(commentPage.value); // 상태 동기화
 };
+const onPageChange = async (page) => {
+  commentPage.value = page;
+  await commentStore.loadComments(boardId, page);
+};
+
 </script>
+
+<style scoped>
+.thumbnail-preview {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+.comment-box {
+  max-height: 100vh;
+  overflow-y: auto;
+  border-radius: 8px;
+}
+.text-sm {
+  font-size: 0.85rem;
+}
+</style>
