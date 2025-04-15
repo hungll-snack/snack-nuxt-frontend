@@ -20,21 +20,23 @@
       </v-btn>
     </div>
   </template>
-  
-  <script setup lang="ts">
-  import { useAccountStore } from '@/store/account/accountStore'
-  import { useRouter } from 'vue-router'
-  
-  const accountStore = useAccountStore()
-  const router = useRouter()
-  
-  const handleWithdraw = () => {
-    if (confirm('회원 탈퇴하시겠습니까?')) {
-      router.push('/policy/withdrawal')
-    }
+<script setup lang="ts">
+import { useAccountStore } from '@/store/account/accountStore'
+import { useAuthStore } from '@/store/auth/authStore' // ✅ 추가
+import { useRouter } from 'vue-router'
+
+const accountStore = useAccountStore()
+const authStore = useAuthStore() // ✅ 스토어 인스턴스
+const router = useRouter()
+
+const handleWithdraw = async () => {
+  if (confirm('회원 탈퇴하시겠습니까?')) {
+    await authStore.withdrawAccount()
+    router.push('/') // 탈퇴 후 메인으로 이동
   }
-  </script>
-  
+}
+</script>
+
   <style scoped>
   .profile-section {
     background-color: #f8f9fa; /* 좀 더 연한 회색 */

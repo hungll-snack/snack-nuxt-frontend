@@ -94,5 +94,26 @@ async handleOAuthRedirect(router: ReturnType<typeof useRouter>, provider: Provid
         this.logout()
       }
     },
+
+    async withdrawAccount(): Promise<void> {
+      const accountId = localStorage.getItem('account_id')
+      if (!accountId) {
+        alert('계정 정보가 없습니다. 다시 로그인해주세요.')
+        return
+      }
+    
+      try {
+        const result = await authRepository.deactivateAccount(accountId)
+        if (result?.success) {
+          alert('정상적으로 탈퇴 처리되었습니다.')
+          this.logout()  // 기존 logout 함수 재사용!
+        } else {
+          alert('탈퇴 처리에 실패했습니다. 다시 시도해주세요.')
+        }
+      } catch (error) {
+        console.error('❌ 탈퇴 처리 중 오류:', error)
+        alert('서버 오류로 탈퇴에 실패했습니다. 잠시 후 다시 시도해주세요.')
+      }
+    }    
   },
 })
