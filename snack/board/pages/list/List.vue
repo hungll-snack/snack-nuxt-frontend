@@ -118,6 +118,11 @@
                     </span>
                     | {{ formatDate(board.end_time) }} | {{ formatTime(board.end_time) }}
                   </v-list-item-subtitle>
+
+                  <!-- 작성일 추가 -->
+                  <v-list-item-subtitle class="text-caption text-grey">
+                    작성일: {{ formatDate(board.created_at) }} {{ formatTime(board.created_at) }}
+                  </v-list-item-subtitle>
                 </v-list-item-content>
 
                 <v-list-item-action class="d-flex flex-column align-end mr-4">
