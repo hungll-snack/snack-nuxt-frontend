@@ -3,7 +3,7 @@ name: CD (Continuous Deploy)
 on:
   push:
     branches:
-      - main
+      - demo
 
 env:
   DOCKER_IMAGE: ghcr.io/${{ github.actor }}/frontend-deploy-nuxt:latest
