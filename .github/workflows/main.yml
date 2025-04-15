@@ -27,7 +27,7 @@ jobs:
           docker buildx build --platform linux/amd64,linux/arm64 \
             -f snack/Dockerfile \
             -t ${{ env.DOCKER_IMAGE }} \
-            --push .
+            --push snack
           docker logout
 
   deploy:
