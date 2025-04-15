@@ -1,2 +1,2 @@
 # snack-nuxt-frontend
-It's for Snack Nuxt Frontend
+It's for Snack Nuxt Frontend Demo
