@@ -102,7 +102,7 @@ const descriptionLines = [
 <style scoped>
 /* 헤드라인 */
 .section-title {
-  font-size: 40px;
+  font-size: 50px;
   font-weight: 900;
   margin-bottom: 36px;
   text-align: center;
