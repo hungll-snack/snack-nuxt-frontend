@@ -233,9 +233,6 @@ const deleteBoard = async (boardId) => {
   }
 };
 
-
-
-
 const formatDate = (datetimeStr) => {
   return datetimeStr?.split(' ')[0] || '';
 };
