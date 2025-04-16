@@ -20,12 +20,13 @@ export const authRepository = {
     const response = await getAxios().post(`/${provider}-oauth/redirect-access-token`, { code })
     const userToken = response.headers['usertoken'] || response.data.userToken
     const accountId = response.headers['account_id'] || response.data.account_id
+    const statusCode = response.status  // ✅ 여기서 추출
 
     if (!userToken || !accountId) {
       throw new Error('로그인 응답에 필요한 정보가 없습니다.')
     }
 
-    return { userToken, accountId }
+    return { userToken, accountId, statusCode }
   },
 
   async logout(provider: Provider, userToken: string) {
