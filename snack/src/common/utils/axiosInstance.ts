@@ -1,13 +1,15 @@
 import axios from 'axios'
 import type { AxiosInstance } from 'axios'
+import { useRuntimeConfig } from 'nuxt/app'
 
 export const createAxiosInstance = (
-  baseURL: string,
   token?: string,
   accountId?: string
 ): AxiosInstance => {
+  const config = useRuntimeConfig()
+
   return axios.create({
-    baseURL,
+    baseURL: config.public.MAIN_API_URL,
     timeout: 5000,
     headers: {
       'Content-Type': 'application/json',
