@@ -1,7 +1,11 @@
-<script setup>
-import HomePage from '@/views/home/HomePage.vue'
-</script>
-
 <template>
-  <HomePage />
+  <InfoPage />
 </template>
+
+<script setup lang="ts">
+import InfoPage from '@/views/info/InfoPage.vue'
+
+definePageMeta({
+  layout: 'default',
+})
+</script>

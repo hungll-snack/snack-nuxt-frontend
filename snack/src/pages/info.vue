@@ -1,4 +1,7 @@
+<script setup>
+import HomePage from '@/views/home/HomePage.vue'
+</script>
+
 <template>
-  <!-- 팀원 / 프로젝트 소개 페이지 -->
-  <div>팀원 소개</div>
+  <HomePage />
 </template>
