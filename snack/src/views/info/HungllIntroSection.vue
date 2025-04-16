@@ -1,6 +1,6 @@
 <template>
   <section class="hungll-chat-section" ref="sectionRef">
-    <div class="chat-card">
+    <div class="chat-card" :class="{ 'visible': cardVisible }">
       <div class="chat-wrapper">
         <transition-group name="chat" tag="div" class="chat-list">
           <div
@@ -41,6 +41,7 @@ const triggered = ref(false)
 const inputValue = ref('')
 const showModal = ref(false)
 const router = useRouter()
+const cardVisible = ref(false)
 
 const messages = [
   { sender: 'user', text: '오늘 뭐 먹을까?' },
@@ -85,6 +86,7 @@ onMounted(() => {
     entries => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
+          cardVisible.value = true     
           playChatAnimation()
         }
       })
@@ -93,6 +95,7 @@ onMounted(() => {
   )
   if (sectionRef.value) observer.observe(sectionRef.value)
 })
+
 </script>
 
 
@@ -104,7 +107,6 @@ onMounted(() => {
   justify-content: center;
 }
 
-/* 💬 채팅방 UI 카드 */
 .chat-card {
   background: white;
   border-radius: 24px;
@@ -116,8 +118,15 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   min-height: 550px;
-}
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all 0.8s ease;
 
+}
+.chat-card.visible {
+  transform: translateY(0);
+  opacity: 1;
+}
 /* 채팅 리스트 */
 .chat-wrapper {
   flex: 1;
