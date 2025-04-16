@@ -4,7 +4,10 @@
       <!-- 왼쪽: 썸네일 -->
       <v-col cols="12" md="4">
         <v-card class="pa-4">
-          <v-img :src="boardStore.board?.image_url" class="thumbnail-preview" />
+          <v-img
+            :src="boardStore.board?.image_url || '/default-thumbnail.jpg'"
+            class="thumbnail-preview"
+          />
           <v-list>
             <v-list-item>
               <v-list-item-content>
@@ -123,6 +126,7 @@ const loadPage = async (page = 1) => {
 
 onMounted(async () => {
   await boardStore.requestDetailBoard(boardId);
+  console.log("📸 이미지 URL:", boardStore.board?.image_url); 
   await loadPage(commentPage.value);
 });
 
