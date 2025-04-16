@@ -27,7 +27,7 @@ export const useAuthStore = defineStore('auth', {
 
 async handleOAuthRedirect(router: ReturnType<typeof useRouter>, provider: Provider, code: string) {
   try {
-    const { userToken, accountId } = await authRepository.getAccessToken(provider, code)
+    const { userToken, accountId, statusCode } = await authRepository.getAccessToken(provider, code)
 
     if (!userToken || !accountId) {
       throw new Error('토큰 또는 계정 정보 누락')
@@ -42,12 +42,11 @@ async handleOAuthRedirect(router: ReturnType<typeof useRouter>, provider: Provid
     const profile = await accountRepository.getProfileInfo()
     accountStore.setProfile(profile)
 
-    const statusCode = Number(localStorage.getItem('login_status')) || 200
 
-    if (statusCode === 200) {
-      router.push('/')
-    } else if (statusCode === 201) {
+    if (statusCode === 201) {
       router.push('/prefer')
+    } else if (statusCode === 200) {
+      router.push('/')
     } else if (statusCode === 409) {
       alert('이미 가입된 이메일입니다. 기존 계정으로 로그인해주세요.')
       sessionStorage.removeItem('provider')
