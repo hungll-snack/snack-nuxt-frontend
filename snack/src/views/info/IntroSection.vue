@@ -5,7 +5,7 @@
       <img src="@/assets/images/logo/hungle_full_big.png" alt="HUNGLL 로고" class="logo" />
     </div>
     <br>
-    <br>
+
     <!-- 타이핑 텍스트 -->
     <h1 class="hook-text">
       {{ typedText }}<span class="cursor">|</span>
@@ -16,7 +16,9 @@
       서울의 인증된 맛집을 취향 기반으로 추천하고,<br />
       나와 맞는 밥친구까지 연결해주는 트렌디한 AI 서비스, <strong>HUNGLL</strong>
     </p>
-
+    <br>
+    <br>
+    <br>
     <!-- 네온카드 버튼 -->
     <div class="flip-card-button" @click="copyEmail">
       <div class="flip-card-inner" :class="{ flipped: isHovered }" @mouseenter="isHovered = true" @mouseleave="isHovered = false">
@@ -86,7 +88,7 @@ const copyEmail = async () => {
 .intro-section {
   position: relative;
   text-align: center;
-  padding: 60px 20px 80px;
+  padding: 40px 20px 120px;
   overflow: hidden;
 }
 
