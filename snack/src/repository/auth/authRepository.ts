@@ -1,15 +1,12 @@
-import { useRuntimeConfig } from 'nuxt/app'
+// import { useRuntimeConfig } from 'nuxt/app'
 import { createAxiosInstance } from '@/common/utils/axiosInstance'
 import type { Provider } from '@/store/auth/authStore'
 
 const getAxios = () => {
-  const config = useRuntimeConfig()
   const token = localStorage.getItem('userToken') || ''
   const accountId = localStorage.getItem('account_id') || ''
 
-
-  return createAxiosInstance(config.public.MAIN_API_URL, token, accountId)
-  console.log('url: ${config.public.MAIN_API_URL}')
+  return createAxiosInstance(token, accountId)
 }
 
 export const authRepository = {
