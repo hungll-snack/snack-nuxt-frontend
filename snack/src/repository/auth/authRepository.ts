@@ -9,6 +9,7 @@ const getAxios = () => {
 
 
   return createAxiosInstance(config.public.MAIN_API_URL, token, accountId)
+  console.log('url: ${config.public.MAIN_API_URL}')
 }
 
 export const authRepository = {
