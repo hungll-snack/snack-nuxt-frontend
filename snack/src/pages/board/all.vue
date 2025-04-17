@@ -1,4 +1,7 @@
 <template>
-  <!-- 밥친구 찾기 게시판 페이지 -->
-  <div>밥친구 게시판</div>
+  <BoardListPage />
 </template>
+
+<script setup lang="ts">
+import BoardListPage from '@/views/board/list/BoardListPage.vue'
+</script>
