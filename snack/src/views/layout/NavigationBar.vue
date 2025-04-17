@@ -2,7 +2,7 @@
   <header class="responsive-nav" ref="navRef">
     <!-- ✅ 로고 -->
     <div class="logo" @click="goHome">
-      <img src="/images/logo/hungllhomelogo.png" alt="로고" />
+      <img :src="hungllLogo" alt="로고" />
     </div>
 
     <!-- ✅ PC 메뉴 -->
@@ -52,6 +52,7 @@ import { useRouter } from 'vue-router'
 import AppDownloadModal from '@/views/appdown/AppDownloadModal.vue'
 import UserModal from '@/views/layout/userModal/userModal.vue'
 import { useAuthStore } from '@/store/auth/authStore'
+import hungllLogo from '@/assets/images/logo/hungle_full_big.png'
 
 const router = useRouter()
 const authStore = useAuthStore()
