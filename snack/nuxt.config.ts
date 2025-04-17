@@ -44,6 +44,7 @@ export default defineNuxtConfig({
     public: {
       MAIN_API_URL: process.env.NUXT_PUBLIC_MAIN_API_URL,
       AI_BASE_URL: process.env.NUXT_PUBLIC_AI_BASE_URL,
+      KAKAO_JAVASCRIPT_KEY: process.env.KAKAO_JAVASCRIPT_APP_KEY,
     },
   },
 
