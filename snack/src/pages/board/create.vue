@@ -1,8 +1,7 @@
 <template>
-    <BoardListPage />
-  </template>
-  
-  <script setup lang="ts">
-  import BoardListPage from '@/views/board/list/BoardListPage.vue'
-  </script>
-  
+  <BoardCreatePage />
+</template>
+
+<script setup lang="ts">
+import BoardCreatePage from '@/views/board/create/BoardCreatePage.vue'
+</script>
