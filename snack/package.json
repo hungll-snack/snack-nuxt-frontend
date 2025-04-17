@@ -24,6 +24,7 @@
     "vue": "^3.5.13",
     "vue-i18n": "^11.1.2",
     "vue-router": "latest",
+    "vue3-datepicker": "^0.4.0",
     "vue3-fullpage": "^0.2.0"
   },
   "devDependencies": {
