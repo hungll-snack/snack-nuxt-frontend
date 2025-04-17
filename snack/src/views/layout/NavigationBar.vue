@@ -1,35 +1,40 @@
 <template>
-  <header class="responsive-nav">
+  <header class="responsive-nav" ref="navRef">
     <!-- ✅ 로고 -->
     <div class="logo" @click="goHome">
       <img src="/images/logo/hungllhomelogo.png" alt="로고" />
     </div>
 
-    <!-- ✅ PC 화면용 메뉴 -->
+    <!-- ✅ PC 메뉴 -->
     <div class="desktop-menu">
       <button @click="navigateTo('/restaurants/all')">맛집 찾기</button>
       <button @click="navigateTo('/board/all')">밥 친구 찾기</button>
       <button @click="showAppDownloadModal = true">앱 다운로드</button>
     </div>
 
-    <!-- ✅ 햄버거 버튼 (중간/작은 화면 전용, 중앙 정렬) -->
+    <!-- ✅ 햄버거 버튼 -->
     <div class="menu-toggle" @click="toggleMenu">
       <span></span>
       <span></span>
       <span></span>
     </div>
 
-    <!-- ✅ 드롭다운 메뉴 (중간/작은 화면 전용) -->
+    <!-- ✅ 드롭다운 (모바일 전용) -->
     <transition name="fade">
-      <div v-if="showMenu" class="dropdown-menu">
+      <div v-if="showMenu" ref="dropdownRef" class="dropdown-menu">
+        <div class="auth-icon dropdown-auth" @click="handleAuthClick">
+          <v-icon :style="{ color: '#FF6F00' }">
+            {{ isAuthenticated ? 'mdi-account-circle' : 'mdi-account-circle-outline' }}
+          </v-icon>
+        </div>
         <button @click="navigateTo('/restaurants/all')">맛집 찾기</button>
         <button @click="navigateTo('/board/all')">밥 친구 찾기</button>
         <button @click="showAppDownloadModal = true">앱 다운로드</button>
       </div>
     </transition>
 
-    <!-- ✅ 로그인 아이콘 -->
-    <div class="auth-icon" @click="handleAuthClick">
+    <!-- ✅ 데스크탑 로그인 아이콘 -->
+    <div class="auth-icon desktop-auth" @click="handleAuthClick">
       <v-icon :style="{ color: '#FF6F00' }">
         {{ isAuthenticated ? 'mdi-account-circle' : 'mdi-account-circle-outline' }}
       </v-icon>
@@ -42,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import AppDownloadModal from '@/views/appdown/AppDownloadModal.vue'
 import UserModal from '@/views/layout/userModal/userModal.vue'
@@ -57,17 +62,15 @@ const showUserModal = ref(false)
 const showMenu = ref(false)
 
 const goHome = () => router.push('/')
-
-const toggleMenu = () => {
-  showMenu.value = !showMenu.value
-}
-
+const toggleMenu = () => (showMenu.value = !showMenu.value)
 const navigateTo = (path: string) => {
+  showMenu.value = false // ✅ 버튼 클릭 시 드롭다운 닫기
   router.push(path)
-  showMenu.value = false
 }
+
 
 const handleAuthClick = () => {
+  showMenu.value = false // ✅ 로그인 버튼 클릭 시 드롭다운 닫기
   if (isAuthenticated.value) {
     showUserModal.value = true
   } else {
@@ -82,25 +85,53 @@ const confirmLogout = () => {
     router.push('/')
   }
 }
+
+const dropdownRef = ref<HTMLElement | null>(null)
+const navRef = ref<HTMLElement | null>(null)
+
+const handleClickOutside = (e: MouseEvent) => {
+  if (
+    dropdownRef.value &&
+    !dropdownRef.value.contains(e.target as Node) &&
+    !navRef.value?.contains(e.target as Node)
+  ) {
+    showMenu.value = false
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
 </script>
 
 <style scoped>
 .responsive-nav {
-  position: relative;
+  position: fixed;
+  top: 0;
   width: 100%;
   height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: white;
+  background: linear-gradient(to bottom,
+    rgba(255, 153, 58, 0.2),
+    rgba(255, 232, 198, 0.03),
+    rgba(255, 152, 0, 0)
+  );
+  backdrop-filter: blur(6px);
   padding: 0 20px;
-  border-bottom: 1px solid #eee;
+  z-index: 9999;
 }
 
 /* ✅ 로고 */
 .logo img {
-  height: 48px;
   cursor: pointer;
+  width: 100px;
+  height: auto;
 }
 
 /* ✅ 데스크탑 메뉴 */
@@ -119,26 +150,21 @@ const confirmLogout = () => {
   color: #757575;
   cursor: pointer;
   transition: color 0.2s;
-  margin:  0px 20px;
 }
 .desktop-menu button:hover {
   color: #ff8a00;
   font-size: 18px;
 }
 
-/* ✅ 햄버거 버튼 (작은 화면용) */
+/* ✅ 햄버거 버튼 */
 .menu-toggle {
   display: none;
   flex-direction: column;
-  align-items: center; /* 👈 가운데 정렬 */
+  align-items: center;
   gap: 4px;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  margin-left: auto;
   cursor: pointer;
 }
-
-/* ✅ 역삼각형 형태 (가운데로 좁아지는 느낌) */
 .menu-toggle span:nth-child(1) {
   width: 28px;
   height: 4px;
@@ -156,49 +182,51 @@ const confirmLogout = () => {
   border-radius: 2px;
 }
 
-
 /* ✅ 드롭다운 메뉴 */
 .dropdown-menu {
   position: absolute;
   top: 64px;
-  left: 50%;
-  transform: translateX(-50%);
+  right: 20px;
   background: white;
-  border: 1px solid #ddd;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   padding: 10px 0;
   width: 200px;
-  z-index: 100;
   display: flex;
   flex-direction: column;
+  z-index: 9999;
 }
 .dropdown-menu button {
   padding: 12px;
   font-weight: 600;
   background: transparent;
-  color: #4e342e; /* 진한 브라운 계열 – 차분하고 고급스럽게 */
+  color: #4e342e;
   border: none;
   text-align: center;
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
 }
-
 .dropdown-menu button:hover {
-  background-color: #ff6f0017; /* 부드러운 살구톤 배경 */
-  color: #ff6f00; /* 톤다운된 딥오렌지 포인트 */
+  background-color: #ff6f0017;
+  color: #ff6f00;
 }
 
+/* ✅ 로그인 버튼 */
+.dropdown-auth {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
 
-/* ✅ 로그인 아이콘 */
 .auth-icon {
-  position: relative;
-  z-index: 1;
-  margin-left: auto;
   cursor: pointer;
 }
+.desktop-auth {
+  margin-left: auto;
+}
 
-/* ✅ 드롭다운 애니메이션 */
+/* ✅ 애니메이션 */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease, transform 0.3s ease;
@@ -206,12 +234,13 @@ const confirmLogout = () => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
-  transform: translateX(-10px);
+  transform: translateY(-10px);
 }
 
-/* ✅ 반응형 처리 */
+/* ✅ 반응형 */
 @media (max-width: 1024px) {
-  .desktop-menu {
+  .desktop-menu,
+  .desktop-auth {
     display: none;
   }
   .menu-toggle {

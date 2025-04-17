@@ -100,15 +100,13 @@ const descriptionLines = [
 </script>
 
 <style scoped>
-/* 헤드라인 */
 .section-title {
   font-size: 50px;
   font-weight: 900;
   margin-bottom: 36px;
   text-align: center;
-  /* opacity: 0; */
   animation: fadeInUp 1s ease forwards;
-  color: #222; /* ⭐ 기본색 지정 안 해주면 안 보일 수 있음 */
+  color: #222; 
 }
 .gradient-text {
   background: linear-gradient(to right, #ff6f00, #ff1744);
@@ -145,7 +143,6 @@ const descriptionLines = [
   }
 }
 
-/* 팀 그리드 */
 .team-section {
   text-align: center;
   padding: 120px 20px 64px;
@@ -179,7 +176,6 @@ const descriptionLines = [
   }
 }
 
-/* 카드 */
 .flip-card {
   width: 140px;
   height: 240px;
@@ -260,4 +256,58 @@ const descriptionLines = [
 .flip-card-back a:hover {
   color: #f5f5f5;
 }
+@media (max-width: 1024px) {
+  .section-title {
+    font-size: 38px;
+  }
+
+  .about-description {
+    font-size: 16px;
+    line-height: 1.8;
+  }
+
+  .member-name {
+    font-size: 13px;
+  }
+
+  .flip-card-back a {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  .section-title {
+    font-size: 28px;
+    line-height: 1.3;
+  }
+
+  .about-description {
+    font-size: 15px;
+    line-height: 1.7;
+    padding: 0 12px;
+  }
+
+  .member-name {
+    font-size: 12px;
+  }
+
+  .flip-card-back {
+    font-size: 14px;
+    padding: 16px;
+  }
+
+  .flip-card-back a {
+    font-size: 11px;
+  }
+
+  .flip-card {
+    width: 120px;
+    height: 210px;
+  }
+
+  .flip-card-front img {
+    height: 160px;
+  }
+}
+
 </style>
