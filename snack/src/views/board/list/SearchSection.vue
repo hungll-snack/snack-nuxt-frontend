@@ -6,7 +6,7 @@
       <div class="input-wrapper">
         <label class="input-label">📝 제목</label>
         <input class="search-input" type="text" placeholder="제목을 입력하세요" v-model="title" />
-      </div>
+      </div> 
   
       <!-- 🧑‍💼 작성자 검색 -->
       <div class="input-wrapper">
@@ -49,11 +49,13 @@
       </div>
   
       <div class="divider" />
-      <button class="btn orange">+ 모임 등록</button>
+      <button class="btn orange" @click="goToCreate">+ 모임 등록</button>
     </div>
   </template>
   
   <script setup lang="ts">
+  import { useRouter } from 'vue-router'
+  const router = useRouter()
   import { ref, onMounted, onBeforeUnmount } from 'vue'
   import HungllDatePicker from '@/common/components/HungllDatePicker.vue'
   
@@ -95,7 +97,9 @@
       endCalendar.value?.close()
     }
   }
-  
+  const goToCreate = () => {
+    router.push('/board/create')
+  }
   onMounted(() => {
     window.addEventListener('click', handleClickOutside)
   })
@@ -208,7 +212,7 @@
     gap: 12px;
   }
   
-  @media (min-width: 768px) {
+  @media (max-width: 768px) {
     .date-flex-wrapper {
       flex-direction: row;
       gap: 12px;
