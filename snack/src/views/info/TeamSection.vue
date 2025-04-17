@@ -50,7 +50,7 @@
 import { ref, onMounted } from 'vue'
 import jena from '@/assets/images/team/jena.jpg'
 import junhee from '@/assets/images/team/jena.jpg'
-import seungil from '@/assets/images/team/jena.jpg'
+import seungil from '@/assets/images/team/seungil.jpg'
 import goeun from '@/assets/images/team/goeun.jpg'
 import hyeonseo from '@/assets/images/team/hyeonseo.jpeg'
 
@@ -86,7 +86,7 @@ onMounted(() => {
 const teamMembers = [
   { name: '유제나', role: '팀장', image: jena, github: 'https://github.com/jenaRyu' },
   { name: '조준희', role: '팀원', image: junhee, github: 'https://github.com/jojunhee' },
-  { name: '손승일', role: '팀원', image: seungil, github: 'https://github.com/seungilson' },
+  { name: '손승일', role: '팀원', image: seungil, github: 'https://github.com/ajeseung' },
   { name: '주고은', role: '팀원', image: goeun, github: 'https://github.com/goeunjoo' },
   { name: '정현서', role: '팀원', image: hyeonseo, github: 'https://github.com/hyunseojeong' },
 ]
