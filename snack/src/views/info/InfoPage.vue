@@ -1,3 +1,4 @@
+<!-- InfoPage.vue -->
 <template>
   <div class="info-page">
     <!-- 배경 흐릿한 로고 -->
@@ -12,7 +13,7 @@
       />
     </div>
 
-    <!-- 순서 변경된 섹션 -->
+    <!-- 순서: 인트로 → 헝글 챗 → 왜 헝글 → 모임 소개 → 팀 -->
     <div ref="introSectionRef">
       <IntroSection @next="scrollToHungll" />
     </div>
@@ -22,14 +23,17 @@
     <div ref="whySectionRef">
       <WhySection />
     </div>
+    <div ref="boardSectionRef">
+      <BoardIntroSection />
+    </div>
     <div ref="teamSectionRef">
       <TeamSection />
     </div>
 
-    <!-- 🔽 그라데이션 화살표 -->
+    <!-- 스크롤 화살표 -->
     <div
       class="gradient-arrow"
-      :class="{ up: sectionIndex === 3 }"
+      :class="{ up: sectionIndex === 4 }"
       @click="toggleScroll"
     ></div>
   </div>
@@ -40,12 +44,14 @@ import { ref, onMounted } from 'vue'
 import IntroSection from '@/views/info/IntroSection.vue'
 import HungllIntroSection from '@/views/info/HungllIntroSection.vue'
 import WhySection from '@/views/info/WhySection.vue'
+import BoardIntroSection from '@/views/info/BoardIntroSection.vue'
 import TeamSection from '@/views/info/TeamSection.vue'
 
 const sectionIndex = ref(0)
 const introSectionRef = ref<HTMLElement | null>(null)
 const hungllSectionRef = ref<HTMLElement | null>(null)
 const whySectionRef = ref<HTMLElement | null>(null)
+const boardSectionRef = ref<HTMLElement | null>(null)
 const teamSectionRef = ref<HTMLElement | null>(null)
 
 const scrollTo = (refEl: HTMLElement | null, index: number) => {
@@ -57,12 +63,14 @@ const scrollTo = (refEl: HTMLElement | null, index: number) => {
 const scrollToIntro = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 const scrollToHungll = () => scrollTo(hungllSectionRef.value, 1)
 const scrollToWhy = () => scrollTo(whySectionRef.value, 2)
-const scrollToTeam = () => scrollTo(teamSectionRef.value, 3)
+const scrollToBoard = () => scrollTo(boardSectionRef.value, 3)
+const scrollToTeam = () => scrollTo(teamSectionRef.value, 4)
 
 const toggleScroll = () => {
   if (sectionIndex.value === 0) scrollToHungll()
   else if (sectionIndex.value === 1) scrollToWhy()
-  else if (sectionIndex.value === 2) scrollToTeam()
+  else if (sectionIndex.value === 2) scrollToBoard()
+  else if (sectionIndex.value === 3) scrollToTeam()
   else scrollToIntro()
 }
 
@@ -92,7 +100,8 @@ onMounted(() => {
           if (entry.target === introSectionRef.value) sectionIndex.value = 0
           else if (entry.target === hungllSectionRef.value) sectionIndex.value = 1
           else if (entry.target === whySectionRef.value) sectionIndex.value = 2
-          else if (entry.target === teamSectionRef.value) sectionIndex.value = 3
+          else if (entry.target === boardSectionRef.value) sectionIndex.value = 3
+          else if (entry.target === teamSectionRef.value) sectionIndex.value = 4
         }
       })
     },
@@ -102,6 +111,7 @@ onMounted(() => {
   if (introSectionRef.value) observer.observe(introSectionRef.value)
   if (hungllSectionRef.value) observer.observe(hungllSectionRef.value)
   if (whySectionRef.value) observer.observe(whySectionRef.value)
+  if (boardSectionRef.value) observer.observe(boardSectionRef.value)
   if (teamSectionRef.value) observer.observe(teamSectionRef.value)
 })
 </script>
@@ -114,7 +124,6 @@ onMounted(() => {
   overflow-x: hidden;
 }
 
-/* 배경 로고 */
 .background-logos {
   position: fixed;
   inset: 0;
@@ -137,6 +146,7 @@ onMounted(() => {
     transform: translate(-50%, -50%) scale(1);
   }
 }
+
 .gradient-arrow {
   width: 28px;
   height: 28px;
@@ -147,7 +157,6 @@ onMounted(() => {
   cursor: pointer;
   z-index: 10;
 
-  /* ▼ 아래 화살표 (기본) */
   clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
   background: linear-gradient(to bottom, #ff9800, #ff5722);
   animation: bounce 1.5s infinite;
@@ -159,12 +168,10 @@ onMounted(() => {
 }
 
 .gradient-arrow.up {
-  /* ▲ 위 화살표 */
   clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
   background: linear-gradient(to top, #ff9800, #ff5722);
 }
 
-/* 뽀용뽀용 효과 */
 @keyframes bounce {
   0%, 100% {
     transform: translate(-50%, 0);
@@ -173,5 +180,4 @@ onMounted(() => {
     transform: translate(-50%, -10px);
   }
 }
-
 </style>

@@ -67,7 +67,7 @@
   
   <style scoped>
   .why-section {
-    padding: 120px 20px;
+    padding: 120px 20px 0 20px;
     position: relative;
     text-align: center;
     overflow: hidden;
