@@ -7,6 +7,8 @@ export const boardDetailRepository = {
     const axios = createAxiosInstance(token, accountId)
 
     const { data } = await axios.get(`/board/${boardId}/`)
+    console.log('📥 boardDetail 응답:', data)
+
     return data
-  }
+  },
 }
