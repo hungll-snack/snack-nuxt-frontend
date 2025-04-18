@@ -3,4 +3,4 @@ It's for Snack Nuxt Frontend Demo
 
 .........
 
-updating env_production
+updating env_production 2
