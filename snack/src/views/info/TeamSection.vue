@@ -2,11 +2,8 @@
   <section class="team-section" ref="sectionRef">
     <h2 class="section-title">
       <span class="normal-text">ABOUT </span>
-
       <span class="gradient-text">SNACK TEAM</span>
-</h2>
-
-
+    </h2>
 
     <div class="about-description">
       <p
@@ -19,7 +16,6 @@
       </p>
     </div>
 
-    <!-- 팀원 카드 -->
     <div class="team-grid">
       <div
         v-for="(member, index) in teamMembers"
@@ -59,21 +55,15 @@ const visibleCards = ref<boolean[]>([])
 
 onMounted(() => {
   visibleCards.value = teamMembers.map(() => false)
-
   const observer = new IntersectionObserver(
     entries => {
       entries.forEach(entry => {
         const index = Number((entry.target as HTMLElement).dataset.index)
-        if (entry.isIntersecting) {
-          visibleCards.value[index] = true
-        } else {
-          visibleCards.value[index] = false
-        }
+        visibleCards.value[index] = entry.isIntersecting
       })
     },
     { threshold: 0.6 }
   )
-
   setTimeout(() => {
     const cards = document.querySelectorAll('.flip-card')
     cards.forEach((el, i) => {
@@ -84,11 +74,11 @@ onMounted(() => {
 })
 
 const teamMembers = [
-  { name: '유제나', role: '팀장', image: jena, github: 'https://github.com/jenaRyu' },
-  { name: '조준희', role: '팀원', image: junhee, github: 'https://github.com/jojunhee' },
+  { name: '유제나', role: '팀장', image: jena, github: 'https://github.com/denalog' },
+  { name: '조준희', role: '팀원', image: junhee, github: 'https://github.com/codelego8' },
   { name: '손승일', role: '팀원', image: seungil, github: 'https://github.com/ajeseung' },
-  { name: '주고은', role: '팀원', image: goeun, github: 'https://github.com/goeunjoo' },
-  { name: '정현서', role: '팀원', image: hyeonseo, github: 'https://github.com/hyunseojeong' },
+  { name: '주고은', role: '팀원', image: goeun, github: 'https://github.com/goeun-ju' },
+  { name: '정현서', role: '팀원', image: hyeonseo, github: 'https://github.com/jungs0914' },
 ]
 
 const descriptionLines = [
@@ -106,15 +96,13 @@ const descriptionLines = [
   margin-bottom: 36px;
   text-align: center;
   animation: fadeInUp 1s ease forwards;
-  color: #222; 
+  color: #222;
 }
 .gradient-text {
   background: linear-gradient(to right, #ff6f00, #ff1744);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-
-/* 문단 */
 .about-description {
   text-align: center;
   max-width: 720px;
@@ -129,8 +117,6 @@ const descriptionLines = [
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-
-/* 문단 줄별 fade 효과 */
 .fade-line {
   opacity: 0;
   transform: translateY(10px);
@@ -142,7 +128,6 @@ const descriptionLines = [
     transform: translateY(0);
   }
 }
-
 .team-section {
   text-align: center;
   padding: 120px 20px 64px;
@@ -155,7 +140,6 @@ const descriptionLines = [
   justify-items: center;
   padding: 0 16px;
 }
-
 @media (min-width: 1024px) {
   .team-grid {
     grid-template-columns: repeat(5, 1fr);
@@ -165,7 +149,7 @@ const descriptionLines = [
   .team-grid {
     grid-template-columns: repeat(3, 1fr);
   }
-  .team-grid > :nth-child(n+4) {
+  .team-grid > :nth-child(n + 4) {
     grid-column: span 1;
     justify-self: center;
   }
@@ -175,12 +159,16 @@ const descriptionLines = [
     grid-template-columns: 1fr;
   }
 }
-
 .flip-card {
   width: 140px;
   height: 240px;
   perspective: 1000px;
   opacity: 0;
+  transition: transform 0.4s ease;
+}
+.flip-card:hover {
+  transform: scale(1.2);
+  z-index: 10;
 }
 .fade-in {
   animation: fadeWave 0.6s ease forwards;
@@ -200,11 +188,12 @@ const descriptionLines = [
   width: 100%;
   height: 100%;
   text-align: center;
-  transition: transform 0.6s;
+  transition: transform 0.6s ease;
   transform-style: preserve-3d;
 }
 .flip-card:hover .flip-card-inner {
-  transform: rotateY(180deg);
+  transform: rotateY(180deg) scale(1.15);
+  z-index: 10;
 }
 .flip-card-front,
 .flip-card-back {
@@ -234,80 +223,90 @@ const descriptionLines = [
   font-weight: bold;
 }
 .flip-card-back {
-  background-color: #ff9800;
-  color: #fff;
+  background-color: rgba(255, 153, 0, 0);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(8px);
   transform: rotateY(180deg);
   padding: 20px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  color: #ffad1e;
 }
 .flip-card-back p {
   font-weight: bold;
   margin-bottom: 8px;
 }
 .flip-card-back a {
-  color: white;
+  color: #ffad1e;
   font-size: 13px;
   font-weight: bold;
   text-decoration: underline;
 }
 .flip-card-back a:hover {
-  color: #f5f5f5;
+  color: #ff6600c2;
 }
 @media (max-width: 1024px) {
   .section-title {
     font-size: 38px;
   }
-
   .about-description {
     font-size: 16px;
     line-height: 1.8;
   }
-
   .member-name {
     font-size: 13px;
   }
-
   .flip-card-back a {
     font-size: 12px;
   }
 }
-
 @media (max-width: 640px) {
   .section-title {
     font-size: 28px;
     line-height: 1.3;
   }
-
   .about-description {
     font-size: 15px;
     line-height: 1.7;
     padding: 0 12px;
   }
-
   .member-name {
     font-size: 12px;
   }
-
-  .flip-card-back {
-    font-size: 14px;
-    padding: 16px;
-  }
-
   .flip-card-back a {
     font-size: 11px;
   }
-
   .flip-card {
     width: 120px;
     height: 210px;
   }
-
   .flip-card-front img {
     height: 160px;
   }
 }
-
+.image-blur-wrapper {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  border-radius: 12px;
+}
+.image-blur-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.image-blur-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(6px);
+  background: rgba(255, 255, 255, 0.2);
+  z-index: 1;
+}
 </style>
