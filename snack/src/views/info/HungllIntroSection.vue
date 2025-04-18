@@ -44,8 +44,8 @@ const router = useRouter()
 const cardVisible = ref(false)
 
 const messages = [
-  { sender: 'user', text: '오늘 뭐 먹을까?' },
-  { sender: 'user', text: '오늘 좀 꿀꿀하네.. 😫😫' },
+  { sender: 'bot', text: '안녕하세요 JENA님! 무엇을 도와드릴까요?' },
+  { sender: 'user', text: '오늘 날씨도 꿀꿀한데 뭐 먹을까? .. 😫😫' },
   { sender: 'bot', text: '현재 서울은 흐리고, 저녁 시간이네요.' },
   { sender: 'bot', text: '🍶 막걸리에 파전 한 판 어때요?' },
   { sender: 'bot', text: '🍗 아니면 치킨에 시원한 맥주도 추천해요!' },

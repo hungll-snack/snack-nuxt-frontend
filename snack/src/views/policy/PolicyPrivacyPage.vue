@@ -86,12 +86,14 @@ const goBack = () => {
 
 <style scoped>
 .policy-wrapper {
-  width: 800px;
-  margin: 60px auto;
+  max-width: 800px;
+  width: 90%;
+  margin: 40px auto;
   padding: 24px;
   border: 1px solid #eee;
   border-radius: 12px;
   background-color: #fff;
+  box-sizing: border-box;
 }
 
 .policy-section {
@@ -99,12 +101,12 @@ const goBack = () => {
 }
 
 .policy-check {
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 500;
 }
 
 .policy-text-box {
-  font-size: 14px;
+  font-size: 0.9rem;
   color: #444;
   line-height: 1.6;
   white-space: pre-line;
@@ -114,6 +116,7 @@ const goBack = () => {
   background-color: #f9f9f9;
   max-height: 250px;
   overflow-y: auto;
+  margin-top: 8px;
 }
 
 .toggle-line {
@@ -127,7 +130,7 @@ const goBack = () => {
   color: #1976d2;
   cursor: pointer;
   text-decoration: underline;
-  font-size: 14px;
+  font-size: 0.9rem;
   padding: 0;
 }
 
@@ -139,7 +142,7 @@ const goBack = () => {
 .agree-btn {
   width: 100%;
   max-width: 300px;
-  margin: 16px auto;
+  margin: 24px auto 8px;
   display: block;
   background-color: #ffaa00;
   color: white;
@@ -147,6 +150,7 @@ const goBack = () => {
   border-radius: 6px;
   font-weight: bold;
   transition: background-color 0.2s;
+  font-size: 1rem;
 }
 
 .agree-btn:disabled {
@@ -161,5 +165,48 @@ const goBack = () => {
   text-decoration: underline;
   cursor: pointer;
   text-align: center;
+  font-size: 0.9rem;
+}
+
+/* 📱 모바일 대응 */
+@media (max-width: 600px) {
+  .policy-wrapper {
+    padding: 16px;
+    margin: 24px auto;
+  }
+
+  .policy-check {
+    font-size: 0.95rem;
+  }
+
+  .policy-text-box {
+    font-size: 0.85rem;
+    padding: 12px;
+  }
+
+  .agree-btn {
+    font-size: 0.95rem;
+    padding: 10px;
+  }
+}
+
+/* 💻 데스크탑 이상에서는 살짝 키움 */
+@media (min-width: 1200px) {
+  .policy-wrapper {
+    padding: 32px;
+  }
+
+  .policy-check {
+    font-size: 1.05rem;
+  }
+
+  .policy-text-box {
+    font-size: 1rem;
+  }
+
+  .agree-btn {
+    font-size: 1.1rem;
+    padding: 14px;
+  }
 }
 </style>
