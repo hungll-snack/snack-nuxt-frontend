@@ -23,7 +23,7 @@
     "three": "^0.174.0",
     "vue": "^3.5.13",
     "vue-i18n": "^11.1.2",
-    "vue-router": "latest",
+    "vue-router": "^4.5.0",
     "vue3-fullpage": "^0.2.0"
   },
   "devDependencies": {
@@ -32,6 +32,7 @@
     "@nuxt/typescript-build": "^3.0.2",
     "@types/node": "^22.10.2",
     "@types/three": "^0.175.0",
+    "@types/vue-router": "^2.0.0",
     "@vue/test-utils": "^2.4.6",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
