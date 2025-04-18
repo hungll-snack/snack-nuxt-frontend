@@ -1,89 +1,125 @@
 <template>
-  <div class="board-list-card">
-    <div class="header">
-      <h2 class="header-title">📋 밥친구 모집 리스트</h2>
+  <div class="board-list-wrapper">
+    <div class="board-list-header">
+      <h2>📋 밥친구 모집 리스트</h2>
 
-      <div class="select-wrapper">
-        <div class="dropdown" ref="statusDropdown">
-          <label class="dropdown-label">상태</label>
-          <div class="custom-dropdown" @click.stop="toggleStatus">
-            <div class="selected-option">{{ selectedStatus }}</div>
-            <ul v-if="statusOpen" class="dropdown-options">
-              <li @click.stop="selectStatus('전체')">전체</li>
-              <li @click.stop="selectStatus('모집중')">모집중</li>
-              <li @click.stop="selectStatus('모집종료')">모집종료</li>
-            </ul>
-          </div>
+      <div class="dropdown-group">
+        <div class="dropdown" ref="statusDropdown" @click="toggleStatus">
+          <span>{{ selectedStatus }}</span>
+          <ul v-if="statusOpen" class="dropdown-menu">
+            <li v-for="status in statusOptions" :key="status" @click.stop="selectStatus(status)">
+              {{ status }}
+            </li>
+          </ul>
         </div>
 
-        <div class="dropdown" ref="sortDropdown">
-          <label class="dropdown-label">정렬</label>
-          <div class="custom-dropdown" @click.stop="toggleSort">
-            <div class="selected-option">{{ selectedSort }}</div>
-            <ul v-if="sortOpen" class="dropdown-options">
-              <li @click.stop="selectSort('최신순')">최신순</li>
-              <li @click.stop="selectSort('마감순')">마감순</li>
-            </ul>
-          </div>
+        <div class="dropdown" ref="sortDropdown" @click="toggleSort">
+          <span>{{ selectedSort }}</span>
+          <ul v-if="sortOpen" class="dropdown-menu">
+            <li v-for="sort in sortOptions" :key="sort" @click.stop="selectSort(sort)">
+              {{ sort }}
+            </li>
+          </ul>
         </div>
       </div>
     </div>
 
-    <v-divider class="mb-4" />
-
-    <div class="list-section">
-      <div v-if="boardStore.boardList.length === 0" class="no-data-card">
-        <span class="no-data-text">😢 등록된 밥모임이 없습니다</span>
-      </div>
-
-<!-- 게시글 리스트 -->
-<div
-  v-else
-  class="board-card"
-  v-for="board in boardStore.boardList"
-  :key="board.board_id"
-  @click="goToDetail(board.board_id)"
->
-  <img class="board-image" :src="board.image_url" alt="썸네일" />
-  <div class="board-info">
-    <h3 class="board-title">{{ board.title }}</h3>
-    <p class="board-meta">
-      👤 {{ board.author_nickname }} |
-      📅 {{ board.end_time?.slice(0, 10) || '미정' }} |
-      📌 {{ board.status === 'ongoing' ? '모집중' : '모집종료' }}
-    </p>
-  </div>
-</div>
-
+    <div v-if="reactiveBoardList.length === 0" class="no-data">
+      😢 등록된 밥모임이 없습니다
     </div>
+
+    <div v-else class="board-list">
+      <div
+        v-for="board in reactiveBoardList"
+        :key="board.board_id"
+        class="board-item"
+        @click="goToDetail(board.board_id)"
+      >
+        <img :src="board.image_url || '/default-thumbnail.jpg'" alt="썸네일" />
+        <div class="details">
+          <h3>{{ board.title }}</h3>
+          <p>
+            👤 {{ board.author_nickname }} |
+            📅 {{ board.end_time?.slice(0, 10) || '미정' }} |
+            📌 {{ board.status === 'ongoing' ? '모집중' : '모집종료' }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <v-pagination
+      v-model="boardStore.currentPage"
+      :length="boardStore.totalPages"
+      @update:modelValue="fetchBoardList"
+      color="orange"
+      class="mt-6"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { useBoardListStore } from '@/store/board/boardListStore'
+import { ref, onMounted, onBeforeUnmount, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
-const router = useRouter()
+import { useBoardListStore } from '@/store/board/boardListStore'
 
-const goToDetail = (boardId: number) => {
-  router.push(`/board/detail/${boardId}`)
-}
+// props 추가
+const props = defineProps<{
+  title: string
+  author: string
+  start_date: string
+  end_date: string
+}>()
+
+const router = useRouter()
+const boardStore = useBoardListStore()
 
 const selectedStatus = ref('전체')
 const selectedSort = ref('최신순')
+
+const statusOptions = ['전체', '모집중', '모집종료']
+const sortOptions = ['최신순', '마감순']
+
 const statusOpen = ref(false)
 const sortOpen = ref(false)
 
-const boardStore = useBoardListStore()
+const statusDropdown = ref<HTMLElement | null>(null)
+const sortDropdown = ref<HTMLElement | null>(null)
 
+const reactiveBoardList = computed(() => boardStore.boardList)
+
+// ✅ 한글 → 영문 변환 맵핑
+const statusMap: Record<string, string> = {
+  모집중: 'ongoing',
+  모집종료: 'closed',
+}
+
+const sortMap: Record<string, string> = {
+  최신순: 'latest',
+  마감순: 'end_date',
+}
+
+watch(
+  () => [props.title, props.author, props.start_date, props.end_date],
+  () => {
+    boardStore.currentPage = 1
+    fetchBoardList()
+  }
+)
+
+// fetchBoardList 수정
 const fetchBoardList = async () => {
   await boardStore.fetchBoardList({
     page: boardStore.currentPage,
     perPage: 10,
-    status: selectedStatus.value,
-    sort: selectedSort.value,
+    status: selectedStatus.value === '전체' ? undefined : statusMap[selectedStatus.value],
+    sort: sortMap[selectedSort.value],
+    title: props.title,
+    author: props.author,
+    start_date: props.start_date,
+    end_date: props.end_date,
   })
 }
+
 
 const toggleStatus = () => {
   statusOpen.value = !statusOpen.value
@@ -97,30 +133,39 @@ const toggleSort = () => {
 
 const selectStatus = (val: string) => {
   selectedStatus.value = val
-  statusOpen.value = false
-  fetchBoardList()
 }
 
 const selectSort = (val: string) => {
   selectedSort.value = val
-  sortOpen.value = false
+}
+
+watch([selectedStatus, selectedSort], () => {
+  boardStore.currentPage = 1
   fetchBoardList()
+})
+
+watch(() => boardStore.currentPage, () => {
+  fetchBoardList()
+})
+
+const goToDetail = (id: number) => {
+  router.push(`/board/detail/${id}`)
 }
 
 const closeAllDropdowns = (e: MouseEvent) => {
   const target = e.target as Node
-  if (!statusDropdown.value?.contains(target) && !sortDropdown.value?.contains(target)) {
+  if (
+    !statusDropdown.value?.contains(target) &&
+    !sortDropdown.value?.contains(target)
+  ) {
     statusOpen.value = false
     sortOpen.value = false
   }
 }
 
-const statusDropdown = ref<HTMLElement | null>(null)
-const sortDropdown = ref<HTMLElement | null>(null)
-
 onMounted(() => {
-  window.addEventListener('click', closeAllDropdowns)
   fetchBoardList()
+  window.addEventListener('click', closeAllDropdowns)
 })
 
 onBeforeUnmount(() => {
@@ -128,135 +173,136 @@ onBeforeUnmount(() => {
 })
 </script>
 
+
+
 <style scoped>
-.board-list-card {
+.board-list-wrapper {
   padding: 24px;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
-  border: 1px solid #f2f2f2;
-  height: 100%;
 }
-.header {
+
+.board-list-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
+  margin-bottom: 24px;
   flex-wrap: wrap;
   gap: 16px;
 }
-.header-title {
-  font-size: 22px;
-  font-weight: 700;
-  color: #ff7043;
-  margin: auto 0;
-}
-.select-wrapper {
+
+.dropdown-group {
   display: flex;
-  flex-direction: row;
-  gap: 16px;
-  flex-wrap: wrap;
-  width: 100%;
+  gap: 12px;
 }
+
 .dropdown {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
   position: relative;
-  min-width: 120px;
-}
-.dropdown-label {
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 4px;
-  color: #444;
-  margin-left: 4px;
-}
-.custom-dropdown {
-  background-color: #f9f9f9;
+  background: rgba(255, 255, 255, 0.6);
   border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 8px 12px;
-  cursor: pointer;
-  position: relative;
-}
-.selected-option {
+  border-radius: 12px;
+  padding: 6px 14px;
   font-size: 14px;
-  font-weight: 500;
-  color: #333;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: 0.2s ease;
+  min-width: 100px;
 }
-.dropdown-options {
+
+.dropdown:hover {
+  border-color: #ff7043;
+}
+
+.dropdown-menu {
   position: absolute;
   top: 100%;
   left: 0;
-  background-color: white;
+  margin-top: 8px;
+  background: white;
   border: 1px solid #ddd;
-  border-radius: 8px;
-  margin-top: 4px;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  z-index: 999;
+  padding: 6px 0;
+  animation: fadeIn 0.2s ease;
   width: 100%;
-  z-index: 9999;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  list-style: none;
 }
-.dropdown-options li {
-  padding: 10px 12px;
+
+.dropdown-menu li {
+  padding: 8px 14px;
   font-size: 14px;
   color: #333;
   cursor: pointer;
 }
-.dropdown-options li:hover {
-  background-color: #ffece5;
+
+.dropdown-menu li:hover {
+  background: #ffece5;
   color: #ff7043;
 }
-.list-section {
-  margin-top: 24px;
+
+.board-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
-.board-card {
+
+.board-item {
   display: flex;
   gap: 16px;
   padding: 16px;
-  background: #fff8f4;
-  border: 1px solid #ffece5;
-  border-radius: 12px;
-  margin-bottom: 16px;
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #f0f0f0;
+  transition: all 0.2s ease;
+  cursor: pointer;
 }
-.board-image {
+
+.board-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.board-item img {
   width: 120px;
   height: 120px;
   object-fit: cover;
   border-radius: 12px;
+  background: #f9f9f9;
 }
-.board-info {
+
+.details {
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
-.board-title {
+
+.details h3 {
   font-size: 16px;
   font-weight: 600;
-  color: #333;
   margin-bottom: 6px;
+  color: #222;
 }
-.board-meta {
+
+.details p {
   font-size: 14px;
   color: #666;
 }
-.no-data-card {
-  padding: 40px;
+
+.no-data {
   text-align: center;
-  background-color: #fff8f4;
-  border: 1.5px dashed #ff7043;
-  border-radius: 16px;
-  color: #ff7043;
-  font-weight: 600;
-  font-size: 16px;
-  box-shadow: 0 4px 12px rgba(255, 112, 67, 0.1);
+  padding: 40px;
+  color: #aaa;
+  font-size: 15px;
 }
-@media (max-width: 768px) {
-  .select-wrapper {
-    flex-direction: column;
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
   }
-  .dropdown {
-    width: 100%;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 </style>

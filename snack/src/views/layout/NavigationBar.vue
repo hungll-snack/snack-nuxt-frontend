@@ -119,8 +119,6 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: space-between;
   background: linear-gradient(to bottom,
-    rgba(255, 153, 58, 0.2),
-    rgba(255, 232, 198, 0.03),
     rgba(255, 152, 0, 0)
   );
   backdrop-filter: blur(6px);

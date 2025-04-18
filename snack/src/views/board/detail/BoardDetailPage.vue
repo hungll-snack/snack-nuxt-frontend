@@ -4,19 +4,14 @@
         <v-col cols="12" md="3">
   <v-card class="pa-4">
     <v-img
-  v-if="board?.image_url"
-  :src="board.image_url"
-  cover
-  height="200"
-  class="rounded"
-/>
-<v-img
-  v-else
-  src="/default-thumbnail.jpg"
-  cover
-  height="200"
-  class="rounded"
-/>
+      :src="board?.image_url || '/default-thumbnail.jpg'"
+      cover
+      height="200"
+      width="100%"
+      class="rounded"
+      :aspect-ratio="1.5"
+    />
+
     <v-list dense>
       <v-list-item>
         <v-list-item-content>
