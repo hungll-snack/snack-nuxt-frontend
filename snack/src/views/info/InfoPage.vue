@@ -119,7 +119,7 @@ onMounted(() => {
 <style scoped>
 .info-page {
   position: relative;
-  padding: 120px 20px 200px;
+  padding: 0px 20px 200px;
   z-index: 1;
   overflow-x: hidden;
 }

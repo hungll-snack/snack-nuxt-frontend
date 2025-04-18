@@ -6,10 +6,7 @@
     </div>
     <br>
 
-    <!-- 타이핑 텍스트 -->
-    <h1 class="hook-text">
-      {{ typedText }}<span class="cursor">|</span>
-    </h1>
+    <h1 class="hook-text" v-html="typedText"></h1>
 
     <!-- 설명 문단 -->
     <p class="description gradient-text">
@@ -38,12 +35,12 @@
 import { ref, onMounted } from 'vue'
 
 const messages = [
-  '똑똑한 AI 취향 분석으로 정확한 추천!',
-  '지금 당신에게 꼭 맞는 맛집을 찾아드립니다.',
-  '서울의 인증 맛집, HUNGLL이 추천해요.',
-  '당신의 취향을 기억하는 스마트 추천!',
-  '밥친구까지 연결해주는 AI 서비스',
+  '서울의 인증 맛집,<br/> 헝글이 추천해요.',
+  '당신에게 꼭 맞는 맛집을<br/> 헝글이 찾아드립니다.',
+  '당신의 취향을 기억하는<br/> 스마트한 헝글!',
+  '헝글에서 밥친구를 만드세요!',
 ]
+
 
 const typedText = ref('')
 const currentMessageIndex = ref(0)
@@ -53,18 +50,27 @@ const delayBetween = 1500
 
 const typeLoop = async () => {
   const message = messages[currentMessageIndex.value]
-  for (let i = 0; i <= message.length; i++) {
-    typedText.value = message.slice(0, i)
+  const plainText = message.replace(/<[^>]*>/g, '') // 태그 제거
+
+  for (let i = 0; i <= plainText.length; i++) {
+    // 브라우저가 태그 깨진 채 보여주는 걸 방지
+    const sliced = plainText.slice(0, i)
+    typedText.value = sliced + '<span class="cursor">|</span>'
     await new Promise(resolve => setTimeout(resolve, typingSpeed))
   }
+
   await new Promise(resolve => setTimeout(resolve, delayBetween))
-  for (let i = message.length; i >= 0; i--) {
-    typedText.value = message.slice(0, i)
+
+  for (let i = plainText.length; i >= 0; i--) {
+    const sliced = plainText.slice(0, i)
+    typedText.value = sliced + '<span class="cursor">|</span>'
     await new Promise(resolve => setTimeout(resolve, eraseSpeed))
   }
+
   currentMessageIndex.value = (currentMessageIndex.value + 1) % messages.length
   typeLoop()
 }
+
 
 onMounted(() => {
   typeLoop()
@@ -103,13 +109,16 @@ const copyEmail = async () => {
 .hook-text {
   font-size: 50px;
   font-weight: 700;
-  min-height: 40px;
-  margin-bottom: 24px;
   color: #ff6f00;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* ✅ 최대 두 줄까지 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-align: center;
+  margin-bottom: 24px;
+  min-height: 100px;
 }
+
 
 .cursor {
   animation: blink 1s step-start infinite;
@@ -217,4 +226,30 @@ const copyEmail = async () => {
     transform: translate(-50%, -50%) scale(0.8);
   }
 }
+/* 기존 스타일 아래에 추가 */
+
+@media (max-width: 1024px) {
+  .hook-text {
+    font-size: 36px;
+    line-height: 1.4;
+  }
+  .description {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 640px) {
+  .hook-text {
+    font-size: 28px;
+    text-align: center;
+    padding: 0 10px;
+    line-height: 1.3;
+  }
+  .description {
+    font-size: 14px;
+    padding: 0 12px;
+    line-height: 1.6;
+  }
+}
+
 </style>

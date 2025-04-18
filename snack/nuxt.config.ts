@@ -28,6 +28,15 @@ export default defineNuxtConfig({
           href: 'https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap',
         },
       ],
+      meta: [
+        // ✅ OG 메타태그 추가
+        { property: 'og:title', content: 'HUNGLL - 인증 맛집 & 밥친구 찾기 서비스' },
+        { property: 'og:description', content: '취향을 기억하는 AI 추천! 서울 맛집과 밥친구를 연결해드립니다.' },
+        { property: 'og:image', content: 'http://43.201.77.180/og/hungle_hgl.png' },
+        { property: 'og:url', content: 'http://43.201.77.180/' },
+        { property: 'og:type', content: 'website' },
+        { name: 'twitter:card', content: 'summary_large_image' }, // (선택) 트위터용 카드
+      ],
     },
   },
 
@@ -35,6 +44,7 @@ export default defineNuxtConfig({
     public: {
       MAIN_API_URL: process.env.NUXT_PUBLIC_MAIN_API_URL,
       AI_BASE_URL: process.env.NUXT_PUBLIC_AI_BASE_URL,
+      KAKAO_JAVASCRIPT_KEY: process.env.KAKAO_JAVASCRIPT_APP_KEY,
     },
   },
 
