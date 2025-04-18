@@ -27,8 +27,9 @@ export const useAuthStore = defineStore('auth', {
 
 async handleOAuthRedirect(router: ReturnType<typeof useRouter>, provider: Provider, code: string) {
   try {
+   
     const { userToken, accountId, statusCode } = await authRepository.getAccessToken(provider, code)
-
+    console.log('oauth 스토어에요 userToken, accountId, statusCode : ',userToken, accountId, statusCode )
     if (!userToken || !accountId) {
       throw new Error('토큰 또는 계정 정보 누락')
     }
