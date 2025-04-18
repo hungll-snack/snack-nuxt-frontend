@@ -12,6 +12,8 @@ const getAxios = () => {
 export const authRepository = {
   async getLoginUrl(provider: Provider): Promise<string> {
     const response = await getAxios().get(`/${provider}-oauth/request-login-url`)
+
+    console.log('request rul 성공햇다는 뜻 -repo :' ,response.data.url)
     return response.data.url
   },
 
@@ -20,6 +22,9 @@ export const authRepository = {
     const userToken = response.headers['usertoken'] || response.data.userToken
     const accountId = response.headers['account_id'] || response.data.account_id
     const statusCode = response.status  // ✅ 여기서 추출
+    console.log('getAccessToken response -repo :' ,response)
+    console.log('getAccessToken userToken  -repo:' ,userToken)
+    console.log('getAccessToken accountId -repo :' ,accountId)
 
     if (!userToken || !accountId) {
       throw new Error('로그인 응답에 필요한 정보가 없습니다.')
