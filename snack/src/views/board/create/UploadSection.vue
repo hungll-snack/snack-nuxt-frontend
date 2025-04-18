@@ -139,7 +139,7 @@ const submitBoard = async () => {
   }
 }
 
-const goBack = () => router.push('/board')
+const goBack = () => router.push('/board/all')
 </script>
 
 

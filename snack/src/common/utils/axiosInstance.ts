@@ -8,6 +8,7 @@ export const createAxiosInstance = (
 ): AxiosInstance => {
   const config = useRuntimeConfig()
 
+  console.log('여기는 옥시오스에요 : ', accountId)
   return axios.create({
     baseURL: config.public.MAIN_API_URL,
     timeout: 5000,
