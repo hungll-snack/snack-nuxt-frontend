@@ -1,8 +1,10 @@
 import { createAxiosInstance } from '@/common/utils/axiosInstance'
 
-const axios = createAxiosInstance()
 
 export const sendPreferenceAnswers = async (answers: (string[] | null)[], accountId: string | null) => {
+
+  const axios = createAxiosInstance()
+
   if (!accountId) {
     alert('account_id가 없습니다. 로그인 후 이용해주세요.')
     return
