@@ -20,3 +20,20 @@ export const createAxiosInstance = (
     withCredentials: true,
   })
 }
+
+export const createFastAPIAxiosInstance = (
+  token?: string,
+  accountId?: string
+): AxiosInstance => {
+  const config = useRuntimeConfig()
+
+  return axios.create({
+    baseURL: config.public.AI_BASE_URL,
+    timeout: 10000,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}`, userToken: token } : {}),
+      ...(accountId ? { 'Account-Id': accountId } : {}),
+    },
+  })
+}
