@@ -39,7 +39,7 @@ export const boardCreateRepository = {
     }
 
     try {
-      const res = await getAxios().post('/board/create/', formData, {
+      const res = await getAxios().post('/board/create', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
       return res.data

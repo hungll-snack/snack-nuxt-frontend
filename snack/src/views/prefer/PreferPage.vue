@@ -222,6 +222,7 @@ const handleSkip = async () => {
   const accountId = localStorage.getItem('account_id')
   const padded = [...answers.value, ...Array(19 - answers.value.length).fill(null)]
   await sendPreferenceAnswers(padded, accountId)
+  router.push('/')
 }
 
 </script>
