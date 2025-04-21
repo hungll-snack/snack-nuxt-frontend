@@ -11,7 +11,7 @@ export const sendPreferenceAnswers = async (answers: (string[] | null)[], accoun
   }
 
   try {
-    const response = await axios.post('/account-prefer/save/', {
+    const response = await axios.post('/account-prefer/save', {
       account_id: accountId,
       answers
     })
