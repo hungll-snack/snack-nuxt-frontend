@@ -20,7 +20,7 @@ export const authRepository = {
   async getAccessToken(provider: Provider, code: string) {
     const response = await getAxios().post(`/${provider}-oauth/redirect-access-token`, { code })
     const userToken = response.headers['usertoken'] || response.data.userToken
-    const accountId = response.headers['account_id'] || response.data.account_id
+    const accountId = response.headers['account-id'] || response.data.account-id
     const statusCode = response.status  // ✅ 여기서 추출
     console.log('getAccessToken response -repo :' ,response)
     console.log('getAccessToken userToken  -repo:' ,userToken)
