@@ -15,7 +15,7 @@ export const createAxiosInstance = (
     headers: {
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}`, usertoken: token } : {}),
-      ...(accountId ? { 'account_id': accountId } : {}),
+      ...(accountId ? { 'account-id': accountId } : {}),
     },
     withCredentials: true,
   })
@@ -33,7 +33,7 @@ export const createFastAPIAxiosInstance = (
     headers: {
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}`, userToken: token } : {}),
-      ...(accountId ? { 'account_id': accountId } : {}),
+      ...(accountId ? { 'account-id': accountId } : {}),
     },
   })
 }

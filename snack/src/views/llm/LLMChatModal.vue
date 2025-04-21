@@ -91,7 +91,7 @@ import { accountRepository } from '~/repository/account/accountRepository'
     const axios = createFastAPIAxiosInstance(token, accountId)
   
     try {
-      const res = await axios.post('/llm/search', { query: userMsg })
+      const res = await axios.post('/llm/search', { query: userMsg, 'account-id': accountId })
       const botMsg = res.data?.response || '응답이 없습니다'
       chatStore.addChat('bot', botMsg)
   
