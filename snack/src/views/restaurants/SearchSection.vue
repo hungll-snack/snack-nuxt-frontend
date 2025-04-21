@@ -21,10 +21,12 @@
         </div>
         <div class="rating">⭐ {{ r.rating }} / 리뷰 {{ r.reviewCount }}</div>
         <div class="address">📍 {{ r.address }}</div>
-        <div class="button-group">
-          <button class="friend-btn" @mousedown.prevent>밥 친구 찾기 ({{ r.friendCount || 0 }})</button>
-          <button class="call-btn" @mousedown.prevent>전화 하기</button>
-        </div>
+      </div>
+      <div class="button-group">
+        <button class="friend-btn" @mousedown.prevent>밥 친구 찾기 ({{ r.friendCount || 0 }})</button>
+        <button class="call-btn" @mousedown.prevent>
+          <span class="icon">📞</span> 전화 하기
+        </button>
       </div>
     </div>
   </div>
@@ -65,7 +67,8 @@ onMounted(() => {
   border: 1px solid #ddd;
   border-radius: 999px;
   font-size: 14px;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03);
+  background-color: #fff;
+  box-shadow: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .search-input:focus {
@@ -78,21 +81,24 @@ onMounted(() => {
   font-size: 20px;
   font-weight: 700;
   margin-bottom: 20px;
-  color: #ff6f00;
+  color: #333;
 }
 
 .restaurant-card {
-  background: #fffaf5;
+  background: #ffffff;
   padding: 16px;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(255, 102, 0, 0.05);
+  border: 1px solid #eee;
   margin-bottom: 16px;
-  border-left: 4px solid #ff9800;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .restaurant-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(255, 102, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 .restaurant-name {
@@ -110,26 +116,30 @@ onMounted(() => {
 
 .rating {
   font-size: 14px;
-  color: #ff6f00;
+  color: #444;
   margin-bottom: 4px;
 }
 
 .address {
   font-size: 13px;
-  color: #666;
-  margin-bottom: 8px;
+  color: #777;
+  margin-bottom: 12px;
 }
 
 .button-group {
   display: flex;
+  flex-direction: column;
   gap: 8px;
+  min-width: 120px;
+  align-items: flex-end;
+  justify-content: flex-start;
 }
 
 .friend-btn,
 .call-btn {
   font-size: 13px;
   font-weight: 600;
-  padding: 6px 12px;
+  padding: 8px 14px;
   border: none;
   border-radius: 999px;
   cursor: pointer;
@@ -137,17 +147,21 @@ onMounted(() => {
 }
 
 .friend-btn {
-  background: #ffe0b2;
-  color: #e65100;
+  background: #f5f5f5;
+  color: #333;
 }
 .friend-btn:hover {
   transform: scale(1.05);
-  background: #ffd699;
+  background: #e0e0e0;
 }
 
 .call-btn {
-  background: linear-gradient(to right, #ff9800, #ff5722);
+  background: #ff6f00;
   color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 .call-btn:hover {
   transform: scale(1.05);
