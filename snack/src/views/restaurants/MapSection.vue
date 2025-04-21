@@ -116,17 +116,18 @@
   width: 100%;
   height: 600px;
   padding: 8px;
-  background: linear-gradient(to bottom, #fd6d13, #fbb21f);
+  background: #f9f9f9; /* 깔끔한 단색 배경 */
   border-radius: 16px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03); /* 연한 그림자 */
 }
 
 .map-area {
   width: 100%;
   height: 100%;
   border-radius: 12px;
-  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.02);
 }
+
 
   </style>
   
