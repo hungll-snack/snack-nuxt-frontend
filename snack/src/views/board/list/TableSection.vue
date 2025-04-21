@@ -35,8 +35,8 @@
         class="board-item"
         @click="goToDetail(board.board_id)"
       >
-        <img :src="board.image_url || '/default-thumbnail.jpg'" alt="썸네일" />
-        <div class="details">
+      <img :src="board.image_url || defaultThumbnail" alt="헝글" />
+      <div class="details">
           <h3>{{ board.title }}</h3>
           <p>
             👤 {{ board.author_nickname }} |
@@ -61,6 +61,7 @@
 import { ref, onMounted, onBeforeUnmount, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBoardListStore } from '@/store/board/boardListStore'
+import defaultThumbnail from '@/assets/images/logo/hungle_korean_center.png'
 
 // props 추가
 const props = defineProps<{
