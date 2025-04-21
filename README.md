@@ -3,4 +3,4 @@ It's for Snack Nuxt Frontend Demo
 
 .........
 
-updating env_production 4
+updating env_production for s3 access
