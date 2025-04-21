@@ -101,7 +101,7 @@ import { accountRepository } from '~/repository/account/accountRepository'
       })
     } catch (e) {
       console.error('❌ LLM API 실패', e)
-      chatStore.addChat('bot', '오류가 발생했습니다. 다시 시도해주세요.')
+      chatStore.addChat('bot', '미안해요! 헝글이 딱맞는 대답을 찾기위해 알아보고있어요 💡')
     }
   }
   </script>
