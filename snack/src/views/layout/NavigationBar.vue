@@ -1,3 +1,4 @@
+<!-- NavigationBar.vue -->
 <template>
   <header class="responsive-nav" ref="navRef">
     <!-- ✅ 로고 -->
@@ -23,7 +24,7 @@
     <transition name="fade">
       <div v-if="showMenu" ref="dropdownRef" class="dropdown-menu">
         <div class="auth-icon dropdown-auth" @click="handleAuthClick">
-          <v-icon :style="{ color: '#FF6F00' }">
+          <v-icon class="gradient-icon">
             {{ isAuthenticated ? 'mdi-account-circle' : 'mdi-account-circle-outline' }}
           </v-icon>
         </div>
@@ -35,7 +36,7 @@
 
     <!-- ✅ 데스크탑 로그인 아이콘 -->
     <div class="auth-icon desktop-auth" @click="handleAuthClick">
-      <v-icon :style="{ color: '#FF6F00' }">
+      <v-icon class="gradient-icon">
         {{ isAuthenticated ? 'mdi-account-circle' : 'mdi-account-circle-outline' }}
       </v-icon>
     </div>
@@ -65,13 +66,12 @@ const showMenu = ref(false)
 const goHome = () => router.push('/')
 const toggleMenu = () => (showMenu.value = !showMenu.value)
 const navigateTo = (path: string) => {
-  showMenu.value = false // ✅ 버튼 클릭 시 드롭다운 닫기
+  showMenu.value = false
   router.push(path)
 }
 
-
 const handleAuthClick = () => {
-  showMenu.value = false // ✅ 로그인 버튼 클릭 시 드롭다운 닫기
+  showMenu.value = false
   if (isAuthenticated.value) {
     showUserModal.value = true
   } else {
@@ -118,12 +118,11 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: linear-gradient(to bottom,
-    rgba(255, 152, 0, 0)
-  );
-  backdrop-filter: blur(6px);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(8px);
   padding: 0 20px;
   z-index: 9999;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 /* ✅ 로고 */
@@ -141,18 +140,19 @@ onBeforeUnmount(() => {
   display: flex;
   gap: 50px;
 }
+
 .desktop-menu button {
-  font-weight: bold;
+  font-weight: 600;
   font-size: 16px;
   background: transparent;
   border: none;
-  color: #757575;
+  color: #e65100;
   cursor: pointer;
-  transition: color 0.2s;
+  transition: color 0.2s ease, transform 0.2s ease;
 }
 .desktop-menu button:hover {
-  color: #ff8a00;
-  font-size: 18px;
+  color: #ff6f00;
+  transform: scale(1.05);
 }
 
 /* ✅ 햄버거 버튼 */
@@ -163,6 +163,10 @@ onBeforeUnmount(() => {
   gap: 4px;
   margin-left: auto;
   cursor: pointer;
+}
+.menu-toggle span {
+  background: linear-gradient(90deg, #ff9800, #ff5722);
+  border-radius: 2px;
 }
 .menu-toggle span:nth-child(1) {
   width: 28px;
@@ -176,10 +180,6 @@ onBeforeUnmount(() => {
   width: 14px;
   height: 4px;
 }
-.menu-toggle span {
-  background: linear-gradient(90deg, #ff9800, #ff5722);
-  border-radius: 2px;
-}
 
 /* ✅ 드롭다운 메뉴 */
 .dropdown-menu {
@@ -187,8 +187,8 @@ onBeforeUnmount(() => {
   top: 64px;
   right: 20px;
   background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
   padding: 10px 0;
   width: 200px;
   display: flex;
@@ -199,18 +199,37 @@ onBeforeUnmount(() => {
   padding: 12px;
   font-weight: 600;
   background: transparent;
-  color: #4e342e;
+  color: #5d4037;
   border: none;
   text-align: center;
   cursor: pointer;
-  transition: background-color 0.2s, color 0.2s;
+  transition: all 0.2s ease;
 }
 .dropdown-menu button:hover {
-  background-color: #ff6f0017;
+  background-color: #ff6f0014;
   color: #ff6f00;
+  transform: scale(1.03);
 }
 
-/* ✅ 로그인 버튼 */
+/* ✅ 로그인 아이콘 (모바일 & 데스크탑 공통) */
+.auth-icon {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+.auth-icon:hover {
+  transform: scale(1.12);
+}
+.gradient-icon {
+  font-size: 28px;
+  background: linear-gradient(135deg, #ff9800, #ff5722);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ✅ 드롭다운 로그인 */
 .dropdown-auth {
   display: flex;
   justify-content: center;
@@ -218,9 +237,6 @@ onBeforeUnmount(() => {
   border-bottom: 1px solid #eee;
 }
 
-.auth-icon {
-  cursor: pointer;
-}
 .desktop-auth {
   margin-left: auto;
 }
