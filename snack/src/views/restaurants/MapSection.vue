@@ -1,6 +1,9 @@
 <template>
-    <div id="map" class="w-full h-full rounded-lg" />
-  </template>
+  <div class="map-wrapper">
+    <div id="map" class="map-area" />
+  </div>
+</template>
+
   
   <script setup lang="ts">
   import { onMounted, watch } from 'vue'
@@ -109,13 +112,21 @@
   </script>
   
   <style scoped>
-  .map-wrapper {
-    height: 600px; /* ✅ 고정 높이 */
-    width: 100%;
-  }
-  #map {
-    height: 100%;
-    width: 100%;
-  }
+.map-wrapper {
+  width: 100%;
+  height: 600px;
+  padding: 8px;
+  background: linear-gradient(to bottom, #fd6d13, #fbb21f);
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+.map-area {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.05);
+}
+
   </style>
   

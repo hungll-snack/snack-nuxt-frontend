@@ -24,6 +24,7 @@ onMounted(() => {
 })
 </script>
 
+
 <style scoped>
 .page-content {
   padding-top: 64px;

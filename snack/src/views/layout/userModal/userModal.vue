@@ -1,29 +1,31 @@
 <template>
-  <v-dialog :model-value="show" @update:model-value="closeModal" width="350" height="270">
+  <v-dialog :model-value="show" @update:model-value="closeModal" width="360">
     <v-card class="user-modal-card">
+      <!-- 닫기 버튼 -->
+      <div class="close-x" @click="closeModal">✕</div>
+
       <v-card-text class="user-modal-content">
         <div v-if="isLoading" class="spinner-wrapper">
           <div class="loading-spinner" />
         </div>
         <template v-else>
-          <div class="emoji">😊</div>
+          <div class="emoji">😄</div>
           <div class="nickname-msg">
-            안녕하세요 <strong>{{ nickname || '사용자' }}</strong>님 ❤️
+            <span class="typing">안녕하세요 <strong>{{ nickname || '사용자' }}</strong>님 ❤️</span>
           </div>
           <div class="user-actions">
-            <v-btn class="mypage-btn" flat @click="goToMypage">마이페이지</v-btn>
-            <v-btn class="logout-btn" flat @click="handleLogout">로그아웃</v-btn>
+            <v-btn class="hungll-btn" @click="goToMypage">마이페이지</v-btn>
+            <v-btn class="hungll-btn light" @click="handleLogout">로그아웃</v-btn>
           </div>
         </template>
       </v-card-text>
-      <div class="close-x" @click="closeModal">X</div>
     </v-card>
   </v-dialog>
 </template>
 
 <script setup lang="ts">
 import { defineProps, defineEmits, computed, watch, ref } from 'vue'
-import { useRouter } from 'vue-router' 
+import { useRouter } from 'vue-router'
 import { useAccountStore } from '@/store/account/accountStore'
 import { useAuthStore } from '@/store/auth/authStore'
 
@@ -69,93 +71,106 @@ watch(
 
 <style scoped>
 .user-modal-card {
-  width: 350px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  border-radius: 20px;
+  padding: 32px 24px 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   position: relative;
-  border-radius: 16px;
-  padding: 24px;
+  overflow: hidden;
 }
 
 .user-modal-content {
-  width: 350px;
   text-align: center;
 }
 
 .emoji {
-  font-size: 40px;
+  font-size: 48px;
   margin-bottom: 16px;
 }
 
 .nickname-msg {
   font-size: 18px;
   font-weight: bold;
-  animation: shake 0.8s infinite alternate;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
-@keyframes shake {
-  0% {
-    transform: rotate(-2deg);
+/* 타이핑 효과 */
+.typing {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  animation: typing 1.6s steps(25, end) 1;
+  border-right: 2px solid #ff5722;
+}
+
+@keyframes typing {
+  from {
+    width: 0;
   }
-  100% {
-    transform: rotate(2deg);
+  to {
+    width: 100%;
   }
 }
 
 .user-actions {
   display: flex;
   justify-content: center;
-  gap: 40px;
+  gap: 16px;
 }
 
-.mypage-btn {
-  background-color: #ffe0b2;
+.hungll-btn {
+  background: linear-gradient(135deg, #ff9800, #ff5722);
+  color: white;
   font-weight: bold;
-  box-shadow: none;
+  border-radius: 30px;
+  padding: 8px 20px;
+  min-width: 100px;
   font-size: 14px;
-  padding: 8px 16px;
+  box-shadow: none;
+  transition: 0.2s ease;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+.hungll-btn:hover {
+  transform: scale(1.05); /* ✅ 살짝 커짐 */
+  filter: brightness(1.05); /* ✅ 기존 밝기 효과도 유지 */
+}
+.hungll-btn.light {
+  background: #e0e0e0;
+  color: #333;
 }
 
-.logout-btn {
-  background-color: #e0e0e0;
-  font-weight: bold;
-  box-shadow: none;
-  font-size: 14px;
-  padding: 8px 16px;
+.hungll-btn:hover {
+  filter: brightness(1.1);
 }
 
+/* X 버튼 */
 .close-x {
   position: absolute;
-  bottom: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: #aaa;
+  top: 12px;
+  right: 16px;
+  font-size: 18px;
   font-weight: bold;
-  font-size: 14px;
+  color: #bbb;
   cursor: pointer;
 }
 
-/* 로딩 스피너 스타일 */
+/* 로딩 스피너 */
 .spinner-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 150px;
+  height: 120px;
 }
-
 .loading-spinner {
   width: 40px;
   height: 40px;
   border: 6px solid transparent;
-  border-top: 6px solid #ff7043; /* 오렌지 */
-  border-right: 6px solid #f44336; /* 빨강 */
+  border-top: 6px solid #ff7043;
+  border-right: 6px solid #f44336;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
-
 @keyframes spin {
   0% {
     transform: rotate(0);
