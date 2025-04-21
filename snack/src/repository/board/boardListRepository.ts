@@ -21,7 +21,7 @@ interface BoardListRequestPayload {
 export const boardListRepository = {
   async requestBoardList(payload: BoardListRequestPayload) {
     try {
-      const response = await getAxios().get('/board/all/', {
+      const response = await getAxios().get('board/all', {
         params: {
           page: payload.page,
           per_page: payload.perPage,
