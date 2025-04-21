@@ -6,7 +6,7 @@ export const boardDetailRepository = {
     const accountId = localStorage.getItem('account_id') || ''
     const axios = createAxiosInstance(token, accountId)
 
-    const { data } = await axios.get(`/board/${boardId}/`)
+    const { data } = await axios.get(`board/${boardId}`)
     console.log('📥 boardDetail 응답:', data)
 
     return data
