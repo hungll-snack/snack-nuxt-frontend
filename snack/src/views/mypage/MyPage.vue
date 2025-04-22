@@ -9,7 +9,7 @@
         </v-btn>
       </div>
       <p class="greeting-text">안녕하세요 <strong>{{ accountStore.nickname }}</strong>님!</p>
-      <v-btn class="edit-btn" flat>내 정보 수정</v-btn>
+      <v-btn class="edit-btn" flat @click="alertServiceReady">내 정보 수정</v-btn>
       <v-btn class="withdraw-btn" flat @click="handleWithdraw">회원 탈퇴</v-btn>
     </div>
 
@@ -18,17 +18,17 @@
       <div class="feature-card">
         <h3>🍽️ 리뷰 관리</h3>
         <p>내가 남긴 식당 리뷰를 한눈에!</p>
-        <button class="card-btn">리뷰 보러가기</button>
+        <button class="card-btn" @click="alertServiceReady">리뷰 보러가기</button>
       </div>
       <div class="feature-card">
         <h3>❤️ 찜한 목록</h3>
         <p>관심 있는 맛집과 게시글을 모아봤어요</p>
-        <button class="card-btn">찜 목록 보기</button>
+        <button class="card-btn" @click="alertServiceReady">찜 목록 보기</button>
       </div>
       <div class="feature-card">
         <h3>📝 내 게시글 관리</h3>
         <p>밥친구 찾기 게시글을 수정하거나 삭제할 수 있어요</p>
-        <button class="card-btn">게시글 관리</button>
+        <button class="card-btn" @click="alertServiceReady">게시글 관리</button>
       </div>
     </section>
   </div>
@@ -52,6 +52,10 @@ onMounted(async () => {
     console.error('🔴 닉네임 불러오기 실패:', error)
   }
 })
+
+const alertServiceReady = () => {
+  alert('서비스 준비중입니다. 잠시만 기다려주세요.')
+}
 
 const handleWithdraw = async () => {
   if (confirm('회원 탈퇴하시겠습니까?')) {
