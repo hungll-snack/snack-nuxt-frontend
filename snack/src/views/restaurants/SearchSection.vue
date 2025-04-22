@@ -23,8 +23,8 @@
         <div class="address">📍 {{ r.address }}</div>
       </div>
       <div class="button-group">
-        <button class="friend-btn" @mousedown.prevent>밥 친구 찾기 ({{ r.friendCount || 0 }})</button>
-        <button class="call-btn" @mousedown.prevent>
+        <button class="friend-btn" @mousedown.prevent @click="alertServiceReady">밥 친구 찾기 ({{ r.friendCount || 0 }})</button>
+        <button class="call-btn" @mousedown.prevent @click="alertServiceReady">
           <span class="icon">📞</span> 전화 하기
         </button>
       </div>
@@ -43,6 +43,10 @@ const search = () => {
   if (keyword.value.trim()) {
     restaurantStore.searchRestaurants(keyword.value.trim())
   }
+}
+
+const alertServiceReady = () => {
+  alert('서비스 준비중입니다. 잠시만 기다려주세요.')
 }
 
 onMounted(() => {
