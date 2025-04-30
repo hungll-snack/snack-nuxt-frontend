@@ -30,6 +30,14 @@
       <TeamSection />
     </div>
 
+    <!-- ✅ 추가: 푸터 -->
+    <footer class="hungll-footer">
+      <div class="footer-info-wrapper">
+        <p class="footer-line">주소: 서울특별시 송파구 새말로8길 26, 3층 (문정동)</p>
+        <p class="footer-line">문의: hungll.snack@gmail.com</p>
+        <p class="footer-copy">Copyright © 2025 에디(EDDI). All rights reserved.</p>
+      </div>
+    </footer>
     <!-- 스크롤 화살표 -->
     <div
       class="gradient-arrow"
@@ -119,7 +127,7 @@ onMounted(() => {
 <style scoped>
 .info-page {
   position: relative;
-  padding: 0px 20px 200px;
+  padding: 0px 20px 0px;
   z-index: 1;
   overflow-x: hidden;
 }
@@ -170,6 +178,32 @@ onMounted(() => {
 .gradient-arrow.up {
   clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
   background: linear-gradient(to top, #ff9800, #ff5722);
+}
+/* ✅ 헝글 푸터 스타일 */
+.hungll-footer {
+  background-color: #f9f9f9;
+  padding: 24px 16px 40px;
+  text-align: center;
+  font-family: 'Pretendard', sans-serif;
+  border-top: 1px solid #ddd;
+  margin-top: 80px;
+}
+
+.footer-info-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.footer-line {
+  margin: 4px 0;
+  font-size: 13px;
+  color: #444;
+}
+
+.footer-copy {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #999;
 }
 
 @keyframes bounce {
