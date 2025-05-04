@@ -37,6 +37,24 @@
       </div>
     </section>
 
+    <v-divider class="divider" />
+
+    <!-- ✅ 아동 보호 정책 -->
+    <section class="policy-section">
+      <label class="policy-check">
+        <input type="checkbox" v-model="childProtectionAgreed" @change="onAgree('childProtection')" />
+        아동 보호 정책에 동의합니다
+      </label>
+
+      <div v-if="showChildProtection" class="policy-text-box" v-html="childProtectionText"></div>
+
+      <div class="toggle-line">
+        <button class="toggle-btn" @click="toggleView('childProtection')">
+          {{ showChildProtection ? '내용 접기' : '자세히 보기' }}
+        </button>
+      </div>
+    </section>
+
     <!-- ✅ 로그인 버튼 -->
     <button class="custom-btn agree-btn" :disabled="!canProceed" @click="goToLogin">
       간편 로그인으로 계속하기
@@ -51,24 +69,30 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { privacyText } from './PrivacyText'
 import { termsText } from './TermsText'
+import { childProtectionText } from './ChildProtectionText'
 
 const router = useRouter()
 
 const privacyAgreed = ref(false)
 const termsAgreed = ref(false)
+const childProtectionAgreed = ref(false)
+
 const showPrivacy = ref(true)
 const showTerms = ref(true)
+const showChildProtection = ref(true)
 
-const canProceed = computed(() => privacyAgreed.value && termsAgreed.value)
+const canProceed = computed(() => privacyAgreed.value && termsAgreed.value && childProtectionAgreed.value)
 
 const toggleView = (type: string) => {
   if (type === 'privacy') showPrivacy.value = !showPrivacy.value
   if (type === 'terms') showTerms.value = !showTerms.value
+  if (type === 'childProtection') showChildProtection.value = !showChildProtection.value
 }
 
 const onAgree = (type: string) => {
   if (type === 'privacy' && privacyAgreed.value) showPrivacy.value = false
   if (type === 'terms' && termsAgreed.value) showTerms.value = false
+  if (type === 'childProtection' && childProtectionAgreed.value) showChildProtection.value = false
 }
 
 const goToLogin = () => {
@@ -77,7 +101,6 @@ const goToLogin = () => {
     router.push('/login')
   }
 }
-
 
 const goBack = () => {
   router.push('/')
