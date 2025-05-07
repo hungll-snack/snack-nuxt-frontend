@@ -10,8 +10,6 @@ export const useAuthStore = defineStore('auth', {
   state: () => ({
     isAuthenticated: false,
     provider: '' as Provider | '',
-    userId: '',      // ⭐ 추가
-    isAdmin: false   // ⭐ 추가
   }),
 
   actions: {
@@ -30,19 +28,13 @@ export const useAuthStore = defineStore('auth', {
     async handleOAuthRedirect(router: ReturnType<typeof useRouter>, provider: Provider, code: string) {
       try {
         const { userToken, accountId, statusCode } = await authRepository.getAccessToken(provider, code)
-        console.log('oauth 스토어에요 userToken, accountId, statusCode : ', userToken, accountId, statusCode)
-
+        console.log('oauth 스토어에요 userToken, accountId, statusCode : ', userToken, accountId, statusCode )
         if (!userToken || !accountId) {
           throw new Error('토큰 또는 계정 정보 누락')
         }
 
         localStorage.setItem('userToken', userToken)
         localStorage.setItem('account_id', accountId)
-
-        // ⭐ 추가: userId, isAdmin 세팅
-        this.userId = accountId
-        this.isAdmin = localStorage.getItem('isAdmin') === 'true'
-
         this.isAuthenticated = true
         this.provider = provider
 
@@ -75,11 +67,8 @@ export const useAuthStore = defineStore('auth', {
       authRepository.logout(this.provider, token)
       localStorage.removeItem('userToken')
       localStorage.removeItem('account_id')
-
       this.isAuthenticated = false
       this.provider = ''
-      this.userId = ''         // ⭐ 추가
-      this.isAdmin = false     // ⭐ 추가
     },
 
     async validateToken(): Promise<boolean> {
@@ -92,12 +81,9 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async initializeAuth() {
-      this.userId = localStorage.getItem('account_id') || ''
-      this.isAdmin = localStorage.getItem('isAdmin') === 'true'
-    
       const token = localStorage.getItem('userToken')
       if (!token) return
-    
+
       const valid = await this.validateToken()
       if (valid) {
         this.isAuthenticated = true
@@ -106,7 +92,7 @@ export const useAuthStore = defineStore('auth', {
         this.logout()
       }
     },
-    
+
     async withdrawAccount(): Promise<void> {
       const accountId = localStorage.getItem('account_id')
       if (!accountId) {
@@ -118,7 +104,7 @@ export const useAuthStore = defineStore('auth', {
         const result = await authRepository.deactivateAccount(accountId)
         if (result?.success) {
           alert('정상적으로 탈퇴 처리되었습니다.')
-          this.logout()
+          this.logout()  // 기존 logout 함수 재사용!
         } else {
           alert('탈퇴 처리에 실패했습니다. 다시 시도해주세요.')
         }

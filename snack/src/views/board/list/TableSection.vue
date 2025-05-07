@@ -3,7 +3,7 @@ import { ref, onMounted, onBeforeUnmount, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBoardListStore } from '@/store/board/boardListStore'
 import { useBoardDeleteStore } from '@/store/board/boardDeleteStore'
-import { useAuthStore } from '@/store/auth/authStore'
+import { useAccountStore } from '@/store/account/accountStore'
 import defaultThumbnail from '@/assets/images/logo/hungle_korean_center.png'
 
 const props = defineProps<{
@@ -16,7 +16,7 @@ const props = defineProps<{
 const router = useRouter()
 const boardStore = useBoardListStore()
 const deleteStore = useBoardDeleteStore()
-const authStore = useAuthStore()
+const accountStore = useAccountStore()
 
 const selectedStatus = ref('전체')
 const selectedSort = ref('최신순')
@@ -114,10 +114,10 @@ const closeAllDropdowns = (e: MouseEvent) => {
   }
 }
 
-onMounted(() => {
-  authStore.initializeAuth()
-  console.log('userId:', authStore.userId)
-  console.log('isAdmin:', authStore.isAdmin)
+onMounted(async () => {
+  await accountStore.getAccount()
+  console.log('accountId:', accountStore.accountId)
+  console.log('isAdmin:', localStorage.getItem('isAdmin'))
   fetchBoardList()
   window.addEventListener('click', closeAllDropdowns)
 })
@@ -139,6 +139,14 @@ const deleteBoard = async (boardId: number) => {
     alert(deleteStore.errorMessage || '삭제에 실패했습니다.')
   }
 }
+
+const isAdmin = computed(() => {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('isAdmin') === 'true'
+  }
+  return false
+})
+
 </script>
 
 <template>
@@ -160,7 +168,7 @@ const deleteBoard = async (boardId: number) => {
           <span>{{ selectedSort }}</span>
           <ul v-if="sortOpen" class="dropdown-menu">
             <li v-for="sort in sortOptions" :key="sort" @click.stop="selectSort(sort)">
-              작성자 ID: {{ board.author_id }} / 현재 유저 ID: {{ authStore.userId }}
+              작성자 ID: {{ board.author_account_id }} / 현재 유저 ID: {{ accountStore.accountId }}
               {{ sort }}
             </li>
           </ul>
@@ -192,7 +200,7 @@ const deleteBoard = async (boardId: number) => {
         </div>
 
         <div
-          v-if="authStore.isAdmin || String(board.author_account_id) === String(authStore.userId)"
+        v-if="isAdmin || String(board.author_account_id) === String(accountStore.accountId)"
           class="button-group"
         >
           <button class="btn-modify" @click.stop="modifyBoard(board.board_id)">
