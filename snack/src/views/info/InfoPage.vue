@@ -35,6 +35,13 @@
       <div class="footer-info-wrapper">
         <p class="footer-line">주소: 서울특별시 송파구 새말로8길 26, 3층 (문정동)</p>
         <p class="footer-line">문의: hungll.snack@gmail.com</p>
+        <div class="footer-line">
+          <router-link to="/policy/terms-info" class="footer-link">이용약관</router-link>
+          <span class="divider">|</span>
+          <router-link to="/policy/privacy-info" class="footer-link">개인정보처리방침</router-link>
+          <span class="divider">|</span>
+          <router-link to="/policy/child-info" class="footer-link">아동보호정책</router-link>
+        </div>
         <p class="footer-copy">Copyright © 2025 에디(EDDI). All rights reserved.</p>
       </div>
     </footer>
@@ -205,6 +212,18 @@ onMounted(() => {
   font-size: 12px;
   color: #999;
 }
+
+.footer-link {
+  text-decoration: none;
+  color: #555; 
+  font-weight: 500;
+  margin: 0 6px;
+}
+
+.footer-link:hover {
+  color: #222;
+}
+
 
 @keyframes bounce {
   0%, 100% {
