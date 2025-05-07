@@ -1,71 +1,11 @@
-<template>
-  <div class="board-list-wrapper">
-    <div class="board-list-header">
-      <h2>📋 밥친구 모집 리스트</h2>
-
-      <div class="dropdown-group">
-        <div class="dropdown" ref="statusDropdown" @click="toggleStatus">
-          <span>{{ selectedStatus }}</span>
-          <ul v-if="statusOpen" class="dropdown-menu">
-            <li v-for="status in statusOptions" :key="status" @click.stop="selectStatus(status)">
-              {{ status }}
-            </li>
-          </ul>
-        </div>
-
-        <div class="dropdown" ref="sortDropdown" @click="toggleSort">
-          <span>{{ selectedSort }}</span>
-          <ul v-if="sortOpen" class="dropdown-menu">
-            <li v-for="sort in sortOptions" :key="sort" @click.stop="selectSort(sort)">
-              {{ sort }}
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <div v-if="reactiveBoardList.length === 0" class="no-data">
-      😢 등록된 밥모임이 없습니다
-    </div>
-
-    <div v-else class="board-list">
-      <div
-        v-for="board in reactiveBoardList"
-        :key="board.board_id"
-        class="board-item"
-        :class="{ expired: isExpired(board.end_time) }"
-        @click="goToDetail(board.board_id)"
-      >
-        <img :src="board.image_url || defaultThumbnail" alt="헝글" />
-        <div class="details">
-          <h3>{{ board.title }}</h3>
-          <p>
-            👤 {{ board.author_nickname }} |
-            📅 {{ board.end_time?.slice(0, 10) || '미정' }} |
-            📌 {{ board.status === 'ongoing' ? '모집중' : '모집종료' }}
-          </p>
-          <p class="created-at">작성일: {{ board.created_at?.slice(0, 10) || '알수없음' }}</p>
-        </div>
-      </div>
-    </div>
-
-    <v-pagination
-      v-model="boardStore.currentPage"
-      :length="boardStore.totalPages"
-      @update:modelValue="fetchBoardList"
-      color="orange"
-      class="mt-6"
-    />
-  </div>
-</template>
-
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBoardListStore } from '@/store/board/boardListStore'
+import { useBoardDeleteStore } from '@/store/board/boardDeleteStore'
+import { useAuthStore } from '@/store/auth/authStore'
 import defaultThumbnail from '@/assets/images/logo/hungle_korean_center.png'
 
-// props 추가
 const props = defineProps<{
   title: string
   author: string
@@ -75,6 +15,8 @@ const props = defineProps<{
 
 const router = useRouter()
 const boardStore = useBoardListStore()
+const deleteStore = useBoardDeleteStore()
+const authStore = useAuthStore()
 
 const selectedStatus = ref('전체')
 const selectedSort = ref('최신순')
@@ -90,13 +32,11 @@ const sortDropdown = ref<HTMLElement | null>(null)
 
 const reactiveBoardList = computed(() => boardStore.boardList)
 
-// ✅ 종료일이 오늘보다 이전이면 true 반환 (만료된 게시물)
 const isExpired = (end_time: string | null | undefined) => {
   if (!end_time) return false
   return new Date(end_time) < new Date()
 }
 
-// 한글 → 영문 변환 맵핑
 const statusMap: Record<string, string> = {
   모집중: 'ongoing',
   모집종료: 'closed',
@@ -105,6 +45,10 @@ const statusMap: Record<string, string> = {
 const sortMap: Record<string, string> = {
   최신순: 'latest',
   마감순: 'end_date',
+}
+
+const modifyBoard = (boardId: number) => {
+  alert(`수정 기능은 곧 추가될 예정입니다.\n게시글 ID: ${boardId}`)
 }
 
 watch(
@@ -171,6 +115,9 @@ const closeAllDropdowns = (e: MouseEvent) => {
 }
 
 onMounted(() => {
+  authStore.initializeAuth()
+  console.log('userId:', authStore.userId)
+  console.log('isAdmin:', authStore.isAdmin)
   fetchBoardList()
   window.addEventListener('click', closeAllDropdowns)
 })
@@ -178,9 +125,103 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('click', closeAllDropdowns)
 })
+
+// ✅ 삭제 함수
+const deleteBoard = async (boardId: number) => {
+  const confirmDelete = confirm('정말로 이 게시글을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.')
+  if (!confirmDelete) return
+
+  const success = await deleteStore.deleteBoard(boardId)
+  if (success) {
+    alert('게시글이 삭제되었습니다.')
+    fetchBoardList()
+  } else {
+    alert(deleteStore.errorMessage || '삭제에 실패했습니다.')
+  }
+}
 </script>
 
+<template>
+  <div class="board-list-wrapper">
+    <div class="board-list-header">
+      <h2>📋 밥친구 모집 리스트</h2>
+
+      <div class="dropdown-group">
+        <div class="dropdown" ref="statusDropdown" @click="toggleStatus">
+          <span>{{ selectedStatus }}</span>
+          <ul v-if="statusOpen" class="dropdown-menu">
+            <li v-for="status in statusOptions" :key="status" @click.stop="selectStatus(status)">
+              {{ status }}
+            </li>
+          </ul>
+        </div>
+
+        <div class="dropdown" ref="sortDropdown" @click="toggleSort">
+          <span>{{ selectedSort }}</span>
+          <ul v-if="sortOpen" class="dropdown-menu">
+            <li v-for="sort in sortOptions" :key="sort" @click.stop="selectSort(sort)">
+              작성자 ID: {{ board.author_id }} / 현재 유저 ID: {{ authStore.userId }}
+              {{ sort }}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="reactiveBoardList.length === 0" class="no-data">
+      😢 등록된 밥모임이 없습니다
+    </div>
+
+    <div v-else class="board-list">
+      <div
+        v-for="board in reactiveBoardList"
+        :key="board.board_id"
+        class="board-item"
+        :class="{ expired: isExpired(board.end_time) }"
+      >
+        <img :src="board.image_url || defaultThumbnail" alt="헝글" @click="goToDetail(board.board_id)" />
+
+        <div class="details" @click="goToDetail(board.board_id)">
+          <h3>{{ board.title }}</h3>
+          <p>
+            👤 {{ board.author_nickname }} |
+            📅 {{ board.end_time?.slice(0, 10) || '미정' }} |
+            📌 {{ board.status === 'ongoing' ? '모집중' : '모집종료' }}
+          </p>
+          <p class="created-at">작성일: {{ board.created_at?.slice(0, 10) || '알수없음' }}</p>
+        </div>
+
+        <div
+          v-if="authStore.isAdmin || String(board.author_account_id) === String(authStore.userId)"
+          class="button-group"
+        >
+          <button class="btn-modify" @click.stop="modifyBoard(board.board_id)">
+            수정
+          </button>
+          <button
+            class="btn-delete"
+            :disabled="deleteStore.isLoading"
+            @click.stop="deleteBoard(board.board_id)"
+          >
+            <span v-if="deleteStore.isLoading" class="spinner"></span>
+            {{ deleteStore.isLoading ? '삭제 중...' : '삭제' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <v-pagination
+      v-model="boardStore.currentPage"
+      :length="boardStore.totalPages"
+      @update:modelValue="fetchBoardList"
+      color="orange"
+      class="mt-6"
+    />
+  </div>
+</template>
+
 <style scoped>
+/* 공통 스타일 */
 .board-list-wrapper {
   padding: 24px;
 }
@@ -194,57 +235,14 @@ onBeforeUnmount(() => {
   gap: 16px;
 }
 
-.dropdown-group {
-  display: flex;
-  gap: 12px;
+.no-data {
+  text-align: center;
+  padding: 40px;
+  color: #aaa;
+  font-size: 15px;
 }
 
-.dropdown {
-  position: relative;
-  background: rgba(255, 255, 255, 0.6);
-  z-index: 9999;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  padding: 6px 14px;
-  font-size: 14px;
-  cursor: pointer;
-  backdrop-filter: blur(6px);
-  transition: 0.2s ease;
-  min-width: 100px;
-}
-
-.dropdown:hover {
-  border-color: #ff7043;
-}
-
-.dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 8px;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
-  z-index: 999;
-  padding: 6px 0;
-  animation: fadeIn 0.2s ease;
-  width: 100%;
-  list-style: none;
-}
-
-.dropdown-menu li {
-  padding: 8px 14px;
-  font-size: 14px;
-  color: #333;
-  cursor: pointer;
-}
-
-.dropdown-menu li:hover {
-  background: #ffece5;
-  color: #ff7043;
-}
-
+/* 게시글 */
 .board-list {
   display: flex;
   flex-direction: column;
@@ -258,8 +256,9 @@ onBeforeUnmount(() => {
   background: white;
   border-radius: 16px;
   border: 1px solid #f0f0f0;
+  align-items: center;
+  justify-content: space-between;
   transition: all 0.2s ease;
-  cursor: pointer;
 }
 
 .board-item:hover {
@@ -280,6 +279,7 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  cursor: pointer;
 }
 
 .details h3 {
@@ -300,26 +300,140 @@ onBeforeUnmount(() => {
   margin-top: 4px;
 }
 
-.no-data {
-  text-align: center;
-  padding: 40px;
-  color: #aaa;
-  font-size: 15px;
+/* 버튼 그룹 */
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+  margin-left: 16px;
 }
 
+.btn-modify,
+.btn-delete {
+  padding: 6px 14px;
+  font-size: 13px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+  white-space: nowrap;
+}
+
+.btn-modify {
+  background-color: #ffd180;
+  color: #222;
+  border: none;
+}
+
+.btn-modify:hover {
+  background-color: #ffb74d;
+}
+
+.btn-delete {
+  background-color: #ff7043;
+  color: white;
+  border: none;
+  position: relative;
+}
+
+.btn-delete:hover {
+  background-color: #ff5722;
+}
+
+.btn-delete:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* 로딩 스피너 */
+.spinner {
+  border: 2px solid #fff;
+  border-top: 2px solid #ff5722;
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  display: inline-block;
+  margin-right: 6px;
+  animation: spin 0.8s linear infinite;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 만료된 게시물 스타일 */
 .board-item.expired {
   filter: grayscale(100%);
   opacity: 0.7;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
+/* 드롭다운 */
+.dropdown-group {
+  display: flex;
+  gap: 12px;
+}
+
+.dropdown {
+  position: relative;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 6px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: 0.2s ease;
+  min-width: 100px;
+  z-index: 1000;
+}
+
+.dropdown:hover {
+  border-color: #ff7043;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  z-index: 999;
+  padding: 6px 0;
+  width: 100%;
+}
+
+.dropdown-menu li {
+  padding: 8px 14px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.dropdown-menu li:hover {
+  background: #ffece5;
+  color: #ff7043;
+}
+
+/* 반응형 */
+@media (max-width: 600px) {
+  .board-item {
+    flex-direction: column;
+    align-items: flex-start;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  .button-group {
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .btn-modify,
+  .btn-delete {
+    width: 100%;
+    text-align: center;
   }
 }
 </style>

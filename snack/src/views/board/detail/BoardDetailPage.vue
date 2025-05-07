@@ -33,7 +33,7 @@ import { onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useBoardDetailStore } from '@/store/board/boardDetailStore'
-import { useCommentStore } from '@/store/board/commentStore'
+import { useCommentStore } from '~/store/board/boardCommentStore'
 
 import InfoSection from './InfoSection.vue'
 import ContentSection from './ContentSection.vue'
