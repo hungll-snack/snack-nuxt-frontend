@@ -48,7 +48,8 @@ const sortMap: Record<string, string> = {
 }
 
 const modifyBoard = (boardId: number) => {
-  alert(`수정 기능은 곧 추가될 예정입니다.\n게시글 ID: ${boardId}`)
+  console.log('➡️ 수정 이동 시도 boardId:', boardId)
+  router.push(`/board/modify/${boardId}`)
 }
 
 watch(
