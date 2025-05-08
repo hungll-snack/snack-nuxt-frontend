@@ -33,16 +33,18 @@
         v-for="board in reactiveBoardList"
         :key="board.board_id"
         class="board-item"
+        :class="{ expired: isExpired(board.end_time) }"
         @click="goToDetail(board.board_id)"
       >
-      <img :src="board.image_url || defaultThumbnail" alt="헝글" />
-      <div class="details">
+        <img :src="board.image_url || defaultThumbnail" alt="헝글" />
+        <div class="details">
           <h3>{{ board.title }}</h3>
           <p>
             👤 {{ board.author_nickname }} |
             📅 {{ board.end_time?.slice(0, 10) || '미정' }} |
             📌 {{ board.status === 'ongoing' ? '모집중' : '모집종료' }}
           </p>
+          <p class="created-at">작성일: {{ board.created_at?.slice(0, 10) || '알수없음' }}</p>
         </div>
       </div>
     </div>
@@ -88,7 +90,13 @@ const sortDropdown = ref<HTMLElement | null>(null)
 
 const reactiveBoardList = computed(() => boardStore.boardList)
 
-// ✅ 한글 → 영문 변환 맵핑
+// ✅ 종료일이 오늘보다 이전이면 true 반환 (만료된 게시물)
+const isExpired = (end_time: string | null | undefined) => {
+  if (!end_time) return false
+  return new Date(end_time) < new Date()
+}
+
+// 한글 → 영문 변환 맵핑
 const statusMap: Record<string, string> = {
   모집중: 'ongoing',
   모집종료: 'closed',
@@ -107,7 +115,6 @@ watch(
   }
 )
 
-// fetchBoardList 수정
 const fetchBoardList = async () => {
   await boardStore.fetchBoardList({
     page: boardStore.currentPage,
@@ -120,7 +127,6 @@ const fetchBoardList = async () => {
     end_date: props.end_date,
   })
 }
-
 
 const toggleStatus = () => {
   statusOpen.value = !statusOpen.value
@@ -174,8 +180,6 @@ onBeforeUnmount(() => {
 })
 </script>
 
-
-
 <style scoped>
 .board-list-wrapper {
   padding: 24px;
@@ -198,6 +202,7 @@ onBeforeUnmount(() => {
 .dropdown {
   position: relative;
   background: rgba(255, 255, 255, 0.6);
+  z-index: 9999;
   border: 1px solid #ddd;
   border-radius: 12px;
   padding: 6px 14px;
@@ -289,11 +294,22 @@ onBeforeUnmount(() => {
   color: #666;
 }
 
+.created-at {
+  font-size: 13px;
+  color: #999;
+  margin-top: 4px;
+}
+
 .no-data {
   text-align: center;
   padding: 40px;
   color: #aaa;
   font-size: 15px;
+}
+
+.board-item.expired {
+  filter: grayscale(100%);
+  opacity: 0.7;
 }
 
 @keyframes fadeIn {
