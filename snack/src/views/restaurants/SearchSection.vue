@@ -19,7 +19,6 @@
           {{ r.name }}
           <span v-if="r.closed" class="closed-badge">영업종료</span>
         </div>
-        <div class="rating">⭐ {{ r.rating }} / 리뷰 {{ r.reviewCount }}</div>
         <div class="address">📍 {{ r.address }}</div>
       </div>
       <div class="button-group">
