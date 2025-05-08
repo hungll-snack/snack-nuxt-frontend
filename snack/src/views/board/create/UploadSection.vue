@@ -19,8 +19,14 @@
     <!-- 날짜 선택 -->
     <div class="input-wrapper">
       <label class="input-label">모임 날짜</label>
-      <input class="search-input" :value="datetime" readonly placeholder="날짜 선택" @click="calendarRef?.open()" />
-      <HungllDatePicker ref="calendarRef" v-model="datetime" />
+      <input class="search-input" :value="date" readonly placeholder="날짜 선택" @click="calendarRef?.open()" />
+      <HungllDatePicker ref="calendarRef" v-model="date" />
+    </div>
+
+    <!-- 시간 선택 추가 -->
+    <div class="input-wrapper">
+      <label class="input-label">모임 시간</label>
+      <input type="time" v-model="time" class="search-input" />
     </div>
 
     <!-- 맛집 장소 -->
@@ -56,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import HungllDatePicker from '@/common/components/HungllDatePicker.vue'
 import { useBoardCreateStore } from '@/store/board/boardCreateStore'
@@ -73,8 +79,16 @@ const previewImage = ref('')
 const thumbnail = ref<File | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
 
-const datetime = ref('')
+const date = ref('') // 날짜
+const time = ref('12:00') // 시간 (기본값 12:00)
+
 const calendarRef = ref()
+
+// 날짜와 시간을 합쳐서 datetime 생성
+const datetime = computed(() => {
+  if (!date.value) return ''
+  return `${date.value}T${time.value}:00` // ISO 8601 형태
+})
 
 const selectedRestaurant = ref<Restaurant | null>(null)
 const restaurantList = ref<Restaurant[]>([])
@@ -125,7 +139,7 @@ const submitBoard = async () => {
       title: boardStore.title,
       content: boardStore.content,
       image: thumbnail.value ?? undefined,
-      end_time: datetime.value || new Date().toISOString(),
+      end_time: datetime.value || new Date().toISOString(), // 날짜 + 시간 전송
       restaurant_id: selectedRestaurant.value?.id ?? undefined,
       author_id: parseInt(accountId),
     })
@@ -141,6 +155,7 @@ const submitBoard = async () => {
 
 const goBack = () => router.push('/board/all')
 </script>
+
 
 
 
