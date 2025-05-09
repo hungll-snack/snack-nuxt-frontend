@@ -45,7 +45,8 @@
         <p class="footer-copy">Copyright © 2025 에디(EDDI). All rights reserved.</p>
       </div>
     </footer>
-    <!-- 스크롤 화살표 -->
+    <SurveyPopup />
+
     <div
       class="gradient-arrow"
       :class="{ up: sectionIndex === 4 }"
@@ -61,6 +62,7 @@ import HungllIntroSection from '@/views/info/HungllIntroSection.vue'
 import WhySection from '@/views/info/WhySection.vue'
 import BoardIntroSection from '@/views/info/BoardIntroSection.vue'
 import TeamSection from '@/views/info/TeamSection.vue'
+import SurveyPopup from '@/views/info/SurveyPopup.vue'
 
 const sectionIndex = ref(0)
 const introSectionRef = ref<HTMLElement | null>(null)
@@ -233,4 +235,5 @@ onMounted(() => {
     transform: translate(-50%, -10px);
   }
 }
+
 </style>
