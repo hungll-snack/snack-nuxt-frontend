@@ -1,0 +1,168 @@
+<template>
+  <div class="upload-section-card">
+    <h2 class="section-title">📸 모임 정보 수정</h2>
+
+    <!-- 썸네일 업로드 -->
+    <div class="input-wrapper">
+      <label class="input-label">이미지 업로드</label>
+      <div class="thumbnail-box" v-if="!previewImage" @click="triggerFileInput">
+        <span class="thumbnail-placeholder">썸네일을 업로드 해주세요</span>
+      </div>
+      <div class="image-preview" v-else>
+        <img :src="previewImage" alt="Preview" />
+        <button class="btn grey small" @click="removeImage">삭제</button>
+      </div>
+      <input ref="fileInput" type="file" class="hidden-file-input" @change="handleImageUpload" accept="image/*" />
+    </div>
+
+    <!-- 날짜 선택 -->
+    <div class="input-wrapper">
+      <label class="input-label">모임 날짜</label>
+      <input class="search-input" v-model="localDate" type="date" />
+      <input type="time" v-model="localTime" class="search-input" />
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, watch } from 'vue'
+import { useBoardModifyStore } from '@/store/board/boardModifyStore'
+
+const boardStore = useBoardModifyStore()
+
+const previewImage = ref('')
+
+// 컴포넌트 시작할 때 기존 image_url을 previewImage로 지정
+if (typeof boardStore.board.image === 'string') {
+  previewImage.value = boardStore.board.image
+} else if (!boardStore.board.image && boardStore.board.image_url) {
+  previewImage.value = boardStore.board.image_url
+}
+
+// 파일 input
+const fileInput = ref<HTMLInputElement | null>(null)
+
+// 날짜와 시간 분리
+const localDate = ref('')
+const localTime = ref('12:00')
+
+watch(() => boardStore.board.end_time, (newVal) => {
+  if (newVal) {
+    const [date, time] = newVal.split('T')
+    localDate.value = date
+    localTime.value = time ? time.substring(0,5) : '12:00'
+  }
+}, { immediate: true })
+
+// 파일 업로드 핸들링
+const triggerFileInput = () => fileInput.value?.click()
+
+const handleImageUpload = (e: Event) => {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file) return
+  boardStore.board.image = file
+  const reader = new FileReader()
+  reader.onload = (e) => (previewImage.value = e.target?.result as string)
+  reader.readAsDataURL(file)
+}
+
+const removeImage = () => {
+  boardStore.board.image = null
+  previewImage.value = ''
+}
+
+// 날짜 & 시간
+watch(() => boardStore.board.image, (newVal) => {
+  if (newVal instanceof File) {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      previewImage.value = e.target?.result as string
+    }
+    reader.readAsDataURL(newVal)
+  } else if (typeof newVal === 'string') {
+    previewImage.value = newVal
+  } else if (!newVal) {
+    previewImage.value = ''
+  }
+}, { immediate: true })
+
+</script>
+
+<style scoped>
+.upload-section-card {
+  padding: 24px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f2f2f2;
+}
+
+.section-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #ff7043;
+}
+
+.input-wrapper {
+  margin-bottom: 16px;
+}
+
+.input-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+}
+
+.thumbnail-box {
+  width: 100%;
+  max-width: 280px;
+  aspect-ratio: 1 / 1;
+  border: 2px dashed #ff7043;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ff7043;
+  cursor: pointer;
+  background: #fffaf5;
+}
+
+.thumbnail-box:hover {
+  background: #fff3eb;
+}
+
+.thumbnail-placeholder {
+  pointer-events: none;
+}
+
+.image-preview {
+  max-width: 280px;
+  aspect-ratio: 1 / 1;
+  margin-bottom: 10px;
+}
+
+.image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.hidden-file-input {
+  display: none;
+}
+
+.btn.grey.small {
+  font-size: 13px;
+  padding: 6px 12px;
+}
+</style>
