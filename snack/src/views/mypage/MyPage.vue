@@ -12,7 +12,7 @@
           class="menu-btn pill" 
           :class="{ active: selectedMenu === 'profile' }" 
           @click="selectedMenu = 'profile'"
-        >내 정보 수정</button>
+        >나의 프로필</button>
 
         <button 
           class="menu-btn pill" 
@@ -25,11 +25,10 @@
     <!-- ✅ 우측 콘텐츠 영역 -->
     <main class="content-area">
       <div v-if="selectedMenu === 'profile'" class="profile-wrapper">
-        <div class="scrap-header">내 정보</div>
+        <div class="scrap-header">나의 프로필</div>
         <ul class="info-list">
           <li><span class="label">닉네임</span><span>{{ accountStore.nickname }}</span></li>
           <li><span class="label">이메일</span><span>{{ accountStore.email || '이메일 없음' }}</span></li>
-          <li><span class="label">가입일</span><span>{{ accountStore.createdAt || '알 수 없음' }}</span></li>
         </ul>
         <div class="profile-footer">
           <v-btn class="edit-btn" flat @click="alertServiceReady">수정하기</v-btn>
