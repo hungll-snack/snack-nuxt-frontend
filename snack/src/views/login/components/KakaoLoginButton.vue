@@ -6,7 +6,6 @@
 
 
 <style scoped>
-/* ✅ 카카오 */
 .kakao-btn {
   background-color: #FEE500;
   color: #3C1E1E;

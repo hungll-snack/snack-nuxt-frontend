@@ -1,6 +1,5 @@
 <template>
   <div class="mypage-container">
-    <!-- ✅ 좌측 메뉴/프로필 영역 -->
     <aside class="profile-menu">
       <div class="profile-top">
         <div class="avatar-circle">😊</div>
@@ -22,7 +21,6 @@
       </div>
     </aside>
 
-    <!-- ✅ 우측 콘텐츠 영역 -->
     <main class="content-area">
       <div v-if="selectedMenu === 'profile'" class="profile-wrapper">
         <div class="scrap-header">나의 프로필</div>
@@ -51,7 +49,6 @@
 
   <div class="admin-entry" @click="openAdminModal">관리자 페이지로 이동하기</div>
 
-  <!-- ✅ 관리자 코드 입력 모달 -->
   <template v-if="showAdminModal">
     <div class="modal-backdrop" @click.self="closeAdminModal">
       <div class="admin-modal">
@@ -312,7 +309,6 @@ const goToRestaurantAll = () => {
   justify-content: center;
 }
 
-/* ✅ 관리자 모달 스타일 */
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -363,7 +359,6 @@ const goToRestaurantAll = () => {
   font-size: 14px;
 }
 
-/* ✅ 반응형 */
 @media (max-width: 700px) {
   .mypage-container {
     flex-direction: column;

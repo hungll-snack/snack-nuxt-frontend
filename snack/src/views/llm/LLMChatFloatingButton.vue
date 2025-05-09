@@ -1,4 +1,3 @@
-<!-- views/llm/LLMChatFloatingButton.vue -->
 <template>
   <button class="floating-btn" @click="openChatModal">
     <v-icon size="24">mdi-chat</v-icon>
@@ -22,7 +21,7 @@ const openChatModal = () => {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ff9800, #ff5722); /* ✅ 그라데이션 적용 */
+  background: linear-gradient(135deg, #ff9800, #ff5722);  
   color: white;
   border: none;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -35,7 +34,7 @@ const openChatModal = () => {
 }
 
 .floating-btn:hover {
-  transform: scale(1.12); /* ✅ 부드러운 확대 */
-  box-shadow: 0 6px 16px rgba(255, 87, 34, 0.4); /* ✅ 호버 시 좀 더 강조 */
+  transform: scale(1.12); 
+  box-shadow: 0 6px 16px rgba(255, 87, 34, 0.4); 
 }
 </style>

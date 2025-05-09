@@ -6,9 +6,7 @@
       👀 <span>선호도 조사를 통해 <strong>더 적합한 맛집</strong>을 추천해드릴 수 있어요!</span>
     </div>
 
-    <!-- <div class="progress-info" v-if="questions.length">
-      {{ currentIndex + 1 }} / {{ questions.length }}
-    </div> -->
+
 
     <div class="question-box">
       <h2 class="question-title">{{ currentQuestion.question }}</h2>

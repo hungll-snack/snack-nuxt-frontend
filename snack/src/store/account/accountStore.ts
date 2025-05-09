@@ -45,7 +45,7 @@ export const useAccountStore = defineStore('account', {
       }
     },
 
-    // ✅ 여기에 추가: account 정보를 서버에서 직접 요청해서 갱신
+
     async getAccount() {
       try {
         const profile = await accountRepository.getProfileInfo()

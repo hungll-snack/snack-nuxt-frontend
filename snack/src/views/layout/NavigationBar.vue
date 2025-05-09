@@ -1,26 +1,21 @@
-<!-- NavigationBar.vue -->
 <template>
   <header class="responsive-nav" ref="navRef">
-    <!-- ✅ 로고 -->
     <div class="logo" @click="goHome">
       <img :src="hungllLogo" alt="로고" />
     </div>
 
-    <!-- ✅ PC 메뉴 -->
     <div class="desktop-menu">
       <button @click="navigateTo('/restaurants/all')">맛집 찾기</button>
       <button @click="navigateTo('/board/all')">밥 친구 찾기</button>
       <button @click="showAppDownloadModal = true">앱 다운로드</button>
     </div>
 
-    <!-- ✅ 햄버거 버튼 -->
     <div class="menu-toggle" @click="toggleMenu">
       <span></span>
       <span></span>
       <span></span>
     </div>
 
-    <!-- ✅ 드롭다운 (모바일 전용) -->
     <transition name="fade">
       <div v-if="showMenu" ref="dropdownRef" class="dropdown-menu">
         <div class="auth-icon dropdown-auth" @click="handleAuthClick">
@@ -34,14 +29,12 @@
       </div>
     </transition>
 
-    <!-- ✅ 데스크탑 로그인 아이콘 -->
     <div class="auth-icon desktop-auth" @click="handleAuthClick">
       <v-icon class="gradient-icon">
         {{ isAuthenticated ? 'mdi-account-circle' : 'mdi-account-circle-outline' }}
       </v-icon>
     </div>
 
-    <!-- ✅ 모달 -->
     <AppDownloadModal :show="showAppDownloadModal" @update:show="showAppDownloadModal = $event" />
     <UserModal :show="showUserModal" @update:show="showUserModal = $event" @logout="confirmLogout" />
   </header>
@@ -125,14 +118,12 @@ onBeforeUnmount(() => {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
-/* ✅ 로고 */
 .logo img {
   cursor: pointer;
   width: 100px;
   height: auto;
 }
 
-/* ✅ 데스크탑 메뉴 */
 .desktop-menu {
   position: absolute;
   left: 50%;
@@ -155,7 +146,6 @@ onBeforeUnmount(() => {
   transform: scale(1.05);
 }
 
-/* ✅ 햄버거 버튼 */
 .menu-toggle {
   display: none;
   flex-direction: column;
@@ -181,7 +171,6 @@ onBeforeUnmount(() => {
   height: 4px;
 }
 
-/* ✅ 드롭다운 메뉴 */
 .dropdown-menu {
   position: absolute;
   top: 64px;
@@ -211,7 +200,7 @@ onBeforeUnmount(() => {
   transform: scale(1.03);
 }
 
-/* ✅ 로그인 아이콘 (모바일 & 데스크탑 공통) */
+
 .auth-icon {
   cursor: pointer;
   display: flex;
@@ -229,7 +218,6 @@ onBeforeUnmount(() => {
   -webkit-text-fill-color: transparent;
 }
 
-/* ✅ 드롭다운 로그인 */
 .dropdown-auth {
   display: flex;
   justify-content: center;
@@ -241,7 +229,6 @@ onBeforeUnmount(() => {
   margin-left: auto;
 }
 
-/* ✅ 애니메이션 */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease, transform 0.3s ease;
@@ -252,7 +239,6 @@ onBeforeUnmount(() => {
   transform: translateY(-10px);
 }
 
-/* ✅ 반응형 */
 @media (max-width: 1024px) {
   .desktop-menu,
   .desktop-auth {
