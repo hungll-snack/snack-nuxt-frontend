@@ -7,7 +7,7 @@
   
   <style scoped>
   .github-btn {
-    background-color: #6e5494; /* 깃허브 보라 */
+    background-color: #6e5494; 
     color: white;
   }
 

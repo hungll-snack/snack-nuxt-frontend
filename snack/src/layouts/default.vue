@@ -5,7 +5,6 @@
       <NuxtPage />
     </div>
 
-    <!-- ✅ LLM 대화 아이콘 및 모달 컴포넌트 삽입 -->
     <LLMChatFloatingButton />
     <LLMChatModal />
   </v-app>

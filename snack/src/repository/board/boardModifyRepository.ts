@@ -23,7 +23,6 @@ interface BoardModifyPayload {
       }
   
       if (typeof payload.image === 'string') {
-        // 기존 이미지 유지 (전송 안 함)
       } else if (payload.image instanceof File) {
         formData.append('image', payload.image)
       } else if (payload.image === null) {
@@ -33,7 +32,6 @@ interface BoardModifyPayload {
       formData.append('_method', 'PUT')
   
       try {
-        // ✅ 여기서 동적 import로 axios 인스턴스 가져오기
         const { createAxiosInstance } = await import('@/common/utils/axiosInstance')
         const token = localStorage.getItem('userToken') || ''
         const accountId = localStorage.getItem('account_id') || ''

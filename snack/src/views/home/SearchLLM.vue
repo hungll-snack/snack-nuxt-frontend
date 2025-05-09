@@ -59,7 +59,6 @@ const search = () => {
   console.log("검색 실행: ", searchQuery.value);
 };
 
-/* ✅ 바깥 클릭 감지해서 검색창 축소 */
 onMounted(() => {
   document.addEventListener("click", collapseSearch);
 });
@@ -69,7 +68,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-/* ✅ 검색창 전체 컨테이너 */
 .search-container {
   display: flex;
   align-items: center;
@@ -83,7 +81,6 @@ onBeforeUnmount(() => {
   transition: width 0.3s ease-in-out;
 }
 
-/* ✅ 마우스를 올리면 확장 */
 .search-container:hover {
   width: 700px;
 }

@@ -1,5 +1,4 @@
 <template>
-    <!-- 맛집 찾기 페이지 -->
     <RestaurantListPage />
   </template>
   

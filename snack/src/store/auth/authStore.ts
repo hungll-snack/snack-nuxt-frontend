@@ -64,9 +64,12 @@ export const useAuthStore = defineStore('auth', {
       const token = localStorage.getItem('userToken')
       if (!token || !this.provider) return
 
+
       authRepository.logout(this.provider, token)
+      
       localStorage.removeItem('userToken')
       localStorage.removeItem('account_id')
+      localStorage.removeItem('isAdmin')
 
       const accountStore = useAccountStore()
       accountStore.$reset()
@@ -108,7 +111,7 @@ export const useAuthStore = defineStore('auth', {
         const result = await authRepository.deactivateAccount(accountId)
         if (result?.success) {
           alert('정상적으로 탈퇴 처리되었습니다.')
-          this.logout()  // 기존 logout 함수 재사용!
+          this.logout() 
         } else {
           alert('탈퇴 처리에 실패했습니다. 다시 시도해주세요.')
         }

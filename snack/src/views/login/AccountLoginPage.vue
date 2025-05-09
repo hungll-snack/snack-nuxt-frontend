@@ -1,7 +1,6 @@
 <template>
   <div class="login-wrapper">
     <div class="login-container">
-      <!-- ✅ 말풍선 -->
       <SpeechBubble text="⚡ 3초만에 빠른 회원가입" />
       <KakaoLoginButton @login="() => handleLogin('kakao')" />
 <NaverLoginButton @login="() => handleLogin('naver')" />
