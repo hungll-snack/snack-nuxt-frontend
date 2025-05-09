@@ -41,6 +41,7 @@ import { ref, watch, nextTick } from 'vue'
 import { useLLMChatStore } from '@/store/llm/llmChatStore'
 import { useAccountStore } from '@/store/account/accountStore'
 import { createFastAPIAxiosInstance } from '@/common/utils/axiosInstance'
+import { createAxiosInstance } from '@/common/utils/axiosInstance'
 import { accountRepository } from '~/repository/account/accountRepository'
 
 const chatStore = useLLMChatStore()
@@ -104,15 +105,16 @@ const sendMessage = async () => {
 
   const token = localStorage.getItem('userToken') || ''
   const accountId = localStorage.getItem('account_id') || ''
-  const axios = createFastAPIAxiosInstance(token, accountId)
+  const aiaxios = createFastAPIAxiosInstance(token, accountId)
+  const backaxios = createAxiosInstance(token, accountId)
 
   try {
-    const res = await axios.post('/llm/search', { query: userMsg, 'account-id': accountId })
+    const res = await aiaxios.post('/llm/search', { query: userMsg, 'account-id': accountId })
     const botMsg = res.data?.response || '응답이 없습니다'
     chatStore.addChat('bot', botMsg)
     scrollToBottom()
 
-    await axios.post('/chat-history/save', {
+    await backaxios.post('/chat-history/save', {
       user_message: userMsg,
       bot_response: botMsg,
     })
