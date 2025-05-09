@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { boardDeleteRepository } from '@/repository/board/BoardDeleteRepository'
+import { boardDeleteRepository } from '@/repository/board/boardDeleteRepository'
 
 interface BoardDeleteState {
   isLoading: boolean
