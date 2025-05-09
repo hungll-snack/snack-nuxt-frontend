@@ -34,8 +34,10 @@ export const useBoardDetailStore = defineStore('boardDetailStore', {
       this.isLoading = true
       this.errorMessage = null
       this.isSuccess = false
+
       try {
         const data = await boardDetailRepository.getBoardDetail(boardId)
+        console.log("🔎 상세보기 데이터:", data);
 
         if (data && data.board_id) {
           this.board = data
