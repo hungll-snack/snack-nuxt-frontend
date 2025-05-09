@@ -1,4 +1,11 @@
+<script setup lang="ts">
+definePageMeta({
+  middleware: ['admin-check']
+})
+
+import AdminPageView from '@/views/admin/AdminPageView.vue'
+</script>
+
 <template>
-  <!-- 관리자 전용 페이지 -->
-  <div>관리자 페이지</div>
+  <AdminPageView />
 </template>
