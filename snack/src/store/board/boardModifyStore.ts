@@ -75,55 +75,55 @@ export const useBoardModifyStore = defineStore('boardModifyStore', {
       }
     },
 
-   async updateBoard() {
+    async updateBoard() {
       const board = this.board
-
+    
       if (!board.board_id) {
         alert('게시글 ID가 없습니다.')
         return false
       }
-
+    
       if (!board.title?.trim() || !board.content?.trim() || !board.end_time) {
         alert('제목, 내용, 종료일은 필수입니다.')
         return false
       }
-
+    
       this.isLoading = true
       this.isSuccess = false
       this.errorMessage = null
-
+    
       try {
         const formData = new FormData()
         formData.append('title', board.title)
         formData.append('content', board.content)
         formData.append('end_time', board.end_time)
-
+    
         if (board.restaurant_id) {
           formData.append('restaurant', board.restaurant_id.toString())
         }
-
-        // ⭐ 이미지 처리
+    
         if (board.image instanceof File) {
-          // 새 파일이면 파일을 추가
           formData.append('image', board.image)
         } else if (typeof board.image === 'string' && board.image) {
-          // 기존 이미지 URL이면 파일 안 보내고 서버가 기존 이미지 유지하도록 한다
-          // 아무것도 추가하지 않음
+          // 기존 이미지 유지: 전송 안 함
         } else {
-          // 이미지 삭제한 경우 (이미지가 null임)
           formData.append('image', '')
         }
-
+    
         formData.append('_method', 'PUT')
-
-        const axios = await getAxios()
-        const res = await axios.post(`/board/update/${board.board_id}`, formData, {
+    
+        const { createAxiosInstance } = await import('@/common/utils/axiosInstance')
+        const token = localStorage.getItem('userToken') || ''
+        const accountId = localStorage.getItem('account_id') || ''
+        const axios = createAxiosInstance(token, accountId)
+    
+        const res = await axios.put(`/board/update/${board.board_id}`, formData, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('userToken')}`,
+            Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data',
           },
         })
-
+    
         console.log('✅ 게시글 수정 성공:', res.data)
         this.isSuccess = true
         return true
@@ -135,6 +135,6 @@ export const useBoardModifyStore = defineStore('boardModifyStore', {
       } finally {
         this.isLoading = false
       }
-    }
+    }    
   }
 })
