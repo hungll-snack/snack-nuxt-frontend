@@ -67,6 +67,10 @@ export const useAuthStore = defineStore('auth', {
       authRepository.logout(this.provider, token)
       localStorage.removeItem('userToken')
       localStorage.removeItem('account_id')
+
+      const accountStore = useAccountStore()
+      accountStore.$reset()
+
       this.isAuthenticated = false
       this.provider = ''
     },
