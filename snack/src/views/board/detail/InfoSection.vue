@@ -1,12 +1,52 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useAccountStore } from '@/store/account/accountStore'
+import { useRouter, useRoute } from 'vue-router'
+import defaultThumbnail from '@/assets/images/logo/hungle_korean_center.png'
+
+const props = defineProps<{
+  board: {
+    image_url?: string
+    title?: string
+    author_nickname?: string
+    author_account_id?: number
+    end_time?: string
+  }
+  formattedDate: string
+}>()
+
+const accountStore = useAccountStore()
+const router = useRouter()
+const route = useRoute()
+
+const isAdmin = computed(() => {
+  return localStorage.getItem('isAdmin') === 'true'
+})
+
+const goToModify = () => {
+  const id = Number(route.params.id)
+  if (!id) return
+  router.push(`/board/modify/${id}`)
+}
+
+const goToDelete = () => {
+  const id = Number(route.params.id)
+  if (!id) return
+  if (confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
+    router.push(`/board/delete/${id}`) // 필요시 삭제 핸들링 라우트로 수정
+  }
+}
+</script>
+
 <template>
   <v-card class="info-card fill-height">
     <div class="thumbnail-info-wrapper">
-      <!-- 모바일: 좌우 배치 -->
-      <div class="mobile-layout" v-if="$vuetify.display.smAndDown">
-        <div class="thumbnail-container">
+      <div class="desktop-layout">
+        <div class="thumbnail-wrapper">
           <v-img
-            :src="board?.image_url || '/default-thumbnail.jpg'"
+            :src="board?.image_url || defaultThumbnail"
             class="thumbnail-img"
+            cover
           />
         </div>
         <div class="info-body">
@@ -22,49 +62,20 @@
             <span class="info-label">👤 작성자</span>
             <div class="info-value">{{ board?.author_nickname }}</div>
           </div>
+
+          <!-- ✅ 수정 및 삭제 버튼: 작성자 바로 하다 -->
+          <div
+            class="button-group"
+            v-if="isAdmin || String(board.author_account_id) === String(accountStore.accountId)"
+          >
+            <button class="btn-modify" @click="goToModify">✏ 수정</button>
+            <button class="btn-delete" @click="goToDelete">🗑 삭제</button>
+          </div>
         </div>
       </div>
-
-      <!-- 태블릿 이상: 위아래 배치 -->
-<!-- 데스크탑 이상: 위아래 배치 -->
-<div class="desktop-layout" v-else>
-  <div class="thumbnail-wrapper">
-    <v-img
-      :src="board?.image_url || '/default-thumbnail.jpg'"
-      class="thumbnail-img"
-      cover
-    />
-  </div>
-  <div class="info-body">
-    <div class="info-block">
-      <span class="info-label">✨ 모임 제목</span>
-      <div class="info-value">{{ board?.title }}</div>
-    </div>
-    <div class="info-block">
-      <span class="info-label">📅 모임 날짜</span>
-      <div class="info-value">{{ formattedDate }}</div>
-    </div>
-    <div class="info-block">
-      <span class="info-label">👤 작성자</span>
-      <div class="info-value">{{ board?.author_nickname }}</div>
-    </div>
-  </div>
-</div>
-
     </div>
   </v-card>
 </template>
-
-<script setup lang="ts">
-defineProps<{
-  board: {
-    image_url?: string
-    title?: string
-    author_nickname?: string
-  }
-  formattedDate: string
-}>()
-</script>
 
 <style scoped>
 .info-card {
@@ -86,14 +97,8 @@ defineProps<{
   flex-direction: column;
 }
 
-.mobile-layout {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 16px;
-}
 .desktop-layout .thumbnail-wrapper {
-  margin-top: -12px; /* 살짝 위로 올림 */
+  margin-top: -12px;
 }
 
 .desktop-layout {
@@ -101,10 +106,6 @@ defineProps<{
   flex-direction: column;
   align-items: center;
   gap: 16px;
-}
-
-.thumbnail-container {
-  flex-shrink: 0;
 }
 
 .thumbnail-img {
@@ -134,7 +135,6 @@ defineProps<{
   margin-bottom: 4px;
   display: block;
   margin-left: 10px;
-
 }
 
 .info-value {
@@ -144,14 +144,51 @@ defineProps<{
   color: #333;
 }
 
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.btn-modify {
+  background-color: #ffd180;
+  color: #222;
+  border: none;
+  padding: 6px 14px;
+  font-size: 13px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-modify:hover {
+  background-color: #ffb74d;
+}
+
+.btn-delete {
+  background-color: #ff7043;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  font-size: 13px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-delete:hover {
+  background-color: #ff5722;
+}
+
 @media (max-width: 576px) {
   .info-label {
     font-size: 12px;
-    margin-left: 10px
+    margin-left: 10px;
   }
   .info-value {
     font-size: 14px;
-    margin-left: 10px
+    margin-left: 10px;
   }
   .thumbnail-img {
     width: 200px;

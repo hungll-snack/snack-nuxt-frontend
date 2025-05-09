@@ -37,6 +37,12 @@ export const useAccountStore = defineStore('account', {
       this.payment = profile.account_pay
       this.age = profile.account_age
       this.subscribe = profile.account_sub
+      
+      if (profile.role === 'ADMIN') {
+        localStorage.setItem('isAdmin', 'true')
+      } else {
+        localStorage.setItem('isAdmin', 'false')
+      }
     },
 
     // ✅ 여기에 추가: account 정보를 서버에서 직접 요청해서 갱신

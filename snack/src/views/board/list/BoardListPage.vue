@@ -20,10 +20,10 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import SearchSection from './SearchSection.vue'
 import TableSection from './TableSection.vue'
 
-// 🔥 검색 파라미터 상태
 const searchParams = ref({
   title: '',
   author: '',
@@ -31,7 +31,6 @@ const searchParams = ref({
   end_date: ''
 })
 
-// 🔥 SearchSection에서 emit 받은 값 저장
 const onSearch = (params: {
   title: string
   author: string
