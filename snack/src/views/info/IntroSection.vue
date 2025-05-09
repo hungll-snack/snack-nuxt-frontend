@@ -1,6 +1,5 @@
 <template>
   <section class="intro-section">
-    <!-- 상단 로고 -->
     <div class="logo-wrapper">
       <img src="@/assets/images/logo/hungle_full_big.png" alt="HUNGLL 로고" class="logo" />
     </div>
@@ -8,7 +7,6 @@
 
     <h1 class="hook-text" v-html="typedText"></h1>
 
-    <!-- 설명 문단 -->
     <p class="description gradient-text">
       서울의 인증된 맛집을 취향 기반으로 추천하고,<br />
       나와 맞는 밥친구까지 연결해주는 트렌디한 AI 서비스, <strong>HUNGLL</strong>
@@ -16,7 +14,6 @@
     <br>
     <br>
     <br>
-    <!-- 네온카드 버튼 -->
     <div class="flip-card-button" @click="copyEmail">
       <div class="flip-card-inner" :class="{ flipped: isHovered }" @mouseenter="isHovered = true" @mouseleave="isHovered = false">
         <div class="flip-card-front">헝글 팀에 문의하기</div>
@@ -26,7 +23,6 @@
       </div>
     </div>
 
-    <!-- 복사되었을 때 팝업 -->
     <div v-if="copied" class="copy-popup">✅ 복사되었습니다</div>
   </section>
 </template>
@@ -53,7 +49,6 @@ const typeLoop = async () => {
   const plainText = message.replace(/<[^>]*>/g, '') // 태그 제거
 
   for (let i = 0; i <= plainText.length; i++) {
-    // 브라우저가 태그 깨진 채 보여주는 걸 방지
     const sliced = plainText.slice(0, i)
     typedText.value = sliced + '<span class="cursor">|</span>'
     await new Promise(resolve => setTimeout(resolve, typingSpeed))
@@ -111,7 +106,7 @@ const copyEmail = async () => {
   font-weight: 700;
   color: #ff6f00;
   display: -webkit-box;
-  -webkit-line-clamp: 2; /* ✅ 최대 두 줄까지 */
+  -webkit-line-clamp: 2; 
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-align: center;
@@ -142,7 +137,6 @@ const copyEmail = async () => {
   -webkit-text-fill-color: transparent;
 }
 
-/* 🎯 Flip 애니메이션 */
 .flip-card-button {
   width: 240px;
   height: 60px;
@@ -201,7 +195,6 @@ const copyEmail = async () => {
   box-shadow: 0 0 12px #ff572266;
 }
 
-/* ✅ 복사 팝업 */
 .copy-popup {
   position: fixed;
   top: 50%;
@@ -226,7 +219,6 @@ const copyEmail = async () => {
     transform: translate(-50%, -50%) scale(0.8);
   }
 }
-/* 기존 스타일 아래에 추가 */
 
 @media (max-width: 1024px) {
   .hook-text {

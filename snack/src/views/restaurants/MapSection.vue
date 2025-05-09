@@ -116,9 +116,9 @@
   width: 100%;
   height: 600px;
   padding: 8px;
-  background: #f9f9f9; /* 깔끔한 단색 배경 */
+  background: #f9f9f9; 
   border-radius: 16px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03); /* 연한 그림자 */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03); 
 }
 
 .map-area {

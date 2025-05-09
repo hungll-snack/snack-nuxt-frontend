@@ -3,7 +3,6 @@
       <h2>회원 탈퇴 안내</h2>
   
       <br><br>
-      <!-- ✅ 회색 박스 안에 상세 내용 -->
       <div class="withdraw-box">
         <p>
           회원 탈퇴 시 아래 내용이 적용됩니다:
@@ -15,13 +14,11 @@
         </ul>
       </div>
   
-      <!-- ✅ 체크박스 동의 -->
       <label class="checkbox-label">
         <input type="checkbox" v-model="agreed" />
         위 내용을 모두 확인했으며, 동의 후 회원 탈퇴를 진행하겠습니다.
       </label>
   
-      <!-- ✅ 버튼들 -->
       <div class="action-buttons">
         <button class="withdraw-btn" :disabled="!agreed" @click="handleWithdraw">회원 탈퇴</button>
         <button class="cancel-btn" @click="goBack">취소</button>

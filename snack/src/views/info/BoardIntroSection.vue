@@ -24,7 +24,6 @@
       </transition-group>
     </div>
 
-    <!-- ✅ 팝업 이미지 -->
     <div v-if="popupImage" class="popup-image-overlay">
       <img :src="popupImage" class="popup-image" />
     </div>
@@ -67,8 +66,6 @@ const cards = [
 ]
 </script>
 
-<!-- <template> 부분은 그대로 유지 -->
-<!-- 아래 style scoped만 수정해줘도 완성돼 -->
 <style scoped>
 .board-intro-section {
   padding: 120px 20px;
@@ -123,29 +120,24 @@ const cards = [
 }
 
 @media (max-width: 768px) {
-  /* ✅ 모든 카드 너비를 100%로 확장 */
   .intro-card {
     width: 100% !important;
   }
 
-  /* ✅ 오직 3번째 카드에만 세로 레이아웃 적용 */
   .intro-card:nth-child(3) .card-interactive-content {
     flex-direction: column !important;
     text-align: center;
   }
 
-  /* ✅ 3번째 카드 이미지 대응 */
   .intro-card:nth-child(3) .intro-image {
     width: 100%;
     height: auto;
   }
 
-  /* ✅ 텍스트 여백 보정 */
   .intro-card:nth-child(3) .intro-text {
     margin-top: 16px;
   }
 
-  /* ✅ 반응형 글씨 크기 */
   .card-title {
     font-size: clamp(18px, 4vw, 24px);
   }

@@ -3,7 +3,6 @@
     <h2>약관 동의</h2>
     <br />
 
-    <!-- ✅ 개인정보처리방침 -->
     <section class="policy-section">
       <label class="policy-check">
         <input type="checkbox" v-model="privacyAgreed" @change="onAgree('privacy')" />
@@ -21,7 +20,6 @@
 
     <v-divider class="divider" />
 
-    <!-- ✅ 이용약관 -->
     <section class="policy-section">
       <label class="policy-check">
         <input type="checkbox" v-model="termsAgreed" @change="onAgree('terms')" />
@@ -39,7 +37,6 @@
 
     <v-divider class="divider" />
 
-    <!-- ✅ 아동 보호 정책 -->
     <section class="policy-section">
       <label class="policy-check">
         <input type="checkbox" v-model="childProtectionAgreed" @change="onAgree('childProtection')" />
@@ -55,7 +52,6 @@
       </div>
     </section>
 
-    <!-- ✅ 로그인 버튼 -->
     <button class="custom-btn agree-btn" :disabled="!canProceed" @click="goToLogin">
       간편 로그인으로 계속하기
     </button>
@@ -191,7 +187,6 @@ const goBack = () => {
   font-size: 0.9rem;
 }
 
-/* 📱 모바일 대응 */
 @media (max-width: 600px) {
   .policy-wrapper {
     padding: 16px;
@@ -213,7 +208,6 @@ const goBack = () => {
   }
 }
 
-/* 💻 데스크탑 이상에서는 살짝 키움 */
 @media (min-width: 1200px) {
   .policy-wrapper {
     padding: 32px;

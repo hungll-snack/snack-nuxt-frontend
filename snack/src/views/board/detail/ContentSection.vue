@@ -10,8 +10,8 @@ import { computed } from 'vue'
 
 const props = defineProps<{
   content: string
-  comments: { id: number; content: string; writer: string; timestamp: number }[]
-  newComment: string
+  comments?: { id: number; content: string; writer: string; timestamp: number }[]
+  newComment?: string
 }>()
 
 const emit = defineEmits(['update:comments', 'update:newComment'])
@@ -25,16 +25,6 @@ const convertedContent = computed(() => {
     .replace(/ /g, '&nbsp;')
 })
 
-const submitComment = () => {
-  if (model.value?.trim()) {
-    const newEntry = {
-      id: Date.now(),
-      content: model.value,
-    }
-    emit('update:comments', [newEntry, ...props.comments])
-    model.value = ''
-  }
-}
 </script>
 
 <style scoped>

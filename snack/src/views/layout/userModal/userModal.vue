@@ -1,7 +1,6 @@
 <template>
   <v-dialog :model-value="show" @update:model-value="closeModal" width="360">
     <v-card class="user-modal-card">
-      <!-- 닫기 버튼 -->
       <div class="close-x" @click="closeModal">✕</div>
 
       <v-card-text class="user-modal-content">
@@ -95,7 +94,6 @@ watch(
   overflow: hidden;
 }
 
-/* 타이핑 효과 */
 .typing {
   display: inline-block;
   white-space: nowrap;
@@ -132,8 +130,8 @@ watch(
   transition: transform 0.2s ease, filter 0.2s ease;
 }
 .hungll-btn:hover {
-  transform: scale(1.05); /* ✅ 살짝 커짐 */
-  filter: brightness(1.05); /* ✅ 기존 밝기 효과도 유지 */
+  transform: scale(1.05);
+  filter: brightness(1.05); 
 }
 .hungll-btn.light {
   background: #e0e0e0;
@@ -144,7 +142,6 @@ watch(
   filter: brightness(1.1);
 }
 
-/* X 버튼 */
 .close-x {
   position: absolute;
   top: 12px;
@@ -155,7 +152,6 @@ watch(
   cursor: pointer;
 }
 
-/* 로딩 스피너 */
 .spinner-wrapper {
   display: flex;
   justify-content: center;

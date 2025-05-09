@@ -1,11 +1,9 @@
 <template>
     <v-container fluid>
       <v-row>
-        <!-- 좌측: 지도 -->
         <v-col cols="12" md="6" style="height:600px" class="map-col">
           <MapSection />
         </v-col>
-        <!-- 우측: 검색 -->
         <v-col cols="12" md="6" class="search-col">
           <SearchSection />
         </v-col>

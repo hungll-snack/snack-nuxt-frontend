@@ -9,6 +9,8 @@ interface Board {
   end_time: string
   status: string
   image_url: string
+  created_at?: string
+  author_account_id?: string
 }
 
 

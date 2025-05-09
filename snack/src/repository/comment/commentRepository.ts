@@ -1,5 +1,5 @@
 const getAxios = async () => {
-  const { createAxiosInstance } = await import('@/common/utils/axiosInstance')  // ⭐ dynamic import
+  const { createAxiosInstance } = await import('@/common/utils/axiosInstance')  
   const token = process.client ? localStorage.getItem('userToken') || '' : ''
   const accountId = process.client ? localStorage.getItem('account_id') || '' : ''
   return createAxiosInstance(token, accountId)
