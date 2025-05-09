@@ -23,10 +23,22 @@
       <HungllDatePicker ref="calendarRef" v-model="date" />
     </div>
 
-    <!-- 시간 선택 추가 -->
+    <!-- 시간 선택 -->
     <div class="input-wrapper">
       <label class="input-label">모임 시간</label>
-      <input type="time" v-model="time" class="search-input" />
+      <div style="display: flex; gap: 8px">
+        <select v-model="selectedHour" class="search-input" style="flex: 1">
+          <option v-for="hour in 24" :key="hour" :value="String(hour).padStart(2, '0')">
+            {{ String(hour).padStart(2, '0') }}
+          </option>
+        </select>
+        <span style="align-self: center">:</span>
+        <select v-model="selectedMinute" class="search-input" style="flex: 1">
+          <option v-for="minute in minuteSteps" :key="minute" :value="String(minute).padStart(2, '0')">
+            {{ String(minute).padStart(2, '0') }}
+          </option>
+        </select>
+      </div>
     </div>
 
     <!-- 맛집 장소 -->
@@ -82,12 +94,16 @@ const fileInput = ref<HTMLInputElement | null>(null)
 const date = ref('') // 날짜
 const time = ref('12:00') // 시간 (기본값 12:00)
 
+const selectedHour = ref('12')
+const selectedMinute = ref('00')
+const minuteSteps = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+
 const calendarRef = ref()
 
-// 날짜와 시간을 합쳐서 datetime 생성
+// 시간 결합해서 datetime 계산
 const datetime = computed(() => {
   if (!date.value) return ''
-  return `${date.value}T${time.value}:00` // ISO 8601 형태
+  return `${date.value}T${selectedHour.value}:${selectedMinute.value}:00`
 })
 
 const selectedRestaurant = ref<Restaurant | null>(null)
