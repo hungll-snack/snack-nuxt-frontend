@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useAccountStore } from '@/store/account/accountStore'
 import { useRouter, useRoute } from 'vue-router'
+import defaultThumbnail from '@/assets/images/logo/hungle_korean_center.png'
 
 const props = defineProps<{
   board: {
@@ -27,6 +28,14 @@ const goToModify = () => {
   if (!id) return
   router.push(`/board/modify/${id}`)
 }
+
+const goToDelete = () => {
+  const id = Number(route.params.id)
+  if (!id) return
+  if (confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
+    router.push(`/board/delete/${id}`) // 필요시 삭제 핸들링 라우트로 수정
+  }
+}
 </script>
 
 <template>
@@ -35,7 +44,7 @@ const goToModify = () => {
       <div class="desktop-layout">
         <div class="thumbnail-wrapper">
           <v-img
-            :src="board?.image_url || '/default-thumbnail.jpg'"
+            :src="board?.image_url || defaultThumbnail"
             class="thumbnail-img"
             cover
           />
@@ -54,12 +63,13 @@ const goToModify = () => {
             <div class="info-value">{{ board?.author_nickname }}</div>
           </div>
 
-          <!-- ✅ 수정 버튼: 작성자 밑, 오른쪽 -->
+          <!-- ✅ 수정 및 삭제 버튼: 작성자 바로 하다 -->
           <div
-            class="modify-button-wrapper"
+            class="button-group"
             v-if="isAdmin || String(board.author_account_id) === String(accountStore.accountId)"
           >
             <button class="btn-modify" @click="goToModify">✏ 수정</button>
+            <button class="btn-delete" @click="goToDelete">🗑 삭제</button>
           </div>
         </div>
       </div>
@@ -134,10 +144,10 @@ const goToModify = () => {
   color: #333;
 }
 
-/* ✅ 수정 버튼 스타일 */
-.modify-button-wrapper {
+.button-group {
   display: flex;
   justify-content: flex-end;
+  gap: 8px;
   margin-top: 8px;
 }
 
@@ -154,6 +164,21 @@ const goToModify = () => {
 
 .btn-modify:hover {
   background-color: #ffb74d;
+}
+
+.btn-delete {
+  background-color: #ff7043;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  font-size: 13px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-delete:hover {
+  background-color: #ff5722;
 }
 
 @media (max-width: 576px) {
