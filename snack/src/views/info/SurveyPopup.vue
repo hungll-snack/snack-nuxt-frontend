@@ -19,12 +19,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-
 const showPopup = ref(false)
 
 onMounted(() => {
-  console.log('✅ SurveyPopup mounted')
-  const today = new Date().toISOString().split('T')[0] // 'YYYY-MM-DD'
+  const today = new Date().toISOString().split('T')[0]
   const hideDate = localStorage.getItem('survey-popup-hide-date')
 
   if (hideDate !== today) {
@@ -42,57 +40,98 @@ function closeToday() {
 <style scoped>
 .popup-wrapper {
   position: fixed;
-  top: 100px;
-  left: 40px;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 9999;
+  width: 92%;
+  max-width: 360px;
+  animation: fadeInUp 0.3s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 }
 
 .popup-card {
-  width: 280px;
-  background-color: #fff8e1;
-  border: 1px solid #ffa500;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
   padding: 20px;
-  font-family: sans-serif;
+  font-family: 'Pretendard', sans-serif;
   color: #333;
+  text-align: center;
 }
 
 .popup-card h3 {
-  margin-top: 0;
-  font-size: 18px;
-  color: #ff6600;
+  margin: 0 0 12px;
+  font-size: 17px;
+  color: #ff5722;
+  font-weight: 700;
 }
 
 .popup-card p {
   font-size: 14px;
-  margin-bottom: 16px;
-  line-height: 1.4;
+  line-height: 1.5;
+  margin-bottom: 18px;
+  color: #444;
 }
 
 .survey-link {
   display: block;
-  background-color: #ff6600;
+  background: linear-gradient(to right, #ff9800, #ff5722);
   color: white;
+  font-weight: 600;
+  font-size: 15px;
   text-align: center;
-  padding: 8px 12px;
-  border-radius: 8px;
+  padding: 12px;
+  border-radius: 12px;
   text-decoration: none;
-  font-weight: bold;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
+  transition: background 0.3s ease;
+}
+.survey-link:hover {
+  background: linear-gradient(to right, #ffa000, #f4511e);
 }
 
 .btn-group {
   display: flex;
   justify-content: space-between;
+  gap: 8px;
 }
 
 .plain-btn {
-  background: transparent;
+  background: none;
   border: none;
   color: #888;
   font-size: 13px;
   cursor: pointer;
   text-decoration: underline;
+  padding: 0;
+}
+.plain-btn:hover {
+  color: #555;
+}
+
+@media (max-width: 768px) {
+  .popup-card {
+    padding: 16px;
+  }
+  .popup-card h3 {
+    font-size: 15px;
+  }
+  .popup-card p {
+    font-size: 13px;
+  }
+  .plain-btn {
+    font-size: 12px;
+  }
 }
 </style>
