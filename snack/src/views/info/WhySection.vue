@@ -1,6 +1,5 @@
 <template>
   <section class="why-section" ref="sectionRef">
-    <!-- 제목 -->
     <h2 class="why-title">
       똑똑한 추천을 위해,<br />
       <span class="highlight">
@@ -8,14 +7,12 @@
       </span>
     </h2>
 
-    <!-- 점선 아이콘 -->
     <svg class="ellipsis" width="6" height="38" viewBox="0 0 6 38" fill="none">
       <circle cx="3" cy="3" r="3" />
       <circle cx="3" cy="19" r="3" />
       <circle cx="3" cy="35" r="3" />
     </svg>
 
-    <!-- 메시지 -->
     <div class="why-content">
       <p class="why-label slide-up" :class="{ visible: isVisible[0] }">WHY</p>
       <p class="why-heading slide-up" :class="{ visible: isVisible[1] }">
@@ -31,7 +28,6 @@
       </p>
     </div>
 
-    <!-- 점선 아이콘 -->
     <svg class="ellipsis" width="6" height="38" viewBox="0 0 6 38" fill="none">
       <circle cx="3" cy="3" r="3" />
       <circle cx="3" cy="19" r="3" />
@@ -133,7 +129,6 @@ onMounted(() => {
   z-index: -1;
 }
 
-/* 슬라이드 등장 */
 .slide-up {
   opacity: 0;
   transform: translateY(20px);
@@ -144,7 +139,6 @@ onMounted(() => {
   transform: translateY(0);
 }
 
-/* 반응형 */
 @media (max-width: 1024px) {
   .why-title {
     font-size: 36px;

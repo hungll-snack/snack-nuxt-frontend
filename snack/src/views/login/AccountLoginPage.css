@@ -1,14 +1,12 @@
-/* ✅ 전체 화면에서 중앙 정렬 */
 .login-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  padding: 16px; /* 모바일 대응 */
+  padding: 16px;
   box-sizing: border-box;
 }
 
-/* ✅ 로그인 컨테이너 */
 .login-container {
   background: white;
   padding: 24px;
@@ -21,7 +19,6 @@
   box-sizing: border-box;
 }
 
-/* ✅ 공통 버튼 스타일 */
 .custom-btn {
   width: 100%;
   max-width: 280px;
@@ -42,7 +39,6 @@
   transition: background-color 0.2s, color 0.2s;
 }
 
-/* ✅ 돌아가기 텍스트 */
 .back-text {
   font-size: 14px;
   color: #666;
@@ -55,14 +51,12 @@
   color: #333;
 }
 
-/* ✅ '돌아가기'를 중앙 정렬 */
 .bottom-buttons {
   display: flex;
   justify-content: center;
   margin-top: 10px;
 }
 
-/* 📱 모바일 대응 */
 @media (max-width: 600px) {
   .login-container {
     padding: 16px;
@@ -80,7 +74,6 @@
   }
 }
 
-/* 💻 큰 화면에서 시원하게 */
 @media (min-width: 1200px) {
   .login-container {
     padding: 32px;

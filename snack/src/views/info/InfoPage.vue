@@ -1,7 +1,6 @@
 <!-- InfoPage.vue -->
 <template>
   <div class="info-page">
-    <!-- 배경 흐릿한 로고 -->
     <div class="background-logos">
       <img
         v-for="n in 10"
@@ -13,7 +12,6 @@
       />
     </div>
 
-    <!-- 순서: 인트로 → 헝글 챗 → 왜 헝글 → 모임 소개 → 팀 -->
     <div ref="introSectionRef">
       <IntroSection @next="scrollToHungll" />
     </div>
@@ -30,7 +28,6 @@
       <TeamSection />
     </div>
 
-    <!-- ✅ 추가: 푸터 -->
     <footer class="hungll-footer">
       <div class="footer-info-wrapper">
         <p class="footer-line">주소: 서울특별시 송파구 새말로8길 26, 3층 (문정동)</p>
@@ -188,7 +185,7 @@ onMounted(() => {
   clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
   background: linear-gradient(to top, #ff9800, #ff5722);
 }
-/* ✅ 헝글 푸터 스타일 */
+
 .hungll-footer {
   background-color: #f9f9f9;
   padding: 24px 16px 40px;

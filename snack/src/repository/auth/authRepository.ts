@@ -1,4 +1,3 @@
-// import { useRuntimeConfig } from 'nuxt/app'
 import { createAxiosInstance } from '@/common/utils/axiosInstance'
 import type { Provider } from '@/store/auth/authStore'
 
@@ -21,7 +20,7 @@ export const authRepository = {
     const response = await getAxios().post(`/${provider}-oauth/redirect-access-token`, { code })
     const userToken = response.headers['usertoken'] || response.data.userToken
     const accountId = response.headers['account-id'] || response.data['account-id'];
-    const statusCode = response.status  // ✅ 여기서 추출
+    const statusCode = response.status 
     console.log('getAccessToken response -repo :' ,response)
     console.log('getAccessToken userToken  -repo:' ,userToken)
     console.log('getAccessToken accountId -repo :' ,accountId)
@@ -35,8 +34,11 @@ export const authRepository = {
 
   async logout(provider: Provider, userToken: string) {
     await getAxios().post(`/authentication/${provider}-logout`, { userToken })
+    
+    console.log('123')
     localStorage.removeItem('userToken')
     localStorage.removeItem('account_id')
+    localStorage.removeItem('isAmdin')
   },
 
   async validateToken(userToken: string): Promise<boolean> {

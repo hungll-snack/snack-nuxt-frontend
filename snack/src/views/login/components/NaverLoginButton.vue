@@ -5,7 +5,6 @@
   </template>
 
 <style scoped>
-/* ✅ 네이버 */
 .naver-btn {
   background-color: #03C75A;
   color: white;

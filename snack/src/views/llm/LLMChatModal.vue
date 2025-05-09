@@ -6,7 +6,6 @@
       @click.self="chatStore.closeModal()"
     >
       <div class="chat-card visible">
-        <!-- ✅ 채팅 리스트 -->
         <div class="chat-wrapper">
           <transition-group name="chat" tag="div" class="chat-list">
             <div
@@ -21,7 +20,6 @@
           </transition-group>
         </div>
 
-        <!-- ✅ 입력창 -->
         <div class="chat-input-wrapper">
           <input
             v-model="message"
@@ -41,6 +39,7 @@ import { ref, watch, nextTick } from 'vue'
 import { useLLMChatStore } from '@/store/llm/llmChatStore'
 import { useAccountStore } from '@/store/account/accountStore'
 import { createFastAPIAxiosInstance } from '@/common/utils/axiosInstance'
+import { createAxiosInstance } from '@/common/utils/axiosInstance'
 import { accountRepository } from '~/repository/account/accountRepository'
 
 const chatStore = useLLMChatStore()
@@ -48,9 +47,7 @@ const accountStore = useAccountStore()
 const message = ref('')
 const nickname = ref('')
 
-/**
- * ✅ 채팅창 스크롤 맨 아래로
- */
+
 const scrollToBottom = () => {
   nextTick(() => {
     const wrapper = document.querySelector('.chat-wrapper')
@@ -60,11 +57,7 @@ const scrollToBottom = () => {
   })
 }
 
-/**
- * ✅ 모달 열릴 때:
- * - 닉네임 없으면 getAccount()
- * - 인사 메시지 추가
- */
+
 watch(
   () => chatStore.modalOpen,
   async (isOpen) => {
@@ -91,9 +84,7 @@ watch(
   }
 )
 
-/**
- * ✅ 메시지 전송
- */
+
 const sendMessage = async () => {
   if (!message.value.trim()) return
 
@@ -104,15 +95,16 @@ const sendMessage = async () => {
 
   const token = localStorage.getItem('userToken') || ''
   const accountId = localStorage.getItem('account_id') || ''
-  const axios = createFastAPIAxiosInstance(token, accountId)
+  const aiaxios = createFastAPIAxiosInstance(token, accountId)
+  const backaxios = createAxiosInstance(token, accountId)
 
   try {
-    const res = await axios.post('/llm/search', { query: userMsg, 'account-id': accountId })
+    const res = await aiaxios.post('/llm/search', { query: userMsg, 'account-id': accountId })
     const botMsg = res.data?.response || '응답이 없습니다'
     chatStore.addChat('bot', botMsg)
     scrollToBottom()
 
-    await axios.post('/chat-history/save', {
+    await backaxios.post('/chat-history/save', {
       user_message: userMsg,
       bot_response: botMsg,
     })
@@ -163,7 +155,6 @@ const sendMessage = async () => {
   height: 100%;
 }
 
-/* ✅ 스크롤바 스타일 */
 .chat-wrapper::-webkit-scrollbar {
   width: 8px;
 }
@@ -263,7 +254,6 @@ const sendMessage = async () => {
   box-shadow: 0 0 12px #ff6f00;
 }
 
-/* 슬라이드 모달 애니메이션 */
 .slide-up-enter-active,
 .slide-up-leave-active {
   transition: transform 0.3s ease;
@@ -274,7 +264,6 @@ const sendMessage = async () => {
 }
 </style>
 
-<!-- ✅ app.vue 또는 global style 영역에 아래도 반드시 있어야 함 -->
 <style>
 body.modal-open,
 body.modal-open .v-application,
