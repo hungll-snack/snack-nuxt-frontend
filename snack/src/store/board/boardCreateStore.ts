@@ -1,6 +1,6 @@
 // src/store/board/boardCreateStore.ts
 import { defineStore } from 'pinia'
-import { boardCreateRepository } from '@/repository/board/boardCreateRepository'
+import { boardCreateRepository, fetchAllRestaurants, searchRestaurants } from '@/repository/board/boardCreateRepository'
 
 interface BoardCreatePayload {
   title: string
@@ -18,11 +18,25 @@ export const useBoardCreateStore = defineStore('boardCreate', {
     image: null as File | null,
     end_time: '',
     restaurant_id: null as number | null,
+    restaurantList: [] as any[],
+    restaurantSearchKeyword: '',
   }),
   actions: {
     async requestCreateBoard(payload: BoardCreatePayload) {
       console.log('📤 게시글 생성 요청:', payload)
       return await boardCreateRepository.requestCreateBoard(payload)
     },
+    async loadAllRestaurants() {
+      this.restaurantList = await fetchAllRestaurants()
+    },
+
+    async searchRestaurantList() {
+      if (!this.restaurantSearchKeyword.trim()) {
+        await this.loadAllRestaurants()
+        return
+      }
+      this.restaurantList = await searchRestaurants(this.restaurantSearchKeyword)
+    },
+
   },
 })
