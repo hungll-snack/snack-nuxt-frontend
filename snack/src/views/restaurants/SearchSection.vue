@@ -1,8 +1,8 @@
 <template>
   <div class="restaurant-list-wrapper">
     <input
-      v-model="keyword"
-      @keydown.enter="search"
+      v-model="restaurantStore.searchKeyword"
+      @keydown.enter="restaurantStore.searchRestaurants"
       placeholder="식당명을 검색하세요"
       class="search-input"
     />
@@ -10,7 +10,7 @@
     <h2 class="list-title">🍽️ 맛집 목록</h2>
 
     <div
-      v-for="r in restaurantStore.restaurants"
+      v-for="r in restaurantStore.restaurantList"
       :key="r.id"
       class="restaurant-card"
     >
@@ -22,7 +22,7 @@
         <div class="address">📍 {{ r.address }}</div>
       </div>
       <div class="button-group">
-        <button class="friend-btn" @mousedown.prevent @click="alertServiceReady">밥 친구 찾기 ({{ r.friendCount || 0 }})</button>
+        <button class="friend-btn" @mousedown.prevent @click="alertServiceReady">밥 친구 찾기  ({{ r.friendCount || 0 }}) </button>
         <button class="call-btn" @mousedown.prevent @click="alertServiceReady">
           <span class="icon">📞</span> 전화 하기
         </button>
@@ -33,14 +33,14 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRestaurantStore } from '@/store/restaurants/restaurantsStore'
+import { useRestaurantsStore } from '@/store/restaurants/restaurantsStore'
 
 const keyword = ref('')
-const restaurantStore = useRestaurantStore()
+const restaurantStore = useRestaurantsStore()
 
 const search = () => {
-  if (keyword.value.trim()) {
-    restaurantStore.searchRestaurants(keyword.value.trim())
+  if (restaurantStore.searchKeyword.trim()) {
+    restaurantStore.searchRestaurants()
   }
 }
 
@@ -48,8 +48,9 @@ const alertServiceReady = () => {
   alert('서비스 준비중입니다. 잠시만 기다려주세요.')
 }
 
-onMounted(() => {
-  restaurantStore.fetchRestaurants()
+onMounted(async () => {
+  await restaurantStore.loadAllRestaurants()
+  await restaurantStore.loadBoardCounts()
 })
 </script>
 

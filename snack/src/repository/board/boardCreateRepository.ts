@@ -49,3 +49,13 @@ export const boardCreateRepository = {
     }
   },
 }
+
+export const fetchAllRestaurants = async () => {
+  const { data } = await getAxios().get('/restaurant/list/')
+  return data
+}
+
+export const searchRestaurants = async (keyword: string) => {
+  const { data } = await getAxios().get(`/restaurant/search/?keyword=${encodeURIComponent(keyword)}`)
+  return data
+}

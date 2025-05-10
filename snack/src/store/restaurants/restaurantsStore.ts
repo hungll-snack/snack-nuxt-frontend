@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { restaurantRepository } from '@/repository/restaurants/restaurantsRepository'
+import { restaurantsRepository } from '@/repository/restaurants/restaurantsRepository'
 
 export interface Restaurant {
   id: number
@@ -13,29 +13,53 @@ export interface Restaurant {
   friendCount?: number
 }
 
-export const useRestaurantStore = defineStore('restaurant', {
+export const useRestaurantsStore = defineStore('restaurants', {
   state: () => ({
-    restaurants: [] as Restaurant[],
+    restaurantList: [] as any[],
+    searchKeyword: '',
+    boardCounts: {} as Record<number, number>
   }),
   actions: {
-    async fetchRestaurants() {
-        try {
-          const response = await restaurantRepository.getRestaurantList()
-          console.log('📦 받아온 맛집 목록:', response)
-          this.restaurants = response
-        } catch (e) {
-          console.error('❌ fetchRestaurants 실패', e)
-        }
-      },
-
-    async searchRestaurants(keyword: string) {
-        try {
-          const response = await restaurantRepository.searchRestaurants(keyword)
-          this.restaurants = response
-        } catch (e) {
-          console.error('❌ searchRestaurants 실패', e)
-        }
+    async loadAllRestaurants() {
+      this.restaurantList = await restaurantsRepository.fetchAllRestaurants()
+    },
+    async searchRestaurants() {
+      if (!this.searchKeyword.trim()) {
+        await this.loadAllRestaurants()
+        return
       }
-      
-  },
+
+      const restaurants = await restaurantsRepository.searchRestaurants(this.searchKeyword)
+      const counts = await restaurantsRepository.fetchRestaurantBoardCounts()
+
+      const boardCountMap: Record<number, number> = {}
+      counts.forEach(({ restaurant_id, board_count }) => {
+        if (restaurant_id !== null) {
+          boardCountMap[restaurant_id] = board_count
+        }
+      })
+
+      this.restaurantList = restaurants.map(r => ({
+        ...r,
+        friendCount: boardCountMap[r.id] || 0
+      }))
+    },
+
+    async loadBoardCounts() {
+      const counts = await restaurantsRepository.fetchRestaurantBoardCounts()
+
+      const boardCountMap: Record<number, number> = {}
+      counts.forEach(({ restaurant_id, board_count }) => {
+        if (restaurant_id !== null) {
+          boardCountMap[restaurant_id] = board_count
+        }
+      })
+
+      this.restaurantList = this.restaurantList.map(r => ({
+        ...r,
+        friendCount: boardCountMap[r.id] || 0
+      }))
+    }
+
+  }
 })

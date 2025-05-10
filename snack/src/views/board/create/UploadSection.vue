@@ -45,9 +45,9 @@
     <div class="input-wrapper">
       <label class="input-label">맛집 장소</label>
       <v-autocomplete
-        v-model="selectedRestaurant"
-        :items="restaurantList"
-        item-text="name"
+        v-model="boardStore.restaurant_id"
+        :items="boardStore.restaurantList"
+        item-title="name"
         item-value="id"
         placeholder="맛집 검색"
         hide-details
@@ -106,10 +106,13 @@ const datetime = computed(() => {
   return `${date.value}T${selectedHour.value}:${selectedMinute.value}:00`
 })
 
-const selectedRestaurant = ref<Restaurant | null>(null)
 const restaurantList = ref<Restaurant[]>([])
 const loadingRestaurants = ref(false)
 const loading = ref(false)
+
+onMounted(() => {
+  boardStore.loadAllRestaurants()
+})
 
 const triggerFileInput = () => fileInput.value?.click()
 
@@ -127,19 +130,14 @@ const removeImage = () => {
   previewImage.value = ''
 }
 
-const onSearchRestaurant = async (query: string) => {
-  if (!query) return
-  loadingRestaurants.value = true
-  try {
-    const res = await fetch(`/api/restaurants?keyword=${query}`)
-    const data = await res.json()
-    restaurantList.value = data.results
-  } catch (error) {
-    console.error('맛집 검색 실패:', error)
-  } finally {
-    loadingRestaurants.value = false
-  }
+const onSearchRestaurant = async (input: string) => {
+  boardStore.restaurantSearchKeyword = input
+  await boardStore.searchRestaurantList()
 }
+
+onMounted(() => {
+  boardStore.loadAllRestaurants()
+})
 
 const submitBoard = async () => {
   const token = localStorage.getItem('userToken')
@@ -156,7 +154,7 @@ const submitBoard = async () => {
       content: boardStore.content,
       image: thumbnail.value ?? undefined,
       end_time: datetime.value || new Date().toISOString(), // 날짜 + 시간 전송
-      restaurant_id: selectedRestaurant.value?.id ?? undefined,
+      restaurant_id: boardStore.restaurant_id ?? undefined,
       author_id: parseInt(accountId),
     })
     alert('게시글이 등록되었습니다.')

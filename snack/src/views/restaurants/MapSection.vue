@@ -7,9 +7,9 @@
   
   <script setup lang="ts">
   import { onMounted, watch } from 'vue'
-  import { useRestaurantStore } from '@/store/restaurants/restaurantsStore'
+  import { useRestaurantsStore } from '@/store/restaurants/restaurantsStore'
   
-  const restaurantStore = useRestaurantStore()
+  const restaurantStore = useRestaurantsStore()
   
   let map: any = null
   let clusterer: any = null
@@ -45,13 +45,13 @@
   function updateMarkers() {
     if (!map || !clusterer) return
   
-    const validRestaurants = restaurantStore.restaurants.filter(r => {
+    const validRestaurants = restaurantStore.restaurantList.filter(r => {
       const lat = parseFloat(r.latitude)
       const lng = parseFloat(r.longitude)
       return isFinite(lat) && isFinite(lng)
     })
   
-    console.log('✅ 좌표 확인 (최초 10개):', restaurantStore.restaurants.slice(0, 10).map(r => [r.name, typeof r.latitude, r.latitude, typeof r.longitude, r.longitude]))
+    console.log('✅ 좌표 확인 (최초 10개):', restaurantStore.restaurantList.slice(0, 10).map(r => [r.name, typeof r.latitude, r.latitude, typeof r.longitude, r.longitude]))
   
     clusterer.clear()
   
@@ -103,7 +103,7 @@
   })
   
   watch(
-    () => restaurantStore.restaurants,
+    () => restaurantStore.restaurantList,
     () => {
       updateMarkers()
     },
