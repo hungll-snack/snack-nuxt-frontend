@@ -25,11 +25,40 @@
       <div v-if="selectedMenu === 'profile'" class="profile-wrapper">
         <div class="scrap-header">나의 프로필</div>
         <ul class="info-list">
-          <li><span class="label">닉네임</span><span>{{ accountStore.nickname }}</span></li>
-          <li><span class="label">이메일</span><span>{{ accountStore.email || '이메일 없음' }}</span></li>
+          <li><span class="label">이름</span><span>{{ accountStore.name }}</span></li>
+          <li>
+            <span class="label">닉네임</span>
+            <span v-if="!isEditing">{{ accountStore.nickname }}</span>
+            <div v-if="isEditing">
+              <input v-model="nickname" placeholder="닉네임을 입력하세요" />
+              <button @click="checkNickname">중복 확인</button>
+              <p v-if="nicknameCheckResult === true" class="available-msg">사용 가능한 닉네임입니다.</p>
+              <p v-if="nicknameCheckResult === false" class="error-msg">이미 사용 중인 닉네임입니다.</p>
+            </div>
+          </li>
+          <li><span class="label">성별</span><span>{{ accountStore.gender || '미기입' }}</span></li>
+          <li><span class="label">나이</span><span>{{ accountStore.age || '미기입' }}</span></li>
+          <li><span class="label">생년월일</span><span>{{ accountStore.birth || '미기입' }}</span></li>
+          <li><span class="label">이메일</span><span>{{ accountStore.email || '미기입' }}</span></li>
+          <li><span class="label">전화번호</span>
+            <span v-if="!isEditing">{{ accountStore.phoneNum || '미기입' }}</span>
+            <input 
+              v-if="isEditing" 
+              v-model="phoneNum" 
+              @input="formatPhoneNumber"
+              maxlength="13"
+              placeholder="010-0000-0000"
+            />
+          </li>
+          <li><span class="label">주소</span>
+            <span v-if="!isEditing">{{ accountStore.address || '미기입' }}</span>
+            <input v-if="isEditing" v-model="address" placeholder="예: 서울특별시 강남구 테헤란로 123" />
+          </li>
         </ul>
         <div class="profile-footer">
-          <v-btn class="edit-btn" flat @click="alertServiceReady">수정하기</v-btn>
+          <v-btn v-if="!isEditing" class="edit-btn" flat @click="toggleEdit">수정하기</v-btn>
+          <v-btn v-if="isEditing" class="save-btn" flat :disabled="!isModified" @click="saveProfile">저장하기</v-btn>
+          <v-btn v-if="isEditing" class="cancel-btn" flat @click="toggleEdit">취소</v-btn>
         </div>
       </div>
 
@@ -69,9 +98,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAccountStore } from '@/store/account/accountStore'
+import { accountRepository } from '@/repository/account/accountRepository'
 import { useAuthStore } from '@/store/auth/authStore'
 import { useAdminStore } from '@/store/admin/adminStore'
 
@@ -81,6 +111,88 @@ const adminStore = useAdminStore()
 const router = useRouter()
 
 const selectedMenu = ref<'profile' | 'scrap'>('profile')
+const isEditing = ref(false)
+const isModified = ref(false) 
+const nicknameCheckResult = ref<null | boolean>(null)
+
+//수정 가능한 프로필 필드
+const nickname = ref(accountStore.nickname)
+const phoneNum = ref(accountStore.phoneNum)
+const address = ref(accountStore.address)
+
+//  Watch 상태로 변경 감지
+watch(
+  [nickname, phoneNum, address],
+  ([newNickname, newPhoneNum, newAddress]) => {
+    isModified.value = (
+      newNickname !== accountStore.nickname ||
+      newPhoneNum !== accountStore.phoneNum ||
+      newAddress !== accountStore.address
+    )
+  }
+)
+
+// 수정 모드 전환
+const toggleEdit = () => {
+  if (isEditing.value) {
+    nickname.value = accountStore.nickname
+    phoneNum.value = accountStore.phoneNum
+    address.value = accountStore.address
+    isModified.value = false
+  }
+  isEditing.value = !isEditing.value
+}
+
+// 닉네임 중복 확인
+const checkNickname = async () => {
+  if (!nickname.value) {
+    alert('닉네임을 입력해주세요.')
+    return
+  }
+
+  try {
+    const response = await accountRepository.checkNicknameDuplication(nickname.value)
+    nicknameCheckResult.value = response.available
+  } catch (error) {
+    console.error('닉네임 중복 확인 에러:', error)
+    nicknameCheckResult.value = false
+  }
+}
+
+// 프로필 저장
+const saveProfile = async () => {
+  if (!isModified.value) return
+  
+  if (nicknameCheckResult.value === false) {
+    alert('닉네임이 이미 사용 중입니다.')
+    return
+  }
+
+  try {
+    await accountStore.updateProfile({
+      account_nickname: nickname.value,
+      phone_num: phoneNum.value,
+      account_add: address.value,
+    })
+    alert('프로필이 성공적으로 수정되었습니다.')
+    isEditing.value = false
+    isModified.value = false
+    nicknameCheckResult.value = null
+  } catch (error) {
+    console.error('❌ 프로필 수정 실패:', error)
+    alert('프로필 수정에 실패했습니다.')
+  }
+}
+
+
+// 전화번호 형식 자동 포맷 함수
+const formatPhoneNumber = () => {
+  phoneNum.value = phoneNum.value
+    .replace(/[^0-9]/g, '') // 숫자 외 문자 제거
+    .replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3') // 010-0000-0000 형식
+    .slice(0, 13) // 최대 13자
+}
+
 
 // 관리자 모달 상태
 const showAdminModal = ref(false)
@@ -391,5 +503,13 @@ const goToRestaurantAll = () => {
   .content-area {
     width: 100%;
   }
+}
+
+.available-msg {
+  color: green;
+}
+
+.error-msg {
+  color: red;
 }
 </style>

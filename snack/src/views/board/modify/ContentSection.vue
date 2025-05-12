@@ -5,14 +5,14 @@
     <!-- 제목 입력 -->
     <div class="input-wrapper">
       <label class="input-label">모임 제목</label>
-      <input v-model="board.title" class="search-input" placeholder="제목을 입력하세요" />
+      <input v-model="localBoard.title" class="search-input" placeholder="제목을 입력하세요" />
     </div>
 
     <!-- 소개 입력 -->
     <div class="input-wrapper">
       <label class="input-label">모임 소개</label>
       <textarea
-        v-model="board.content"
+        v-model="localBoard.content"
         class="search-input"
         placeholder="내용을 입력하세요"
         rows="6"
@@ -31,19 +31,39 @@
 </template>
 
 <script setup lang="ts">
+import { reactive, watch } from 'vue'
 import { useBoardModifyStore } from '@/store/board/boardModifyStore'
 import { useRouter } from 'vue-router'
 
 const boardStore = useBoardModifyStore()
-const board = boardStore.board
-
 const router = useRouter()
 
+// 🔧 1. 로컬 상태 생성
+const localBoard = reactive({
+  title: '',
+  content: '',
+})
+
+// 🔧 2. boardStore.board가 변경되면 localBoard에 복사
+watch(
+  () => boardStore.board,
+  (newBoard) => {
+    localBoard.title = newBoard.title
+    localBoard.content = newBoard.content
+  },
+  { immediate: true, deep: true }
+)
+
+// 🔧 3. 수정 버튼 클릭 시 반영 후 저장
 const submitModify = async () => {
+  boardStore.board.title = localBoard.title
+  boardStore.board.content = localBoard.content
+
   const success = await boardStore.updateBoard()
   if (success) {
     alert('게시글이 수정되었습니다.')
-    router.push(`/board/detail/${board.board_id}`)
+    router.push(`/board/detail/${boardStore.board.board_id}`)
+    console.log('✅ board_id for redirection:', boardStore.board.board_id)
   } else {
     alert('게시글 수정 실패')
   }
@@ -88,6 +108,11 @@ const submitModify = async () => {
 .divider {
   border-top: 1px solid #f2f2f2;
   margin: 20px 0;
+}
+
+.button-flex-wrapper {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .btn.primary {

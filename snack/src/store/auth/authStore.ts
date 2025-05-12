@@ -50,6 +50,14 @@ export const useAuthStore = defineStore('auth', {
           alert('이미 가입된 이메일입니다. 기존 계정으로 로그인해주세요.')
           sessionStorage.removeItem('provider')
           router.push('/policy/privacy')
+        } else if (statusCode === 414) {
+          alert('일시 정지된 계정입니다. 관리자에게 문의하세요.')
+          sessionStorage.removeItem('provider')
+          router.push('/')
+        } else if (statusCode === 444) {
+          alert('영구 정지된 계정입니다. 관리자에게 문의하세요.')
+          sessionStorage.removeItem('provider')
+          router.push('/')
         } else {
           router.push('/')
         }
