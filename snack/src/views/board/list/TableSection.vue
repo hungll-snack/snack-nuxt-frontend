@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, computed, watch } from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed, watch, defineProps } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBoardListStore } from '@/store/board/boardListStore'
 import { useBoardDeleteStore } from '@/store/board/boardDeleteStore'
@@ -169,7 +169,6 @@ const isAdmin = computed(() => {
           <span>{{ selectedSort }}</span>
           <ul v-if="sortOpen" class="dropdown-menu">
             <li v-for="sort in sortOptions" :key="sort" @click.stop="selectSort(sort)">
-              작성자 ID: {{ board.author_account_id }} / 현재 유저 ID: {{ accountStore.accountId }}
               {{ sort }}
             </li>
           </ul>
