@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useAccountStore } from '@/store/account/accountStore'
 import { useRouter, useRoute } from 'vue-router'
 import defaultThumbnail from '@/assets/images/logo/hungle_korean_center.png'
+import { useBoardDeleteStore } from '@/store/board/boardDeleteStore'
 
 const props = defineProps<{
   board: {
@@ -11,6 +12,7 @@ const props = defineProps<{
     author_nickname?: string
     author_account_id?: number
     end_time?: string
+    restaurant?: string
   }
   formattedDate: string
 }>()
@@ -29,13 +31,23 @@ const goToModify = () => {
   router.push(`/board/modify/${id}`)
 }
 
-const goToDelete = () => {
+const deleteStore = useBoardDeleteStore()
+
+const goToDelete = async () => {
   const id = Number(route.params.id)
   if (!id) return
-  if (confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
-    router.push(`/board/delete/${id}`) // 필요시 삭제 핸들링 라우트로 수정
+
+  if (confirm('정말로 이 게시글을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.')) {
+    const success = await deleteStore.deleteBoard(id)
+    if (success) {
+      alert('삭제가 완료되었습니다.')
+      router.push('/board/all') 
+    } else {
+      alert(deleteStore.errorMessage || '삭제에 실패했습니다.')
+    }
   }
 }
+
 </script>
 
 <template>
@@ -61,6 +73,10 @@ const goToDelete = () => {
           <div class="info-block">
             <span class="info-label">👤 작성자</span>
             <div class="info-value">{{ board?.author_nickname }}</div>
+          </div>
+          <div class="info-block" v-if="board.restaurant">
+            <span class="info-label">🍽 맛집 장소</span>
+            <div class="info-value">{{ board.restaurant }}</div>
           </div>
 
           <!-- ✅ 수정 및 삭제 버튼: 작성자 바로 하다 -->
