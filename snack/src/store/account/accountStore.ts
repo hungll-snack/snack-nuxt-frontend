@@ -56,5 +56,26 @@ export const useAccountStore = defineStore('account', {
         throw error
       }
     },
+
+    async updateProfile(profileData: any) {
+      try {
+        const updatedProfile = await accountRepository.updateProfileInfo(profileData)
+        this.setProfile(updatedProfile)
+        return updatedProfile
+      } catch (error) {
+        console.error('❌ 프로필 수정 실패:', error)
+        throw error
+      }
+    },
+
+    async checkNickname(nickname: string) {
+      try {
+        const response = await accountRepository.checkNicknameDuplication(nickname)
+        return response
+      } catch (error) {
+        console.error('❌ 닉네임 중복 확인 실패:', error)
+        throw error
+      }
+    }
   },
 })
