@@ -7,7 +7,7 @@
     <div class="desktop-menu">
       <button @click="navigateTo('/restaurants/all')">맛집 찾기</button>
       <button @click="navigateTo('/board/all')">밥 친구 찾기</button>
-      <button @click="showAppDownloadModal = true">앱 다운로드</button>
+      <!-- <button @click="showAppDownloadModal = true">앱 다운로드</button> -->
     </div>
 
     <div class="menu-toggle" @click="toggleMenu">
@@ -25,7 +25,7 @@
         </div>
         <button @click="navigateTo('/restaurants/all')">맛집 찾기</button>
         <button @click="navigateTo('/board/all')">밥 친구 찾기</button>
-        <button @click="showAppDownloadModal = true">앱 다운로드</button>
+        <!-- <button @click="showAppDownloadModal = true">앱 다운로드</button> -->
       </div>
     </transition>
 
