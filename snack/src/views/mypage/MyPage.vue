@@ -47,7 +47,7 @@
               v-model="phoneNum" 
               @input="formatPhoneNumber"
               maxlength="13"
-              placeholder="010-0000-0000"
+              placeholder="01012345678"
             />
           </li>
           <li><span class="label">주소</span>
@@ -145,8 +145,8 @@ const toggleEdit = () => {
 
 // 닉네임 중복 확인
 const checkNickname = async () => {
-  if (!nickname.value) {
-    alert('닉네임을 입력해주세요.')
+  if (nickname.value === accountStore.nickname) {
+    nicknameCheckResult.value = true
     return
   }
 
@@ -162,8 +162,7 @@ const checkNickname = async () => {
 // 프로필 저장
 const saveProfile = async () => {
   if (!isModified.value) return
-  
-  if (nicknameCheckResult.value === false) {
+  if (nickname.value !== accountStore.nickname && nicknameCheckResult.value === false) {
     alert('닉네임이 이미 사용 중입니다.')
     return
   }
@@ -174,10 +173,10 @@ const saveProfile = async () => {
       phone_num: phoneNum.value,
       account_add: address.value,
     })
-    alert('프로필이 성공적으로 수정되었습니다.')
+    alert('프로필이 수정되었습니다.')
+    accountStore.nickname = nickname.value
     isEditing.value = false
     isModified.value = false
-    nicknameCheckResult.value = null
   } catch (error) {
     console.error('❌ 프로필 수정 실패:', error)
     alert('프로필 수정에 실패했습니다.')
