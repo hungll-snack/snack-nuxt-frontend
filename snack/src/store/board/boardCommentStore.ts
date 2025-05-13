@@ -51,7 +51,7 @@ export const useCommentStore = defineStore('commentStore', {
 
     async addComment(boardId: number, content: string): Promise<boolean> {
       try {
-        const author_id = process.client ? Number(localStorage.getItem('account_id')) : null
+        const author_id = process.client ? Number(localStorage.getItem('account_id')) : 0
         await commentRepository.createComment({ board_id: boardId, content, author_id })
         await this.loadComments(boardId)
         return true
@@ -63,7 +63,7 @@ export const useCommentStore = defineStore('commentStore', {
 
     async addReply(boardId: number, parentId: number, content: string): Promise<boolean> {
       try {
-        const author_id = process.client ? Number(localStorage.getItem('account_id')) : null
+        const author_id = process.client ? Number(localStorage.getItem('account_id')) : 0
         await commentRepository.createReply({ board_id: boardId, parent_id: parentId, content, author_id })
         await this.loadComments(boardId)
         return true
