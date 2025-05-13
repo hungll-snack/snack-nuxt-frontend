@@ -1,51 +1,91 @@
-// src/repository/board/BoardCreateRepository.ts
-import { createAxiosInstance } from '@/common/utils/axiosInstance'
-
-const getAxios = () => {
-  const token = localStorage.getItem('userToken') || ''
-  const accountId = localStorage.getItem('account_id') || ''
-  return createAxiosInstance(token, accountId)
-}
+import { useRuntimeConfig } from '#app'
 
 interface BoardCreatePayload {
   title: string
   content: string
-  image?: File
+  image_url?: string
   end_time: string
   restaurant_id?: number
   author_id?: number
 }
 
+// ✅ 공통 컨텍스트 로딩 함수
+const getContext = async () => {
+  const config = useRuntimeConfig()
+  const token = localStorage.getItem('userToken') || ''
+  const accountId = localStorage.getItem('account_id') || ''
+  const axios = await import('@/common/utils/axiosInstance').then(m =>
+    m.createAxiosInstance(token, accountId)
+  )
+  return { config, token, accountId, axios }
+}
+
 export const boardCreateRepository = {
+  // ✅ 게시글 생성
   async requestCreateBoard(payload: BoardCreatePayload) {
+    const { config, token, accountId } = await getContext()
+
     if (!payload.title || !payload.content || !payload.end_time) {
+      console.error('❌ 필수 항목 누락됨')
       throw new Error('필수 항목이 누락되었습니다.')
     }
 
-    const formData = new FormData()
-    formData.append('title', payload.title)
-    formData.append('content', payload.content)
-    formData.append('end_time', payload.end_time)
-
-    const authorId = payload.author_id ?? localStorage.getItem('account_id')
-    if (!authorId) throw new Error('로그인이 필요합니다.')
-    formData.append('author_id', String(authorId))
-
-    if (payload.restaurant_id) {
-      formData.append('restaurant_id', String(payload.restaurant_id))
+    const authorId = payload.author_id ?? accountId
+    if (!authorId) {
+      console.error('❌ author_id 없음')
+      throw new Error('로그인이 필요합니다.')
     }
-    if (payload.image instanceof File) {
-      formData.append('image', payload.image)
+
+    const jsonPayload = {
+      title: payload.title,
+      content: payload.content,
+      end_time: payload.end_time,
+      author_id: Number(authorId),
+      restaurant_id: payload.restaurant_id,
+      image_url: payload.image_url ?? null,
     }
+
+    const url = `${config.public.MAIN_API_URL}/board/create`
+    console.log('📡 요청 URL:', url)
+    console.log('📦 전송 payload:', jsonPayload)
 
     try {
-      const res = await getAxios().post('/board/create', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+      const res = await $fetch(url, {
+        method: 'POST',
+        body: jsonPayload,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          'X-Account-Id': accountId,
+        },
       })
-      return res.data
+
+      console.log('✅ 게시글 생성 성공 응답:', res)
+      return res
     } catch (error: any) {
-      console.error('❌ 게시글 생성 실패:', error.response?.data || error.message)
+      console.error('❌ 요청 중 오류 발생')
+      if (error.response) {
+        console.error('❌ 서버 응답:', error.response)
+      } else if (error.data) {
+        console.error('❌ 서버 응답 데이터:', error.data)
+      } else {
+        console.error('❌ 기타 에러:', error.message || error)
+      }
       throw error
     }
+  },
+
+  // ✅ 전체 식당 목록 가져오기
+  async fetchAllRestaurants() {
+    const { config, axios } = await getContext()
+    const { data } = await axios.get(`/restaurant/list/`)
+    return data
+  },
+
+  // ✅ 키워드로 식당 검색
+  async searchRestaurants(keyword: string) {
+    const { config, axios } = await getContext()
+    const { data } = await axios.get(`/restaurant/search/?keyword=${encodeURIComponent(keyword)}`)
+    return data
   },
 }

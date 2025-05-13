@@ -43,22 +43,15 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import HungllDatePicker from '@/common/components/HungllDatePicker.vue'
 import { useBoardModifyStore } from '@/store/board/boardModifyStore'
+import { uploadImageToS3 } from '@/common/utils/awsS3Instance'
+import HungllDatePicker from '@/common/components/HungllDatePicker.vue'
 
 const boardStore = useBoardModifyStore()
 
 const previewImage = ref('')
-
-if (typeof boardStore.board.image === 'string') {
-  previewImage.value = boardStore.board.image
-} else if (!boardStore.board.image && boardStore.board.image_url) {
-  previewImage.value = boardStore.board.image_url
-}
-
 const fileInput = ref<HTMLInputElement | null>(null)
 const calendarRef = ref()
-
 const localDate = ref('')
 const selectedHour = ref('12')
 const selectedMinute = ref('00')
@@ -86,34 +79,30 @@ watch([selectedHour, selectedMinute], ([h, m]) => {
 
 const triggerFileInput = () => fileInput.value?.click()
 
-const handleImageUpload = (e: Event) => {
+const handleImageUpload = async (e: Event) => {
   const file = (e.target as HTMLInputElement).files?.[0]
   if (!file) return
-  boardStore.board.image = file
+
+  const url = await uploadImageToS3(file, boardStore.board.image_url || undefined)
+  boardStore.board.image_url = url
+  boardStore.board.image_file = file
+
   const reader = new FileReader()
   reader.onload = (e) => (previewImage.value = e.target?.result as string)
   reader.readAsDataURL(file)
 }
 
 const removeImage = () => {
-  boardStore.board.image = null
+  boardStore.board.image_file = null
+  boardStore.board.image_url = null
+  boardStore.board.previous_image_url = null // ✅ S3 삭제 트리거용
   previewImage.value = ''
 }
 
 watch(
-  () => boardStore.board.image,
+  () => boardStore.board.image_url,
   (newVal) => {
-    if (newVal instanceof File) {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        previewImage.value = e.target?.result as string
-      }
-      reader.readAsDataURL(newVal)
-    } else if (typeof newVal === 'string') {
-      previewImage.value = newVal
-    } else if (!newVal) {
-      previewImage.value = ''
-    }
+    previewImage.value = newVal || ''
   },
   { immediate: true }
 )

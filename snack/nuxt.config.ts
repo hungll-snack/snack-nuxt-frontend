@@ -7,7 +7,7 @@ export default defineNuxtConfig({
   css: ['vuetify/styles', '@mdi/font/css/materialdesignicons.css'],
 
   build: {
-    transpile: ['vuetify'],
+    transpile: ['vuetify', '@aws-sdk/client-s3'],
   },
 
   vite: {
@@ -49,6 +49,11 @@ export default defineNuxtConfig({
       MAIN_API_URL: process.env.NUXT_PUBLIC_MAIN_API_URL,
       AI_BASE_URL: process.env.NUXT_PUBLIC_AI_BASE_URL,
       KAKAO_JAVASCRIPT_KEY: process.env.KAKAO_JAVASCRIPT_APP_KEY,
+      AWS_REGION: process.env.AWS_REGION,
+      AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
+      AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
+      AWS_BUCKET_NAME: process.env.AWS_BUCKET_NAME,
+      
     },
   },
 
