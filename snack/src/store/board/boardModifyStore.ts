@@ -9,7 +9,7 @@ interface BoardModify {
   content: string
   end_time: string
   restaurant?: string
-  restaurant_id?: number
+  restaurant_id?: number | null
   image_file?: File | null
   image_url?: string | null
   previous_image_url?: string | null
@@ -101,7 +101,7 @@ export const useBoardModifyStore = defineStore('boardModifyStore', {
           title: board.title,
           content: board.content,
           end_time: board.end_time,
-          restaurant_id: board.restaurant_id,
+          restaurant_id: board.restaurant_id ?? undefined, 
           image_url: board.image_url ?? null,
           previous_image_url: board.previous_image_url,
         }

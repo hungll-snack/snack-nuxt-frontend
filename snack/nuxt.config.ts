@@ -17,8 +17,12 @@ export default defineNuxtConfig({
     ssr: {
       noExternal: ['vuetify'],
     },
+    optimizeDeps: {
+      include: ['fast-xml-parser'],
+    },
     plugins: [vuetify()],
   },
+  
 
   app: {
     head: {
