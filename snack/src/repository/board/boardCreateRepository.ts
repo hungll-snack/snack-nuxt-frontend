@@ -78,7 +78,7 @@ export const boardCreateRepository = {
   // ✅ 전체 식당 목록 가져오기
   async fetchAllRestaurants() {
     const { config, axios } = await getContext()
-    const { data } = await axios.get(`/restaurant/list/`)
+    const { data } = await axios.get(`/restaurant/list`)
     return data
   },
 
