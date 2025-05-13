@@ -1,13 +1,12 @@
-<!-- UploadSection.vue -->
 <template>
   <div class="upload-section-card">
     <h2 class="section-title">📸 모임 정보</h2>
 
-    <!-- 썸네일 업로드 -->
+    <!-- 이미지 -->
     <div class="input-wrapper">
       <label class="input-label">이미지 업로드</label>
       <div class="thumbnail-box" v-if="!previewImage" @click="triggerFileInput">
-        <span class="thumbnail-placeholder">썸네일을 업로드 해주세요</span>
+        <span class="thumbnail-placeholder">쏼남얼을 업로드 해주세요</span>
       </div>
       <div class="image-preview" v-else>
         <img :src="previewImage" alt="Preview" />
@@ -16,14 +15,14 @@
       <input ref="fileInput" type="file" class="hidden-file-input" @change="handleImageUpload" accept="image/*" />
     </div>
 
-    <!-- 날짜 선택 -->
+    <!-- 날짜 -->
     <div class="input-wrapper">
       <label class="input-label">모임 날짜</label>
       <input class="search-input" :value="date" readonly placeholder="날짜 선택" @click="calendarRef?.open()" />
       <HungllDatePicker ref="calendarRef" v-model="date" />
     </div>
 
-    <!-- 시간 선택 -->
+    <!-- 시간 -->
     <div class="input-wrapper">
       <label class="input-label">모임 시간</label>
       <div style="display: flex; gap: 8px">
@@ -45,9 +44,9 @@
     <div class="input-wrapper">
       <label class="input-label">맛집 장소</label>
       <v-autocomplete
-        v-model="selectedRestaurant"
-        :items="restaurantList"
-        item-text="name"
+        v-model="boardStore.restaurant_id"
+        :items="boardStore.restaurantList"
+        item-title="name"
         item-value="id"
         placeholder="맛집 검색"
         hide-details
@@ -63,7 +62,6 @@
 
     <div class="divider" />
 
-    <!-- 등록/취소 버튼 -->
     <div class="button-flex-wrapper">
       <button class="btn primary" :disabled="loading" @click="submitBoard">
         {{ loading ? '등록 중...' : '등록' }}
@@ -74,74 +72,61 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import HungllDatePicker from '@/common/components/HungllDatePicker.vue'
-import { useBoardCreateStore } from '@/store/board/boardCreateStore'
+import { uploadImageToS3 } from '@/common/utils/awsS3Instance'
+import type { useBoardCreateStore } from '@/store/board/boardCreateStore'
 
-interface Restaurant {
-  id: number
-  name: string
-}
-
+const props = defineProps<{ boardStore: ReturnType<typeof useBoardCreateStore> }>()
+const boardStore = props.boardStore
 const router = useRouter()
-const boardStore = useBoardCreateStore()
 
 const previewImage = ref('')
-const thumbnail = ref<File | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
-
-const date = ref('') // 날짜
-const time = ref('12:00') // 시간 (기본값 12:00)
-
+const date = ref('')
 const selectedHour = ref('12')
 const selectedMinute = ref('00')
+const calendarRef = ref()
+const loading = ref(false)
+const loadingRestaurants = ref(false)
 const minuteSteps = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
 
-const calendarRef = ref()
-
-// 시간 결합해서 datetime 계산
 const datetime = computed(() => {
   if (!date.value) return ''
   return `${date.value}T${selectedHour.value}:${selectedMinute.value}:00`
 })
 
-const selectedRestaurant = ref<Restaurant | null>(null)
-const restaurantList = ref<Restaurant[]>([])
-const loadingRestaurants = ref(false)
-const loading = ref(false)
-
 const triggerFileInput = () => fileInput.value?.click()
 
-const handleImageUpload = (e: Event) => {
+const handleImageUpload = async (e: Event) => {
   const file = (e.target as HTMLInputElement).files?.[0]
   if (!file) return
-  thumbnail.value = file
+  boardStore.image_file = file
+  const url = await uploadImageToS3(file)
+  boardStore.image_url = url
   const reader = new FileReader()
   reader.onload = (e) => (previewImage.value = e.target?.result as string)
   reader.readAsDataURL(file)
 }
 
 const removeImage = () => {
-  thumbnail.value = null
+  boardStore.image_file = null
+  boardStore.image_url = null
   previewImage.value = ''
 }
 
 const onSearchRestaurant = async (query: string) => {
-  if (!query) return
-  loadingRestaurants.value = true
-  try {
-    const res = await fetch(`/api/restaurants?keyword=${query}`)
-    const data = await res.json()
-    restaurantList.value = data.results
-  } catch (error) {
-    console.error('맛집 검색 실패:', error)
-  } finally {
-    loadingRestaurants.value = false
-  }
+  boardStore.restaurantSearchKeyword = query
+  await boardStore.searchRestaurantList()
 }
 
+onMounted(() => {
+  boardStore.loadAllRestaurants()
+})
+
 const submitBoard = async () => {
+  if (loading.value) return
   const token = localStorage.getItem('userToken')
   const accountId = localStorage.getItem('account_id')
   if (!token || !accountId) {
@@ -154,16 +139,16 @@ const submitBoard = async () => {
     await boardStore.requestCreateBoard({
       title: boardStore.title,
       content: boardStore.content,
-      image: thumbnail.value ?? undefined,
-      end_time: datetime.value || new Date().toISOString(), // 날짜 + 시간 전송
-      restaurant_id: selectedRestaurant.value?.id ?? undefined,
+      end_time: datetime.value || new Date().toISOString(),
+      image_url: boardStore.image_url ?? undefined,
+      restaurant_id: boardStore.restaurant_id ?? undefined,
       author_id: parseInt(accountId),
     })
     alert('게시글이 등록되었습니다.')
     router.push('/board/all')
   } catch (error) {
-    alert('유지보수 중입니다. 잠시만 기다려주세요.')
     console.error('❌ 게시글 등록 실패:', error)
+    alert('유지보수 중입니다. 잠시만 기다려주세요.')
   } finally {
     loading.value = false
   }
@@ -171,9 +156,6 @@ const submitBoard = async () => {
 
 const goBack = () => router.push('/board/all')
 </script>
-
-
-
 
 <style scoped>
 .upload-section-card {

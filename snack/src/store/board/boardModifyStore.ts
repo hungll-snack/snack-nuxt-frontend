@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { boardDetailRepository } from '@/repository/board/boardDetailRepository'
 import { boardModifyRepository } from '@/repository/board/boardModifyRepository'
+import { uploadImageToS3 } from '@/common/utils/awsS3Instance'
 
 interface BoardModify {
   board_id: number | null
@@ -9,7 +10,9 @@ interface BoardModify {
   end_time: string
   restaurant?: string
   restaurant_id?: number
-  image?: File | string | null
+  image_file?: File | null
+  image_url?: string | null
+  previous_image_url?: string | null
 }
 
 interface BoardModifyState {
@@ -28,7 +31,9 @@ export const useBoardModifyStore = defineStore('boardModifyStore', {
       end_time: '',
       restaurant: '',
       restaurant_id: null,
-      image: null
+      image_file: null,
+      image_url: null as string | null,
+      previous_image_url: null,
     },
     isLoading: false,
     isSuccess: false,
@@ -37,23 +42,13 @@ export const useBoardModifyStore = defineStore('boardModifyStore', {
 
   actions: {
     async fetchBoard(boardId: number) {
-
-      if (!boardId || isNaN(boardId)) {
-        console.error('❌ 잘못된 boardId로 요청 시도:', boardId)
-        this.errorMessage = '잘못된 게시글 ID입니다.'
-        return
-      }
-
       this.isLoading = true
       this.errorMessage = null
       this.isSuccess = false
-      console.log("🔍 게시글 ID:", boardId);
 
       try {
         const data = await boardDetailRepository.getBoardDetail(boardId)
-        console.log("🔍 가져온 데이터:", data);
-
-        if (data && data.board_id) {
+        if (data?.board_id) {
           this.board = {
             board_id: data.board_id,
             title: data.title,
@@ -61,7 +56,9 @@ export const useBoardModifyStore = defineStore('boardModifyStore', {
             end_time: data.end_time,
             restaurant: data.restaurant || '',
             restaurant_id: data.restaurant_id || null,
-            image: data.image_url || null
+            image_url: data.image_url || null,
+            previous_image_url: data.image_url || null,
+            image_file: null,
           }
           this.isSuccess = true
         } else {
@@ -77,64 +74,54 @@ export const useBoardModifyStore = defineStore('boardModifyStore', {
 
     async updateBoard() {
       const board = this.board
-    
-      if (!board.board_id) {
-        alert('게시글 ID가 없습니다.')
-        return false
-      }
-    
-      if (!board.title?.trim() || !board.content?.trim() || !board.end_time) {
+
+      if (!board.board_id || !board.title?.trim() || !board.content?.trim() || !board.end_time) {
         alert('제목, 내용, 종료일은 필수입니다.')
         return false
       }
-    
+
       this.isLoading = true
-      this.isSuccess = false
       this.errorMessage = null
-    
+
       try {
-        const formData = new FormData()
-        formData.append('title', board.title)
-        formData.append('content', board.content)
-        formData.append('end_time', board.end_time)
-    
-        if (board.restaurant_id) {
-          formData.append('restaurant', board.restaurant_id.toString())
+        let imageUrl = board.image_url ?? null
+
+        if (board.image_file) {
+          const imageUrl = await uploadImageToS3(board.image_file)
+          console.log('✅ 업로드 후 반환된 imageUrl:', imageUrl)
+          board.image_url = imageUrl
+        } else if (board.image_url === null) {
+          // 삭제된 상태인 경우 빈 문자열로 보내기
+          board.image_url = ''
         }
-    
-        if (board.image instanceof File) {
-          formData.append('image', board.image)
-        } else if (typeof board.image === 'string' && board.image) {
-          // 기존 이미지 유지: 전송 안 함
-        } else {
-          formData.append('image', '')
+        
+
+        const payload = {
+          board_id: board.board_id,
+          title: board.title,
+          content: board.content,
+          end_time: board.end_time,
+          restaurant_id: board.restaurant_id,
+          image_url: board.image_url ?? null,
+          previous_image_url: board.previous_image_url,
         }
-    
-        formData.append('_method', 'PUT')
-    
-        const { createAxiosInstance } = await import('@/common/utils/axiosInstance')
-        const token = localStorage.getItem('userToken') || ''
-        const accountId = localStorage.getItem('account_id') || ''
-        const axios = createAxiosInstance(token, accountId)
-    
-        const res = await axios.put(`/board/update/${board.board_id}`, formData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
-          },
-        })
-    
-        console.log('✅ 게시글 수정 성공:', res.data)
+        console.log('📦 [store] 최종 payload:', payload)
+        
+        
+        
+        console.log('📤 최종 수정 payload:', payload)
+        
+
+        await boardModifyRepository.requestUpdateBoard(payload)
         this.isSuccess = true
         return true
       } catch (error) {
         console.error('❌ 게시글 수정 실패:', error)
-        this.isSuccess = false
         this.errorMessage = '게시글 수정 실패'
         return false
       } finally {
         this.isLoading = false
       }
-    }    
-  }
+    },
+  },
 })
