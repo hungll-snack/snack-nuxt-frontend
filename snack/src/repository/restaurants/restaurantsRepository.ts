@@ -2,7 +2,7 @@ import { createAxiosInstance } from '@/common/utils/axiosInstance'
 
 export const restaurantsRepository = {
   async fetchAllRestaurants() {
-    const { data } = await createAxiosInstance().get('/restaurant/list/')
+    const { data } = await createAxiosInstance().get('/restaurant/list')
     return data
   },
   async searchRestaurants(keyword: string) {

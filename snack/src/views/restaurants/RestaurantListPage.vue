@@ -15,7 +15,7 @@
           <div class="filter-section">
             <div class="filter-group">
               <div class="filter-header">
-                <h4 class="filter-title">지역</h4>
+                <h4 class="filter-title">서울시</h4>
                 <button class="toggle-filter-btn" @click="areaFilterExpanded = !areaFilterExpanded">
                   {{ areaFilterExpanded ? '필터 접기 ⬆' : '필터 펼치기 ⬇' }}
                 </button>
@@ -50,7 +50,6 @@
             <div class="flex-1">
               <div class="restaurant-name">
                 {{ r.name }}
-                <span v-if="r.closed" class="closed-badge">영업종료</span>
               </div>
               <div class="address">📍 {{ r.address }}</div>
             </div>
@@ -252,11 +251,6 @@ onMounted(async () => {
   font-weight: 600;
   margin-bottom: 4px;
   color: #333;
-}
-.closed-badge {
-  color: #d32f2f;
-  font-size: 13px;
-  margin-left: 8px;
 }
 .address {
   font-size: 13px;

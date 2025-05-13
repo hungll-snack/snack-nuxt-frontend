@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { boardCreateRepository, fetchAllRestaurants, searchRestaurants } from '@/repository/board/boardCreateRepository'
+import { boardCreateRepository } from '@/repository/board/boardCreateRepository'
 
 interface BoardCreatePayload {
   title: string
@@ -7,17 +7,19 @@ interface BoardCreatePayload {
   end_time: string
   restaurant_id?: number
   author_id?: number
+  image_url?: string 
 }
 
 export const useBoardCreateStore = defineStore('boardCreate', {
   state: () => ({
     title: '',
     content: '',
-    image_url: null as string | null,
+    image_url: "" as string | "",
     end_time: '',
     restaurant_id: null as number | null,
     restaurantList: [] as any[],
     restaurantSearchKeyword: '',
+    image_file: null as File | null, 
   }),
   actions: {
     // ✅ 게시글 생성
@@ -25,9 +27,9 @@ export const useBoardCreateStore = defineStore('boardCreate', {
       const finalPayload = {
         title: payload.title,
         content: payload.content,
-        image_url: this.image_url ?? null,
+        image_url: this.image_url ?? "",
         end_time: payload.end_time,
-        restaurant_id: payload.restaurant_id,
+        restaurant_id: payload.restaurant_id ?? undefined,
         author_id: payload.author_id,
       }
   

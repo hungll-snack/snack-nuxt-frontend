@@ -18,25 +18,25 @@ export const commentRepository = {
 
   async createComment(payload: { board_id: number; content: string; author_id: number }) {
     const axios = await getAxios()
-    const response = await axios.post('/comment/create/', payload)
+    const response = await axios.post('/comment/create', payload)
     return response.data
   },
 
   async createReply(payload: { board_id: number; content: string; parent_id: number; author_id: number }) {
     const axios = await getAxios()
-    const response = await axios.post('/comment/reply/', payload)
+    const response = await axios.post('/comment/reply', payload)
     return response.data
   },
 
   async deleteComment(commentId: number) {
     const axios = await getAxios()
-    const response = await axios.delete(`/comment/delete/${commentId}/`)
+    const response = await axios.delete(`/comment/delete/${commentId}`)
     return response.data?.success === true
   },
 
   async updateComment(commentId: number, content: string) {
     const axios = await getAxios()
-    const response = await axios.put(`/comment/update/${commentId}/`, { content })
+    const response = await axios.put(`/comment/update/${commentId}`, { content })
     return response.data?.success === true
   },
 }
