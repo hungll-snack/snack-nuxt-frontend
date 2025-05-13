@@ -49,7 +49,7 @@ export const authRepository = {
   // ✅ 여기가 탈퇴 API 
   async deactivateAccount(accountId: string) {
     try {
-      const response = await getAxios().post('/delete-account/account/deactivate/', {
+      const response = await getAxios().post('/delete-account/account/deactivate', {
         account_id: accountId,
       })
       return response.data

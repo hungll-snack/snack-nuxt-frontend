@@ -112,7 +112,7 @@ const handleImageUpload = async (e: Event) => {
 
 const removeImage = () => {
   boardStore.image_file = null
-  boardStore.image_url = null
+  boardStore.image_url = ""
   previewImage.value = ''
 }
 
