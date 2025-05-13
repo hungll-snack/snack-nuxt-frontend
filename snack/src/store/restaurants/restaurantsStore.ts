@@ -5,14 +5,14 @@ export interface Restaurant {
   id: number
   name: string
   rating: number
+  category: string
   reviewCount: number
   address: string
   latitude: number
   longitude: number
-  closed?: boolean
+  closed?: string
   friendCount?: number
 }
-
 
 interface BoardCountResponse {
   restaurant_id: number | null
@@ -23,7 +23,14 @@ export const useRestaurantsStore = defineStore('restaurants', {
   state: () => ({
     restaurantList: [] as Restaurant[],
     searchKeyword: '',
-    boardCounts: {} as Record<number, number>
+    boardCounts: {} as Record<number, number>,
+
+    // ✅ 선택된 식당 정보 저장용
+    selectedRestaurant: {
+      name: '',
+      latitude: 0,
+      longitude: 0
+    }
   }),
   actions: {
     async loadAllRestaurants() {
@@ -68,6 +75,10 @@ export const useRestaurantsStore = defineStore('restaurants', {
         ...r,
         friendCount: boardCountMap[r.id] || 0
       }))
-    }
+    },
+
+    setSelectedRestaurant(restaurant: Restaurant) {
+      this.selectedRestaurant = { ...restaurant }
+    }    
   }
 })
