@@ -6,7 +6,7 @@ export const restaurantsRepository = {
     return data
   },
   async searchRestaurants(keyword: string) {
-    const { data } = await createAxiosInstance().get(`/restaurant/search/?keyword=${encodeURIComponent(keyword)}`)
+    const { data } = await createAxiosInstance().get(`/restaurant/search?keyword=${encodeURIComponent(keyword)}`)
     return data
   },
   async fetchRestaurantBoardCounts() {

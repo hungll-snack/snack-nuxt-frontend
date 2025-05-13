@@ -9,7 +9,7 @@ export const commentRepository = {
 
   async fetchCommentsByBoard(boardId: number, page = 1) {
     const axios = await getAxios()
-    const response = await axios.get(`/comment/board/${boardId}/?page=${page}&page_size=10`)
+    const response = await axios.get(`/comment/board/${boardId}?page=${page}&page_size=10`)
     return {
       comments: response.data?.comments || [],
       total: response.data?.total || 0,
