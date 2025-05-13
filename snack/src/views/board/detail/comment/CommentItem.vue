@@ -1,60 +1,9 @@
-<template>
-  <div :class="`pl-${level * 4}`" class="comment-text">
-    <div class="comment-content">
-      <span v-if="comment.is_deleted" class="text-gray-400 italic">메세지가 삭제되었습니다</span>
-      <span v-else-if="!isEditing">{{ comment.content }}</span>
-      <textarea v-else v-model="editContent" rows="2" class="edit-textarea" />
-    </div>
-
-    <div class="comment-meta">
-      <span class="comment-writer">{{ comment.author_nickname }}</span>
-      ·
-      <span class="comment-time">{{ comment.created_at }}</span>
-    </div>
-
-    <div class="action-buttons">
-      <button v-if="(comment.is_author || comment.is_admin) && !comment.is_deleted" class="action-btn edit-btn" @click="startEdit">수정</button>
-      <button v-if="(comment.is_author || comment.is_admin) && !comment.is_deleted" class="action-btn delete-btn" @click="confirmDelete">삭제</button>
-      <button v-if="!comment.is_deleted && !comment.parent_id" class="action-btn reply-btn" @click="toggleReply">답글</button>
-    </div>
-
-    <div v-if="isEditing" class="edit-action">
-      <button @click="submitEdit" class="submit-btn">수정 완료</button>
-    </div>
-
-    <div v-if="showReplyInput" class="reply-input-wrapper">
-      <textarea v-model="replyContent" rows="2" class="reply-textarea" placeholder="답글을 입력해주세요" />
-      <div class="reply-action">
-        <button @click="submitReply" class="submit-btn">답글 등록</button>
-      </div>
-    </div>
-
-    <!-- 대댓글 리스트 -->
-    <CommentItem
-      v-for="reply in visibleReplies"
-      :key="reply.comment_id"
-      :comment="reply"
-      :level="level + 1"
-      @reply="$emit('reply', $event)"
-      @delete="$emit('delete', $event)"
-      @edit="$emit('edit', $event)"
-    />
-
-    <!-- 답글 더보기/접기 버튼 -->
-    <div v-if="comment.replies?.length > 0" @click="toggleReplies" class="toggle-replies">
-      <template v-if="!showReplies">답글 더보기 ({{ comment.replies.length }})</template>
-      <template v-else-if="replyLimitState < comment.replies.length">답글 더보기</template>
-      <template v-else>답글 접기</template>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { ref, computed, defineProps, defineEmits } from 'vue'
+import ReportModal from '@/views/report/ReportModal.vue'
 
 const props = defineProps<{ comment: any; level: number }>()
 const emit = defineEmits(['reply', 'delete', 'edit'])
-
 
 const showReplyInput = ref(false)
 const replyContent = ref('')
@@ -63,13 +12,12 @@ const editContent = ref(props.comment.content)
 
 const replyLimit = 5
 const replyLimitState = ref(replyLimit)
-const showReplies = ref(false);
-
+const showReplies = ref(false)
 
 const visibleReplies = computed(() => {
   return showReplies.value
     ? (props.comment.replies || []).slice(0, replyLimitState.value)
-    : [];
+    : []
 })
 
 const toggleReply = () => {
@@ -101,27 +49,95 @@ const submitEdit = () => {
 }
 
 const toggleReplies = () => {
-  const totalReplies = props.comment.replies?.length || 0;
+  const totalReplies = props.comment.replies?.length || 0
 
-  // 답글을 접은 상태 → 5개로 시작
   if (!showReplies.value) {
-    showReplies.value = true;
-    replyLimitState.value = Math.min(replyLimit, totalReplies);
-    return;
+    showReplies.value = true
+    replyLimitState.value = Math.min(replyLimit, totalReplies)
+    return
   }
 
-  // 다 안 보여졌으면 5개씩 추가
   if (replyLimitState.value < totalReplies) {
-    replyLimitState.value = Math.min(replyLimitState.value + 5, totalReplies);
-    return;
+    replyLimitState.value = Math.min(replyLimitState.value + 5, totalReplies)
+    return
   }
 
-  // 다 보여졌으면 접기
-  showReplies.value = false;
-  replyLimitState.value = replyLimit;
-};
+  showReplies.value = false
+  replyLimitState.value = replyLimit
+}
 
+// 신고 모달 상태
+const isReportModalOpen = ref(false)
+const reportTargetId = ref<number | null>(null)
+const reportTargetType = ref<'BOARD' | 'COMMENT' | null>(null)
+
+const reportComment = () => {
+  reportTargetId.value = props.comment.comment_id
+  reportTargetType.value = 'COMMENT'
+  isReportModalOpen.value = true
+}
 </script>
+
+<template>
+  <div :class="`pl-${level * 4}`" class="comment-text">
+    <div class="comment-content">
+      <span v-if="comment.is_deleted" class="text-gray-400 italic">메세지가 삭제되었습니다</span>
+      <span v-else-if="!isEditing">{{ comment.content }}</span>
+      <textarea v-else v-model="editContent" rows="2" class="edit-textarea" />
+    </div>
+
+    <div class="comment-meta">
+      <span class="comment-writer">{{ comment.author_nickname }}</span>
+      ·
+      <span class="comment-time">{{ comment.created_at }}</span>
+      <span
+        v-if="!comment.is_author && !comment.is_deleted"
+        class="report-btn"
+        @click="reportComment"
+      >신고</span>
+    </div>
+
+    <div class="action-buttons">
+      <button v-if="(comment.is_author || comment.is_admin) && !comment.is_deleted" class="action-btn edit-btn" @click="startEdit">수정</button>
+      <button v-if="(comment.is_author || comment.is_admin) && !comment.is_deleted" class="action-btn delete-btn" @click="confirmDelete">삭제</button>
+      <button v-if="!comment.is_deleted && !comment.parent_id" class="action-btn reply-btn" @click="toggleReply">답글</button>
+    </div>
+
+    <div v-if="isEditing" class="edit-action">
+      <button @click="submitEdit" class="submit-btn">수정 완료</button>
+    </div>
+
+    <div v-if="showReplyInput" class="reply-input-wrapper">
+      <textarea v-model="replyContent" rows="2" class="reply-textarea" placeholder="답글을 입력해주세요" />
+      <div class="reply-action">
+        <button @click="submitReply" class="submit-btn">답글 등록</button>
+      </div>
+    </div>
+
+    <CommentItem
+      v-for="reply in visibleReplies"
+      :key="reply.comment_id"
+      :comment="reply"
+      :level="level + 1"
+      @reply="$emit('reply', $event)"
+      @delete="$emit('delete', $event)"
+      @edit="$emit('edit', $event)"
+    />
+
+    <div v-if="comment.replies?.length > 0" @click="toggleReplies" class="toggle-replies">
+      <template v-if="!showReplies">답글 더보기 ({{ comment.replies.length }})</template>
+      <template v-else-if="replyLimitState < comment.replies.length">답글 더보기</template>
+      <template v-else>답글 접기</template>
+    </div>
+
+    <ReportModal
+      :isOpen="isReportModalOpen"
+      :targetId="reportTargetId"
+      :targetType="reportTargetType"
+      @close="isReportModalOpen = false"
+    />
+  </div>
+</template>
 
 <style scoped>
 .comment-text {
@@ -149,10 +165,26 @@ const toggleReplies = () => {
   font-size: 12px;
   color: #999;
   margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .comment-writer {
   font-weight: 500;
+}
+
+.report-btn {
+  margin-left: auto;
+  font-size: 12px;
+  color: #e57373;
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.report-btn:hover {
+  opacity: 1;
+  text-decoration: underline;
 }
 
 .action-buttons {

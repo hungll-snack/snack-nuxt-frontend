@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useAccountStore } from '@/store/account/accountStore'
 import { useRouter, useRoute } from 'vue-router'
 import defaultThumbnail from '@/assets/images/logo/hungle_korean_center.png'
 import { useBoardDeleteStore } from '@/store/board/boardDeleteStore'
+import ReportModal from '@/views/report/ReportModal.vue'
 
 const props = defineProps<{
   board: {
@@ -23,6 +24,10 @@ const route = useRoute()
 
 const isAdmin = computed(() => {
   return localStorage.getItem('isAdmin') === 'true'
+})
+
+const isAuthor = computed(() => {
+  return String(props.board.author_account_id) === String(accountStore.accountId)
 })
 
 const goToModify = () => {
@@ -48,6 +53,18 @@ const goToDelete = async () => {
   }
 }
 
+// 신고 모달 관련
+const isReportModalOpen = ref(false)
+const reportTargetId = ref<number | null>(null)
+const reportTargetType = ref<'BOARD' | 'COMMENT' | null>(null)
+
+const reportPost = () => {
+  const id = Number(route.params.id)
+  if (!id) return
+  reportTargetId.value = id
+  reportTargetType.value = 'BOARD'
+  isReportModalOpen.value = true
+}
 </script>
 
 <template>
@@ -79,19 +96,28 @@ const goToDelete = async () => {
             <div class="info-value">{{ board.restaurant }}</div>
           </div>
 
-          <!-- ✅ 수정 및 삭제 버튼: 작성자 바로 하다 -->
-          <div
-            class="button-group"
-            v-if="isAdmin || String(board.author_account_id) === String(accountStore.accountId)"
-          >
-            <button class="btn-modify" @click="goToModify">✏ 수정</button>
-            <button class="btn-delete" @click="goToDelete">🗑 삭제</button>
+          <div class="button-group">
+            <template v-if="isAdmin || isAuthor">
+              <button class="btn-modify" @click="goToModify">✏ 수정</button>
+              <button class="btn-delete" @click="goToDelete">🗑 삭제</button>
+            </template>
+            <template v-else>
+              <button class="btn-report" @click="reportPost">🚨 신고</button>
+            </template>
           </div>
         </div>
       </div>
     </div>
   </v-card>
+
+  <ReportModal
+    :isOpen="isReportModalOpen"
+    :targetId="reportTargetId"
+    :targetType="reportTargetType"
+    @close="isReportModalOpen = false"
+  />
 </template>
+
 
 <style scoped>
 .info-card {
@@ -195,6 +221,21 @@ const goToDelete = async () => {
 
 .btn-delete:hover {
   background-color: #ff5722;
+}
+
+.btn-report {
+  background-color: transparent;
+  color: #ff7043;
+  border: 1px solid #ff7043;
+  padding: 6px 14px;
+  font-size: 13px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-report:hover {
+  background-color: #ffece5;
 }
 
 @media (max-width: 576px) {
