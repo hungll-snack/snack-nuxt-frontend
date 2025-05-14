@@ -5,7 +5,7 @@ interface BoardCreatePayload {
   content: string
   image_url?: string
   end_time: string
-  restaurant_id?: number
+  restaurant_id?: number 
   author_id?: number
 }
 
@@ -56,7 +56,7 @@ export const boardCreateRepository = {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
-          'X-Account-Id': accountId,
+          'Account-Id': accountId,
         },
       })
 
