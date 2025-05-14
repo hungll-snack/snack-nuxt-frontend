@@ -3,6 +3,8 @@ import { authRepository } from '@/repository/auth/authRepository'
 import { useRouter } from 'vue-router'
 import { useAccountStore } from '../account/accountStore'
 import { accountRepository } from '~/repository/account/accountRepository'
+import axios, { AxiosError } from 'axios'
+
 
 export type Provider = 'kakao' | 'naver' | 'google' | 'github'
 
@@ -42,6 +44,9 @@ export const useAuthStore = defineStore('auth', {
         const profile = await accountRepository.getProfileInfo()
         accountStore.setProfile(profile)
 
+        console.log('상태 코드 확인:', statusCode)
+
+        // 상태 코드에 따른 처리
         if (statusCode === 201) {
           router.push('/prefer')
         } else if (statusCode === 200) {
@@ -50,21 +55,30 @@ export const useAuthStore = defineStore('auth', {
           alert('이미 가입된 이메일입니다. 기존 계정으로 로그인해주세요.')
           sessionStorage.removeItem('provider')
           router.push('/policy/privacy')
-        } else if (statusCode === 414) {
-          alert('일시 정지된 계정입니다. 관리자에게 문의하세요.')
-          sessionStorage.removeItem('provider')
-          router.push('/')
-        } else if (statusCode === 444) {
-          alert('영구 정지된 계정입니다. 관리자에게 문의하세요.')
-          sessionStorage.removeItem('provider')
-          router.push('/')
         } else {
           router.push('/')
         }
-      } catch (error) {
-        alert('OAuth 로그인 처리 중 문제가 발생했습니다.')
-        router.push('/policy/privacy')
-        console.error(error)
+      } catch (err) {
+        const error = err as AxiosError
+      
+        if (error.response) {
+          const status = error.response.status
+      
+          if (status === 414) {
+            alert('일시 정지된 계정입니다. 관리자에게 문의하세요.')
+            sessionStorage.removeItem('provider')
+            router.push('/')
+          } else if (status === 444) {
+            alert('영구 정지된 계정입니다. 관리자에게 문의하세요.')
+            sessionStorage.removeItem('provider')
+            router.push('/')
+          } else {
+            router.push('/')
+          }
+        } else {
+          alert('OAuth 로그인 처리 중 문제가 발생했습니다.')
+          router.push('/policy/privacy')
+        }
       }
     },
 
