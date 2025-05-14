@@ -43,7 +43,7 @@ export const boardModifyRepository = {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
-          'X-Account-Id': accountId,
+          'Account-Id': accountId,
         },
       })
 
