@@ -12,6 +12,7 @@ interface BoardDetail {
   image_url?: string
   status: string
   restaurant?: string
+  restaurant_id?: string
   is_author?: boolean
 }
 

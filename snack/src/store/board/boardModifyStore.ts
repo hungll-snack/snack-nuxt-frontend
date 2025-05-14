@@ -20,6 +20,8 @@ interface BoardModifyState {
   isLoading: boolean
   isSuccess: boolean
   errorMessage: string | null
+  restaurantList: any[]
+  restaurantSearchKeyword: string
 }
 
 export const useBoardModifyStore = defineStore('boardModifyStore', {
@@ -32,12 +34,14 @@ export const useBoardModifyStore = defineStore('boardModifyStore', {
       restaurant: '',
       restaurant_id: null,
       image_file: null,
-      image_url: null as string | null,
+      image_url: null,
       previous_image_url: null,
     },
     isLoading: false,
     isSuccess: false,
     errorMessage: null,
+    restaurantList: [],
+    restaurantSearchKeyword: '',
   }),
 
   actions: {
@@ -84,33 +88,25 @@ export const useBoardModifyStore = defineStore('boardModifyStore', {
       this.errorMessage = null
 
       try {
-        let imageUrl = board.image_url ?? null
-
         if (board.image_file) {
           const imageUrl = await uploadImageToS3(board.image_file)
           console.log('✅ 업로드 후 반환된 imageUrl:', imageUrl)
           board.image_url = imageUrl
         } else if (board.image_url === null) {
-          // 삭제된 상태인 경우 빈 문자열로 보내기
           board.image_url = ''
         }
-        
 
         const payload = {
           board_id: board.board_id,
           title: board.title,
           content: board.content,
           end_time: board.end_time,
-          restaurant_id: board.restaurant_id ?? undefined, 
+          restaurant_id: board.restaurant_id ?? undefined,
           image_url: board.image_url ?? null,
           previous_image_url: board.previous_image_url,
         }
-        console.log('📦 [store] 최종 payload:', payload)
-        
-        
-        
+
         console.log('📤 최종 수정 payload:', payload)
-        
 
         await boardModifyRepository.requestUpdateBoard(payload)
         this.isSuccess = true
@@ -122,6 +118,18 @@ export const useBoardModifyStore = defineStore('boardModifyStore', {
       } finally {
         this.isLoading = false
       }
+    },
+
+    async loadAllRestaurants() {
+      this.restaurantList = await boardModifyRepository.fetchAllRestaurants()
+    },
+
+    async searchRestaurantList() {
+      if (!this.restaurantSearchKeyword.trim()) {
+        await this.loadAllRestaurants()
+        return
+      }
+      this.restaurantList = await boardModifyRepository.searchRestaurants(this.restaurantSearchKeyword)
     },
   },
 })
