@@ -47,31 +47,29 @@
   const reportStore = useReportStore();
   
   const submitReport = async () => {
-    if (!selectedReason.value) {
-      alert('신고 사유를 선택해주세요.');
-      return;
-    }
+  if (!selectedReason.value) {
+    alert('신고 사유를 선택해주세요.');
+    return;
+  }
 
-    const payload = {
+  const payload = {
     content_id: props.targetId,
     target_type: props.targetType,
     reason_type: selectedReason.value,
-    };
-
-    console.log('🔍 신고 payload:', payload); 
-
-    try {
-      await reportStore.requestReport({
-        content_id: props.targetId,
-        target_type: props.targetType,
-        reason_type: selectedReason.value,
-      });
-      alert('신고가 접수되었습니다.');
-      close();
-    } catch (error: any) {
-      alert(error.message || '신고에 실패했습니다.');
-    }
   };
+
+  console.log('📦 신고 요청 payload:', payload);
+
+  try {
+    await reportStore.requestReport(payload);
+    alert('✅ 신고가 정상적으로 접수되었습니다.');
+    close();
+  } 
+  catch (error: any) {
+  console.error('❌ 신고 실패:', error);
+  alert(error?.response?.data?.error || error.message || '❌ 신고에 실패했습니다.');
+}
+};
   
   const close = () => {
     selectedReason.value = '';
