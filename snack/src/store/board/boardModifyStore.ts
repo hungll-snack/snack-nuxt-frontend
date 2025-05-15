@@ -101,7 +101,7 @@ export const useBoardModifyStore = defineStore('boardModifyStore', {
           title: board.title,
           content: board.content,
           end_time: board.end_time,
-          restaurant_id: board.restaurant_id ?? undefined,
+          restaurant_id: board.restaurant_id ?? null,
           image_url: board.image_url ?? null,
           previous_image_url: board.previous_image_url,
         }

@@ -17,14 +17,20 @@
 
     <!-- 날짜 선택 -->
     <div class="input-wrapper">
-      <label class="input-label">모임 날짜</label>
+      <label class="input-label">
+        모임 날짜
+        <span v-if="props.isDateInvalid" style="color: red; font-size: 12px; margin-left: 8px">* 필수항목</span>
+      </label>
       <input class="search-input" :value="localDate" readonly placeholder="날짜 선택" @click="calendarRef?.open()" />
       <HungllDatePicker ref="calendarRef" v-model="localDate" />
     </div>
 
     <!-- 시간 선택 -->
     <div class="input-wrapper">
-      <label class="input-label">모임 시간</label>
+      <label class="input-label">
+        모임 시간
+        <span v-if="props.isTimeInvalid" style="color: red; font-size: 12px; margin-left: 8px">* 필수항목</span>
+      </label>
       <div class="time-select-row">
         <select v-model="selectedHour" class="search-input">
           <option v-for="h in 24" :key="h" :value="String(h).padStart(2, '0')">
@@ -67,6 +73,8 @@ import { useBoardModifyStore } from '@/store/board/boardModifyStore'
 import { uploadImageToS3 } from '@/common/utils/awsS3Instance'
 import HungllDatePicker from '@/common/components/HungllDatePicker.vue'
 
+const props = defineProps<{ isDateInvalid: boolean; isTimeInvalid: boolean }>()
+
 const boardStore = useBoardModifyStore()
 
 const previewImage = ref('')
@@ -81,21 +89,22 @@ const minuteSteps = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
 watch(
   () => boardStore.board.end_time,
   (newVal) => {
-    if (newVal) {
-      const [date, time] = newVal.split('T')
-      localDate.value = date
-      if (time) {
-        const [h, m] = time.split(':')
-        selectedHour.value = h
-        selectedMinute.value = m
-      }
+    if (!newVal) return
+    const hasT = newVal.includes('T')
+    const dateStr = hasT ? newVal.split('T')[0] : newVal.split(' ')[0]
+    localDate.value = dateStr
+    let timeStr = hasT ? newVal.split('T')[1] : newVal.split(' ')[1]
+    if (timeStr) {
+      const [h, m] = timeStr.split(':')
+      selectedHour.value = h
+      selectedMinute.value = m
     }
   },
   { immediate: true }
 )
 
-watch([selectedHour, selectedMinute], ([h, m]) => {
-  boardStore.board.end_time = `${localDate.value}T${h}:${m}:00`
+watch([localDate, selectedHour, selectedMinute], () => {
+  boardStore.board.end_time = `${localDate.value}T${selectedHour.value}:${selectedMinute.value}:00`
 })
 
 const triggerFileInput = () => fileInput.value?.click()
