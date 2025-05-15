@@ -50,9 +50,7 @@ export const useAuthStore = defineStore('auth', {
         if (statusCode === 201) {
           router.push('/prefer')
         } else if (statusCode === 200) {
-          alert('로그인 완료되었습니다.')
           router.push('/')
-          
         } else if (statusCode === 409) {
           alert('이미 가입된 이메일입니다. 기존 계정으로 로그인해주세요.')
           sessionStorage.removeItem('provider')
