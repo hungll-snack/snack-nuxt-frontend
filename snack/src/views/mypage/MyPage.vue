@@ -23,7 +23,7 @@
 
     <main class="content-area">
       <div v-if="selectedMenu === 'profile'" class="profile-wrapper">
-        <div class="scrap-header">나의 프로필</div>
+        <div class="scrap-header">기본 정보</div>
         <ul class="info-list">
           <li><span class="label">이름</span><span>{{ accountStore.name }}</span></li>
           <li>
@@ -55,6 +55,24 @@
             <input v-if="isEditing" v-model="address" placeholder="예: 서울특별시 강남구 테헤란로 123" />
           </li>
         </ul>
+
+        <div class="scrap-header">알림 설정</div>
+        <ul class="info-list">
+          <li><span class="label">게시글 알림</span>
+            <div class="toggle-switch" :class="alarmBoardStatus ? 'on' : 'off'" @click="toggleAlarm('board')">
+              <div class="toggle"></div>
+              <span>{{ alarmBoardStatus ? 'ON' : 'OFF' }}</span>
+            </div>
+          </li>
+          <li><span class="label">댓글 알림</span>
+            <div class="toggle-switch" :class="alarmCommentStatus ? 'on' : 'off'" @click="toggleAlarm('comment')">
+              <div class="toggle"></div>
+              <span>{{ alarmCommentStatus ? 'ON' : 'OFF' }}</span>
+            </div>
+          </li>
+        </ul>
+
+        
         <div class="profile-footer">
           <v-btn v-if="!isEditing" class="edit-btn" flat @click="toggleEdit">수정하기</v-btn>
           <v-btn v-if="isEditing" class="save-btn" flat :disabled="!isModified" @click="saveProfile">저장하기</v-btn>
@@ -119,6 +137,8 @@ const nicknameCheckResult = ref<null | boolean>(null)
 const nickname = ref(accountStore.nickname)
 const phoneNum = ref(accountStore.phoneNum)
 const address = ref(accountStore.address)
+const alarmBoardStatus = ref(accountStore.alarmBoardStatus)
+const alarmCommentStatus = ref(accountStore.alarmCommentStatus)
 
 //  Watch 상태로 변경 감지
 watch(
@@ -157,6 +177,20 @@ const checkNickname = async () => {
     console.error('닉네임 중복 확인 에러:', error)
     nicknameCheckResult.value = false
   }
+}
+
+// 알림 설정 변경 (즉시 저장)
+const toggleAlarm = async (type) => {
+  if (type === 'board') {
+    alarmBoardStatus.value = !alarmBoardStatus.value
+  } else if (type === 'comment') {
+    alarmCommentStatus.value = !alarmCommentStatus.value
+  }
+
+  await accountStore.alarmSettings(
+    type,
+    type === 'board' ? alarmBoardStatus.value : alarmCommentStatus.value
+  )
 }
 
 // 프로필 저장
@@ -395,7 +429,7 @@ const goToRestaurantAll = () => {
 
 .info-list {
   width: 100%;
-  margin-top: 16px;
+  margin-top: 5px;
   font-size: 14px;
   color: #444;
 }
@@ -403,6 +437,9 @@ const goToRestaurantAll = () => {
   display: flex;
   justify-content: space-between;
   margin-bottom: 8px;
+}
+.info-list + .scrap-header {
+  margin-top: 20px; 
 }
 .label {
   font-weight: 600;
@@ -516,5 +553,71 @@ const goToRestaurantAll = () => {
 
 .error-msg {
   color: red;
+}
+
+.toggle-switch {
+  position: relative;
+  width: 52px;
+  height: 26px;
+  background: #e0e0e0; 
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+  box-sizing: border-box;
+}
+
+
+.toggle-switch.on {
+  background: linear-gradient(135deg, #ff9800, #ff5722); 
+}
+
+
+.toggle-switch .toggle {
+  width: 22px;
+  height: 22px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.3s;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+
+.toggle-switch.on .toggle {
+  transform: translateX(26px);
+}
+
+
+.toggle-switch.off .toggle {
+  transform: translateX(0);
+}
+
+
+.toggle-switch span {
+  font-size: 12px;
+  font-weight: bold;
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  pointer-events: none;
+  transition: color 0.3s, transform 0.3s;
+}
+
+
+.toggle-switch.on span {
+  transform: translateX(-12px); 
+  color: white;
+}
+
+
+.toggle-switch.off span {
+  transform: translateX(7px); 
+  color: #666;
 }
 </style>

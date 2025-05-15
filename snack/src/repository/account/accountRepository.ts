@@ -37,5 +37,21 @@ export const accountRepository = {
       account_nickname: nickname
     })
     return data
-  }  
+  },
+  
+  async updateAlarmSettings(alarmBoardStatus: boolean, alarmCommentStatus: boolean) {
+    const token = localStorage.getItem('userToken') || ''
+    const accountId = localStorage.getItem('account_id') || ''
+    const axios = createAxiosInstance(token, accountId)
+    const { data } = await axios.patch('/account-profile/update', {
+      alarm_board_status: alarmBoardStatus,
+      alarm_comment_status: alarmCommentStatus
+    }, {
+      headers: {
+        'account-id': accountId,
+        'usertoken': token,
+      },
+    })
+    return data
+  }
 }
