@@ -36,12 +36,12 @@ export const useBoardCreateStore = defineStore('boardCreate', {
       console.log('📤 게시글 생성 요청 payload:', finalPayload)
       return await boardCreateRepository.requestCreateBoard(finalPayload)
     },
-  
+
     // ✅ 전체 식당 목록 불러오기
     async loadAllRestaurants() {
       this.restaurantList = await boardCreateRepository.fetchAllRestaurants()
     },
-  
+
     // ✅ 식당 검색
     async searchRestaurantList() {
       if (!this.restaurantSearchKeyword.trim()) {
@@ -50,5 +50,16 @@ export const useBoardCreateStore = defineStore('boardCreate', {
       }
       this.restaurantList = await boardCreateRepository.searchRestaurants(this.restaurantSearchKeyword)
     },
+
+    // ✅ 상태 초기화
+    reset() {
+      this.title = ''
+      this.content = ''
+      this.end_time = ''
+      this.image_url = ''
+      this.image_file = null
+      this.restaurant_id = null
+      this.restaurantSearchKeyword = ''
+    }
   }  
 })

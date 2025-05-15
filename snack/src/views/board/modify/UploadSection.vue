@@ -17,14 +17,20 @@
 
     <!-- 날짜 선택 -->
     <div class="input-wrapper">
-      <label class="input-label">모임 날짜</label>
+      <label class="input-label">
+        모임 날짜
+        <span v-if="props.isDateInvalid" style="color: red; font-size: 12px; margin-left: 8px">* 필수항목</span>
+      </label>
       <input class="search-input" :value="localDate" readonly placeholder="날짜 선택" @click="calendarRef?.open()" />
       <HungllDatePicker ref="calendarRef" v-model="localDate" />
     </div>
 
     <!-- 시간 선택 -->
     <div class="input-wrapper">
-      <label class="input-label">모임 시간</label>
+      <label class="input-label">
+        모임 시간
+        <span v-if="props.isTimeInvalid" style="color: red; font-size: 12px; margin-left: 8px">* 필수항목</span>
+      </label>
       <div class="time-select-row">
         <select v-model="selectedHour" class="search-input">
           <option v-for="h in 24" :key="h" :value="String(h).padStart(2, '0')">
@@ -38,14 +44,36 @@
         </select>
       </div>
     </div>
+
+    <!-- 맛집 장소 -->
+    <div class="input-wrapper">
+      <label class="input-label">맛집 장소</label>
+      <v-autocomplete
+        v-model="boardStore.board.restaurant_id"
+        :items="boardStore.restaurantList"
+        item-title="name"
+        item-value="id"
+        placeholder="맛집 검색"
+        hide-details
+        clearable
+        density="comfortable"
+        variant="solo"
+        rounded
+        class="search-input"
+        :loading="loadingRestaurants"
+        @update:search-input="onSearchRestaurant"
+      />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useBoardModifyStore } from '@/store/board/boardModifyStore'
 import { uploadImageToS3 } from '@/common/utils/awsS3Instance'
 import HungllDatePicker from '@/common/components/HungllDatePicker.vue'
+
+const props = defineProps<{ isDateInvalid: boolean; isTimeInvalid: boolean }>()
 
 const boardStore = useBoardModifyStore()
 
@@ -55,26 +83,28 @@ const calendarRef = ref()
 const localDate = ref('')
 const selectedHour = ref('12')
 const selectedMinute = ref('00')
+const loadingRestaurants = ref(false)
 const minuteSteps = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
 
 watch(
   () => boardStore.board.end_time,
   (newVal) => {
-    if (newVal) {
-      const [date, time] = newVal.split('T')
-      localDate.value = date
-      if (time) {
-        const [h, m] = time.split(':')
-        selectedHour.value = h
-        selectedMinute.value = m
-      }
+    if (!newVal) return
+    const hasT = newVal.includes('T')
+    const dateStr = hasT ? newVal.split('T')[0] : newVal.split(' ')[0]
+    localDate.value = dateStr
+    let timeStr = hasT ? newVal.split('T')[1] : newVal.split(' ')[1]
+    if (timeStr) {
+      const [h, m] = timeStr.split(':')
+      selectedHour.value = h
+      selectedMinute.value = m
     }
   },
   { immediate: true }
 )
 
-watch([selectedHour, selectedMinute], ([h, m]) => {
-  boardStore.board.end_time = `${localDate.value}T${h}:${m}:00`
+watch([localDate, selectedHour, selectedMinute], () => {
+  boardStore.board.end_time = `${localDate.value}T${selectedHour.value}:${selectedMinute.value}:00`
 })
 
 const triggerFileInput = () => fileInput.value?.click()
@@ -95,8 +125,15 @@ const handleImageUpload = async (e: Event) => {
 const removeImage = () => {
   boardStore.board.image_file = null
   boardStore.board.image_url = null
-  boardStore.board.previous_image_url = null // ✅ S3 삭제 트리거용
+  boardStore.board.previous_image_url = null
   previewImage.value = ''
+}
+
+const onSearchRestaurant = async (query: string) => {
+  boardStore.restaurantSearchKeyword = query
+  loadingRestaurants.value = true
+  await boardStore.searchRestaurantList()
+  loadingRestaurants.value = false
 }
 
 watch(
@@ -106,6 +143,10 @@ watch(
   },
   { immediate: true }
 )
+
+onMounted(() => {
+  boardStore.loadAllRestaurants()
+})
 </script>
 
 <style scoped>

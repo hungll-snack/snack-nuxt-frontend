@@ -1,34 +1,35 @@
-// src/store/llm/llmChatStore.ts
-
 import { defineStore } from 'pinia'
-
-export type SenderType = 'user' | 'bot'
-
-export interface ChatMessage {
-  sender: SenderType
-  text: string
-  timestamp: string
-}
 
 export const useLLMChatStore = defineStore('llmChat', {
   state: () => ({
+    messages: [] as { role: 'user' | 'bot'; content: string }[],
+    currentBotText: '',
     modalOpen: false,
-    chatHistory: [] as ChatMessage[],
   }),
 
   actions: {
-    openModal() {
+    addUserMessage(content: string) {
+      this.messages.push({ role: 'user', content })
+    },
+    startBotStreaming() {
+      this.currentBotText = ''
+    },
+    updateBotStreaming(chunk: string) {
+      this.currentBotText += chunk
+    },
+    commitBotMessage() {
+      this.messages.push({ role: 'bot', content: this.currentBotText })
+      this.currentBotText = ''
+    },
+    clearChat() {
+      this.messages = []
+      this.currentBotText = ''
+    },
+        openModal() {
       this.modalOpen = true
     },
     closeModal() {
       this.modalOpen = false
-    },
-    addChat(sender: SenderType, text: string) {
-      const timestamp = new Date().toISOString()
-      this.chatHistory.push({ sender, text, timestamp })
-    },
-    clearChat() {
-      this.chatHistory = []
     }
   }
 })

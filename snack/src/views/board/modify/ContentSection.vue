@@ -4,13 +4,19 @@
 
     <!-- 제목 입력 -->
     <div class="input-wrapper">
-      <label class="input-label">모임 제목</label>
+      <label class="input-label">
+        모임 제목
+        <span v-if="props.isTitleInvalid" style="color: red; font-size: 12px; margin-left: 8px">* 필수항목</span>
+      </label>
       <input v-model="localBoard.title" class="search-input" placeholder="제목을 입력하세요" />
     </div>
 
     <!-- 소개 입력 -->
     <div class="input-wrapper">
-      <label class="input-label">모임 소개</label>
+      <label class="input-label">
+        모임 소개
+        <span v-if="props.isContentInvalid" style="color: red; font-size: 12px; margin-left: 8px">* 필수항목</span>
+      </label>
       <textarea
         v-model="localBoard.content"
         class="search-input"
@@ -23,7 +29,7 @@
 
     <!-- 수정 버튼 -->
     <div class="button-flex-wrapper">
-      <button class="btn primary" @click="submitModify">
+      <button class="btn primary" @click="$emit('submit-modify')">
         수정 완료
       </button>
     </div>
@@ -33,18 +39,17 @@
 <script setup lang="ts">
 import { reactive, watch } from 'vue'
 import { useBoardModifyStore } from '@/store/board/boardModifyStore'
-import { useRouter } from 'vue-router'
+
+const props = defineProps<{ isTitleInvalid: boolean; isContentInvalid: boolean }>()
+const emit = defineEmits(['submit-modify'])
 
 const boardStore = useBoardModifyStore()
-const router = useRouter()
 
-// 🔧 1. 로컬 상태 생성
 const localBoard = reactive({
   title: '',
   content: '',
 })
 
-// 🔧 2. boardStore.board가 변경되면 localBoard에 복사
 watch(
   () => boardStore.board,
   (newBoard) => {
@@ -54,20 +59,14 @@ watch(
   { immediate: true, deep: true }
 )
 
-// 🔧 3. 수정 버튼 클릭 시 반영 후 저장
-const submitModify = async () => {
-  boardStore.board.title = localBoard.title
-  boardStore.board.content = localBoard.content
-
-  const success = await boardStore.updateBoard()
-  if (success) {
-    alert('게시글이 수정되었습니다.')
-    router.push(`/board/detail/${boardStore.board.board_id}`)
-    console.log('✅ board_id for redirection:', boardStore.board.board_id)
-  } else {
-    alert('게시글 수정 실패')
-  }
-}
+watch(
+  () => [localBoard.title, localBoard.content],
+  () => {
+    boardStore.board.title = localBoard.title
+    boardStore.board.content = localBoard.content
+  },
+  { immediate: true, deep: true }
+)
 </script>
 
 <style scoped>

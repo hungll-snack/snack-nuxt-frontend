@@ -18,6 +18,8 @@ export const useAccountStore = defineStore('account', {
     subscribe: false,
     accountRegister: '',
     accountPath: '',
+    alarmBoardStatus: true, 
+    alarmCommentStatus: true, 
   }),
   actions: {
     setAccount(account: any) {
@@ -37,6 +39,8 @@ export const useAccountStore = defineStore('account', {
       this.payment = profile.account_pay
       this.age = profile.account_age
       this.subscribe = profile.account_sub
+      this.alarmBoardStatus = profile.alarm_board_status
+      this.alarmCommentStatus = profile.alarm_comment_status
       
       if (profile.role === 'ADMIN') {
         localStorage.setItem('isAdmin', 'true')
@@ -63,6 +67,7 @@ export const useAccountStore = defineStore('account', {
         this.setProfile(updatedProfile)
         return updatedProfile
       } catch (error) {
+        await this.getAccount()
         console.error('❌ 프로필 수정 실패:', error)
         throw error
       }
@@ -76,6 +81,28 @@ export const useAccountStore = defineStore('account', {
         console.error('❌ 닉네임 중복 확인 실패:', error)
         throw error
       }
+    },
+
+    async alarmSettings(type: string, status: boolean) {
+      try {
+        if (type === 'board') {
+          this.alarmBoardStatus = status
+        } else if (type === 'comment') {
+          this.alarmCommentStatus = status
+        }
+
+        await accountRepository.updateProfileInfo({
+          alarm_board_status: this.alarmBoardStatus,
+          alarm_comment_status: this.alarmCommentStatus,
+        })
+      } catch (error) {
+        console.error('❌ 알림 설정 변경 실패:', error)
+        await this.getAccount()
+      }
     }
   },
 })
+
+
+
+  

@@ -9,13 +9,16 @@
         <div class="chat-wrapper">
           <transition-group name="chat" tag="div" class="chat-list">
             <div
-              v-for="(msg, i) in chatStore.chatHistory"
+              v-for="(msg, i) in chatStore.messages"
               :key="i"
-              :class="['chat-bubble-wrapper', msg.sender]"
+              :class="['chat-bubble-wrapper', msg.role]"
             >
-              <div :class="['chat-bubble', msg.sender]">
-                <span>{{ msg.text }}</span>
+              <div :class="['chat-bubble', msg.role]">
+                <span>{{ msg.content }}</span>
               </div>
+            </div>
+            <div v-if="chatStore.currentBotText" class="chat-bubble-wrapper bot">
+              <div class="chat-bubble bot">{{ chatStore.currentBotText }}</div>
             </div>
           </transition-group>
         </div>
@@ -37,16 +40,14 @@
 <script setup lang="ts">
 import { ref, watch, nextTick } from 'vue'
 import { useLLMChatStore } from '@/store/llm/llmChatStore'
+import { llmChatRepository } from '@/repository/llm/llmChatRepository'
 import { useAccountStore } from '@/store/account/accountStore'
-import { createFastAPIAxiosInstance } from '@/common/utils/axiosInstance'
-import { createAxiosInstance } from '@/common/utils/axiosInstance'
 import { accountRepository } from '~/repository/account/accountRepository'
 
 const chatStore = useLLMChatStore()
 const accountStore = useAccountStore()
 const message = ref('')
 const nickname = ref('')
-
 
 const scrollToBottom = () => {
   nextTick(() => {
@@ -56,7 +57,6 @@ const scrollToBottom = () => {
     }
   })
 }
-
 
 watch(
   () => chatStore.modalOpen,
@@ -74,44 +74,40 @@ watch(
       await accountRepository.getProfileInfo()
     }
 
-    if (chatStore.chatHistory.length === 0 && accountStore.nickname) {
+    if (chatStore.messages.length === 0 && accountStore.nickname) {
       nickname.value = accountStore.nickname
       const greeting = `안녕하세요 ${nickname.value}님! 무엇을 도와드릴까요? ✨`
-      chatStore.addChat('bot', greeting)
+      chatStore.messages.push({ role: 'bot', content: greeting })
     }
 
     scrollToBottom()
   }
 )
 
-
 const sendMessage = async () => {
-  if (!message.value.trim()) return
+  const query = message.value.trim()
+  if (!query) return
 
-  const userMsg = message.value
+  chatStore.addUserMessage(query)
+  chatStore.startBotStreaming()
   message.value = ''
-  chatStore.addChat('user', userMsg)
   scrollToBottom()
 
-  const token = localStorage.getItem('userToken') || ''
-  const accountId = localStorage.getItem('account_id') || ''
-  const aiaxios = createFastAPIAxiosInstance(token, accountId)
-  const backaxios = createAxiosInstance(token, accountId)
-
   try {
-    const res = await aiaxios.post('/llm/search', { query: userMsg, 'account-id': accountId })
-    const botMsg = res.data?.response || '응답이 없습니다'
-    chatStore.addChat('bot', botMsg)
-    scrollToBottom()
-
-    await backaxios.post('/chat-history/save', {
-      user_message: userMsg,
-      bot_response: botMsg,
+    await llmChatRepository.streamChat(query, (chunk) => {
+      chatStore.updateBotStreaming(chunk)
+      scrollToBottom()
     })
+
+    chatStore.commitBotMessage()
+
+    await llmChatRepository.saveChatHistory(query, chatStore.currentBotText)
   } catch (e) {
     console.error('❌ LLM API 실패', e)
-    chatStore.addChat('bot', '미안해요! 헝글이 딱맞는 대답을 찾기위해 알아보고있어요 💡')
-    scrollToBottom()
+    chatStore.messages.push({
+      role: 'bot',
+      content: '미안해요! 헝글이 딱맞는 대답을 찾기위해 알아보고있어요 💡'
+    })
   }
 }
 </script>
