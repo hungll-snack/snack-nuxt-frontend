@@ -125,12 +125,11 @@ const reportPost = () => {
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   overflow: hidden;
-  height: 100%;
-  max-height: 560px;
   padding: 16px;
   display: flex;
   flex-direction: column;
   padding-top: 50px;
+  height: auto; 
 }
 
 .thumbnail-info-wrapper {

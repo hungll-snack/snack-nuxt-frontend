@@ -1,7 +1,7 @@
 <template>
   <div class="section-card">
     <h2 class="section-title">
-      📝 모임 소개 작성
+      📝 목임 소개 작성
       <span class="reset-icon" @click="resetAll">🔄</span>
     </h2>
 
@@ -59,13 +59,19 @@
 
     <!-- 제목 입력 -->
     <div class="input-wrapper">
-      <label class="input-label">모임 제목</label>
+      <label class="input-label">
+        목임 제목
+        <span v-if="isTitleInvalid" style="color: red; font-size: 12px; margin-left: 8px">* 필수항목</span>
+      </label>
       <input v-model="title" class="search-input" placeholder="제목을 입력하세요" />
     </div>
 
     <!-- 소개 입력 -->
     <div class="input-wrapper">
-      <label class="input-label">모임 소개</label>
+      <label class="input-label">
+        목임 소개
+        <span v-if="isContentInvalid" style="color: red; font-size: 12px; margin-left: 8px">* 필수항목</span>
+      </label>
       <textarea
         v-model="content"
         class="search-input"
@@ -81,8 +87,10 @@ import { ref } from 'vue'
 import { useBoardCreateStore } from '@/store/board/boardCreateStore'
 import { storeToRefs } from 'pinia'
 
+const props = defineProps<{ isTitleInvalid: boolean; isContentInvalid: boolean }>()
+
 const boardStore = useBoardCreateStore()
-const { title, content } = storeToRefs(boardStore)  // ✅ 스토어랑 연결
+const { title, content } = storeToRefs(boardStore)
 const mood = ref('귀엽게')
 const selectedMenu = ref('')
 const selectedTime = ref('')
@@ -143,7 +151,6 @@ const generateText = () => {
   const time = selectedTime.value
   const menu = selectedMenu.value
   const people = selectedPeople.value
-  const isSmallGroup = people.includes('2') || people.includes('3')
 
   title.value = `${time}에 ${menu} 모임 ${emoji || ''}`
 
@@ -158,6 +165,7 @@ const generateText = () => {
   }
 }
 </script>
+
 
 <style scoped>
 .section-card {

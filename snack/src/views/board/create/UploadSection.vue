@@ -6,7 +6,7 @@
     <div class="input-wrapper">
       <label class="input-label">이미지 업로드</label>
       <div class="thumbnail-box" v-if="!previewImage" @click="triggerFileInput">
-        <span class="thumbnail-placeholder">쏼남얼을 업로드 해주세요</span>
+        <span class="thumbnail-placeholder">썸네일을 업로드 해주세요</span>
       </div>
       <div class="image-preview" v-else>
         <img :src="previewImage" alt="Preview" />
@@ -17,14 +17,20 @@
 
     <!-- 날짜 -->
     <div class="input-wrapper">
-      <label class="input-label">모임 날짜</label>
+      <label class="input-label">
+        모임 날짜
+        <span v-if="isDateInvalid" style="color: red; font-size: 12px; margin-left: 8px">* 필수항목</span>
+      </label>
       <input class="search-input" :value="date" readonly placeholder="날짜 선택" @click="calendarRef?.open()" />
       <HungllDatePicker ref="calendarRef" v-model="date" />
     </div>
 
     <!-- 시간 -->
     <div class="input-wrapper">
-      <label class="input-label">모임 시간</label>
+      <label class="input-label">
+        모임 시간
+        <span v-if="isTimeInvalid" style="color: red; font-size: 12px; margin-left: 8px">* 필수항목</span>
+      </label>
       <div style="display: flex; gap: 8px">
         <select v-model="selectedHour" class="search-input" style="flex: 1">
           <option v-for="hour in 24" :key="hour" :value="String(hour).padStart(2, '0')">
@@ -59,28 +65,17 @@
         @update:search-input="onSearchRestaurant"
       />
     </div>
-
-    <div class="divider" />
-
-    <div class="button-flex-wrapper">
-      <button class="btn primary" :disabled="loading" @click="submitBoard">
-        {{ loading ? '등록 중...' : '등록' }}
-      </button>
-      <button class="btn grey" @click="goBack">취소</button>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import HungllDatePicker from '@/common/components/HungllDatePicker.vue'
 import { uploadImageToS3 } from '@/common/utils/awsS3Instance'
 import type { useBoardCreateStore } from '@/store/board/boardCreateStore'
 
-const props = defineProps<{ boardStore: ReturnType<typeof useBoardCreateStore> }>()
+const props = defineProps<{ boardStore: ReturnType<typeof useBoardCreateStore>, isDateInvalid: boolean, isTimeInvalid: boolean }>()
 const boardStore = props.boardStore
-const router = useRouter()
 
 const previewImage = ref('')
 const fileInput = ref<HTMLInputElement | null>(null)
@@ -88,13 +83,16 @@ const date = ref('')
 const selectedHour = ref('12')
 const selectedMinute = ref('00')
 const calendarRef = ref()
-const loading = ref(false)
 const loadingRestaurants = ref(false)
 const minuteSteps = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
 
 const datetime = computed(() => {
   if (!date.value) return ''
   return `${date.value}T${selectedHour.value}:${selectedMinute.value}:00`
+})
+
+watch([date, selectedHour, selectedMinute], () => {
+  boardStore.end_time = datetime.value
 })
 
 const triggerFileInput = () => fileInput.value?.click()
@@ -124,37 +122,6 @@ const onSearchRestaurant = async (query: string) => {
 onMounted(() => {
   boardStore.loadAllRestaurants()
 })
-
-const submitBoard = async () => {
-  if (loading.value) return
-  const token = localStorage.getItem('userToken')
-  const accountId = localStorage.getItem('account_id')
-  if (!token || !accountId) {
-    alert('로그인 후 이용해주세요')
-    return
-  }
-
-  try {
-    loading.value = true
-    await boardStore.requestCreateBoard({
-      title: boardStore.title,
-      content: boardStore.content,
-      end_time: datetime.value || new Date().toISOString(),
-      image_url: boardStore.image_url ?? undefined,
-      restaurant_id: boardStore.restaurant_id ?? undefined,
-      author_id: parseInt(accountId),
-    })
-    alert('게시글이 등록되었습니다.')
-    router.push('/board/all')
-  } catch (error) {
-    console.error('❌ 게시글 등록 실패:', error)
-    alert('유지보수 중입니다. 잠시만 기다려주세요.')
-  } finally {
-    loading.value = false
-  }
-}
-
-const goBack = () => router.push('/board/all')
 </script>
 
 <style scoped>
