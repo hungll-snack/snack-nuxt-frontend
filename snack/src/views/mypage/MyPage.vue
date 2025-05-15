@@ -162,19 +162,25 @@ const checkNickname = async () => {
 // 프로필 저장
 const saveProfile = async () => {
   if (!isModified.value) return
+
   if (nickname.value !== accountStore.nickname && nicknameCheckResult.value === false) {
     alert('닉네임이 이미 사용 중입니다.')
     return
   }
 
   try {
+    // 프로필 저장 요청 (상태 자동 반영)
     await accountStore.updateProfile({
       account_nickname: nickname.value,
       phone_num: phoneNum.value,
       account_add: address.value,
     })
+
+    // 상태 다시 로드하여 반영 (새로고침 없이)
+    await accountStore.getAccount()
     alert('프로필이 수정되었습니다.')
-    accountStore.nickname = nickname.value
+    
+    // 수정 모드 종료
     isEditing.value = false
     isModified.value = false
   } catch (error) {

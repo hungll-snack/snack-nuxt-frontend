@@ -63,6 +63,7 @@ export const useAccountStore = defineStore('account', {
         this.setProfile(updatedProfile)
         return updatedProfile
       } catch (error) {
+        await this.getAccount()
         console.error('❌ 프로필 수정 실패:', error)
         throw error
       }

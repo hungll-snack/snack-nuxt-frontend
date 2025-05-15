@@ -48,7 +48,6 @@ export const useAuthStore = defineStore('auth', {
 
         // 상태 코드에 따른 처리
         if (statusCode === 201) {
-          alert('가입 완료되었습니다.')
           router.push('/prefer')
         } else if (statusCode === 200) {
           alert('로그인 완료되었습니다.')
