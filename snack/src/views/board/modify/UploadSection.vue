@@ -38,11 +38,31 @@
         </select>
       </div>
     </div>
+
+    <!-- 맛집 장소 -->
+    <div class="input-wrapper">
+      <label class="input-label">맛집 장소</label>
+      <v-autocomplete
+        v-model="boardStore.board.restaurant_id"
+        :items="boardStore.restaurantList"
+        item-title="name"
+        item-value="id"
+        placeholder="맛집 검색"
+        hide-details
+        clearable
+        density="comfortable"
+        variant="solo"
+        rounded
+        class="search-input"
+        :loading="loadingRestaurants"
+        @update:search-input="onSearchRestaurant"
+      />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useBoardModifyStore } from '@/store/board/boardModifyStore'
 import { uploadImageToS3 } from '@/common/utils/awsS3Instance'
 import HungllDatePicker from '@/common/components/HungllDatePicker.vue'
@@ -55,6 +75,7 @@ const calendarRef = ref()
 const localDate = ref('')
 const selectedHour = ref('12')
 const selectedMinute = ref('00')
+const loadingRestaurants = ref(false)
 const minuteSteps = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
 
 watch(
@@ -95,8 +116,15 @@ const handleImageUpload = async (e: Event) => {
 const removeImage = () => {
   boardStore.board.image_file = null
   boardStore.board.image_url = null
-  boardStore.board.previous_image_url = null // ✅ S3 삭제 트리거용
+  boardStore.board.previous_image_url = null
   previewImage.value = ''
+}
+
+const onSearchRestaurant = async (query: string) => {
+  boardStore.restaurantSearchKeyword = query
+  loadingRestaurants.value = true
+  await boardStore.searchRestaurantList()
+  loadingRestaurants.value = false
 }
 
 watch(
@@ -106,6 +134,10 @@ watch(
   },
   { immediate: true }
 )
+
+onMounted(() => {
+  boardStore.loadAllRestaurants()
+})
 </script>
 
 <style scoped>
