@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - demo
+  workflow_dispatch:
 
 env:
   DOCKER_IMAGE: ghcr.io/${{ github.actor }}/frontend-deploy-nuxt:latest
