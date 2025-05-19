@@ -4,9 +4,10 @@
 //   middleware: ['admin-check']
 // })
 
-import LogAlerts from '@/views/admin/LogAlerts.vue'
+import ReportManagement from '@/views/admin/ReportManagement.vue'
+
 </script>
 
 <template>
-  <LogAlerts />
+  <ReportManagement />
 </template>
