@@ -125,7 +125,7 @@ const filteredRestaurants = computed(() => {
 
 const areaCounts = computed(() => {
   const counts: Record<string, number> = {}
-  filteredRestaurants.value.forEach(r => { 
+  restaurantStore.restaurantList.forEach(r => { 
     const match = areas.find(area => r.address.includes(area))
     if (match) {
       counts[match] = (counts[match] || 0) + 1
@@ -133,6 +133,7 @@ const areaCounts = computed(() => {
   })
   return counts
 })
+
 
 onMounted(async () => {
   await restaurantStore.loadAllRestaurants()
