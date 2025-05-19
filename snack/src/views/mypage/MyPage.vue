@@ -82,7 +82,17 @@
 
       <div v-if="selectedMenu === 'scrap'" class="scrap-wrapper">
         <div class="scrap-header">나의 찜 목록</div>
-        <div class="scrap-content centered">
+        <div v-if="restaurantStore.scrapList.length > 0" class="scrap-list">
+          <div v-for="r in restaurantStore.scrapList" :key="r.id" class="scrap-card">
+            <div class="card-content">
+              <div class="card-title">{{ r.name }}</div>
+              <div class="card-date">찜한 날짜: {{ formatDate(r.created_at) }}</div>
+            </div>
+            <v-btn size="small" color="error" class="card-delete-brn" @click="toggleScrap(r.id)">삭제</v-btn>
+          </div>
+        </div>
+
+        <div v-else class="scrap-content centered">
           <p class="empty-message">현재 찜한 목록이 없습니다.<br />더 많은 식당을 담아보세요!</p>
           <button class="card-btn" @click="goToRestaurantAll">맛집 찾기</button>
         </div>
@@ -122,11 +132,13 @@ import { useAccountStore } from '@/store/account/accountStore'
 import { accountRepository } from '@/repository/account/accountRepository'
 import { useAuthStore } from '@/store/auth/authStore'
 import { useAdminStore } from '@/store/admin/adminStore'
+import { useRestaurantsStore } from '@/store/restaurants/restaurantsStore'
 
 const accountStore = useAccountStore()
 const authStore = useAuthStore()
 const adminStore = useAdminStore()
 const router = useRouter()
+const restaurantStore = useRestaurantsStore()
 
 const selectedMenu = ref<'profile' | 'scrap'>('profile')
 const isEditing = ref(false)
@@ -264,7 +276,18 @@ onMounted(async () => {
   } catch (error) {
     console.error('🔴 계정 정보 불러오기 실패:', error)
   }
+
+  restaurantStore.loadScrapsFromServer()
 })
+
+const formatDate = (dateStr: string) => {
+  return new Date(dateStr).toLocaleDateString()
+}
+
+const toggleScrap = async (restaurantId: number) => {
+  await restaurantStore.toggleScrap(restaurantId)
+  await restaurantStore.loadScrapsFromServer()
+}
 
 const alertServiceReady = () => {
   alert('서비스 준비중입니다. 잠시만 기다려주세요.')
@@ -415,6 +438,48 @@ const goToRestaurantAll = () => {
   align-items: center;
   text-align: center;
   gap: 16px;
+}
+
+.scrap-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.scrap-card {
+  background: #fff8ee;
+  padding: 16px;
+  border-radius: 16px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease;
+  border: 1px solid #ffcc80;
+}
+
+.scrap-card:hover {
+  transform: translateY(-4px);
+}
+
+.card-content {
+  margin-bottom: 12px;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ff6f00;
+  margin-bottom: 8px;
+}
+
+.card-date {
+  font-size: 13px;
+  color: #888;
+}
+
+.card-delete-btn {
+  align-self: flex-end;
 }
 
 .empty-message {
