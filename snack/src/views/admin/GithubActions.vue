@@ -53,7 +53,7 @@ const adminStore = useAdminStore()
 const loading = ref(false)
 
 const repositories = [
-  { label: 'Frontend', url: 'https://github.com/hungll-snack/snack-nuxt-frontend/tree/demo' },
+  { label: 'Frontend', url: 'https://github.com/hungll-snack/snack-nuxt-frontend' },
   { label: 'Backend', url: 'https://github.com/hungll-snack/snack-django-backend' },
   { label: 'FastAPI', url: 'https://github.com/hungll-snack/snack-fastapi-ai' },
 ]
