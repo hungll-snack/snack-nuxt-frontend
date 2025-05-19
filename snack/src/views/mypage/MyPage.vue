@@ -250,6 +250,10 @@ const submitAdminCode = async () => {
   alert(resultMessage)
   closeAdminModal()
   if (resultMessage === '관리자 권한이 부여되었습니다.') {
+
+    localStorage.setItem('isAdmin', 'true')
+    sessionStorage.setItem('admincheck', 'true')
+    
     router.push('/admin')
   }
 }
