@@ -31,7 +31,7 @@ const router = useRouter()
 
 const goToMonitoring = () => router.push('/admin/github-actions')
 const goToUserManagement = () => router.push('/admin/user-management')
-const goToLogsAndAlerts = () => router.push('/admin/logs-alerts')
+const goToReportManagement = () => router.push('/admin/report-management')
 const goToWorkflowSettings = () => router.push('/admin/workflow-settings')
 
 const cards = [
@@ -49,9 +49,9 @@ const cards = [
   },
   {
     icon: 'mdi-alert-circle-outline',
-    title: '로그 및 알림 관리',
-    subtitle: '실패 로그 확인 및 알림 설정',
-    action: goToLogsAndAlerts,
+    title: '신고 관리',
+    subtitle: '사용자 신고 관리',
+    action: goToReportManagement,
   },
   {
     icon: 'mdi-cog-outline',
