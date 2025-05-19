@@ -3,7 +3,7 @@
     <h2 class="title">⚙️ 워크플로우 설정 관리</h2>
 
     <div class="description-box">
-      프로젝트별 GitHub Actions 워크플로우를 활성화하거나 비활성화할 수 있어요.
+      프로젝트별 GitHub Actions 워크플로우를 수동으로 실행할 수 있어요.
     </div>
 
     <div class="workflow-grid">
@@ -11,25 +11,17 @@
         v-for="workflow in workflows"
         :key="workflow.id"
         class="workflow-card"
-        :class="{ disabled: !workflow.enabled }"
       >
         <div class="card-header">
           <div class="name">
             <i class="mdi mdi-file-code-outline icon" />
             {{ workflow.name }}
           </div>
-          <label class="toggle-switch">
-            <input
-              type="checkbox"
-              v-model="workflow.enabled"
-              @change="() => toggleWorkflow(workflow)"
-            />
-            <span class="slider"></span>
-          </label>
+          <button class="deploy-btn" @click="() => triggerWorkflow(workflow)">배포</button>
         </div>
 
         <div class="status-label">
-          {{ workflow.enabled ? '✅ 워크플로우 활성화됨' : '⛔ 워크플로우 비활성화됨' }}
+          워크플로우 수동 트리거 방식입니다.
         </div>
 
         <div class="card-actions">
@@ -49,25 +41,26 @@ import { useAdminStore } from '@/store/admin/adminStore'
 const adminStore = useAdminStore()
 
 const workflows = ref([
-  { id: 1, name: '프론트엔드 배포', enabled: true, repo: 'https://github.com/hungll-snack/snack-nuxt-frontend', workflowName: 'main.yml', message: '', messageType: '' },
-  { id: 2, name: '백엔드 테스트', enabled: false, repo: 'https://github.com/hungll-snack/snack-django-backend', workflowName: 'main.yml', message: '', messageType: '' },
-  { id: 3, name: 'FastAPI 테스트 및 배포', enabled: false, repo: 'https://github.com/hungll-snack/snack-fastapi-ai', workflowName: 'main.yml', message: '', messageType: '' },
+  { id: 1, name: '프론트엔드 배포', repo: 'https://github.com/hungll-snack/snack-nuxt-frontend', workflowName: 'main.yml', message: '', messageType: '' },
+  { id: 2, name: '백엔드 테스트', repo: 'https://github.com/hungll-snack/snack-django-backend', workflowName: 'main.yml', message: '', messageType: '' },
+  { id: 3, name: 'FastAPI 테스트 및 배포', repo: 'https://github.com/hungll-snack/snack-fastapi-ai', workflowName: 'main.yml', message: '', messageType: '' },
 ])
 
-const toggleWorkflow = async (workflow: any) => {
+const triggerWorkflow = async (workflow: any) => {
   const userToken = localStorage.getItem('userToken')
   if (!userToken) {
     workflow.message = '인증 정보가 없습니다.'
     workflow.messageType = 'error'
     return
   }
+
   try {
     await adminStore.triggerGithubWorkflow(userToken, workflow.repo, workflow.workflowName)
-    workflow.message = workflow.enabled ? '워크플로우가 활성화되어 실행되었습니다.' : '비활성화되었지만 워크플로우 실행 요청이 전송되었습니다.'
+    workflow.message = '✅ 워크플로우 실행 요청이 전송되었습니다.'
     workflow.messageType = 'success'
   } catch (err) {
     console.error(err)
-    workflow.message = '워크플로우 실행 중 오류가 발생했습니다.'
+    workflow.message = '❌ 워크플로우 실행 중 오류가 발생했습니다.'
     workflow.messageType = 'error'
   }
 }
@@ -110,9 +103,6 @@ const toggleWorkflow = async (workflow: any) => {
   min-width: 280px;
   max-width: 100%;
 }
-.workflow-card.disabled {
-  opacity: 0.5;
-}
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -126,44 +116,18 @@ const toggleWorkflow = async (workflow: any) => {
   font-size: 20px;
   color: #666;
 }
-.toggle-switch {
-  position: relative;
-  display: inline-block;
-  width: 42px;
-  height: 22px;
-}
-.toggle-switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  transition: 0.2s;
-  border-radius: 34px;
-}
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 16px;
-  width: 16px;
-  left: 3px;
-  bottom: 3px;
-  background-color: white;
-  transition: 0.2s;
-  border-radius: 50%;
-}
-.toggle-switch input:checked + .slider {
+.deploy-btn {
   background-color: #3cb371;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
-.toggle-switch input:checked + .slider:before {
-  transform: translateX(20px);
+.deploy-btn:hover {
+  background-color: #2e7d32;
 }
 .status-label {
   padding: 0 16px 8px;
