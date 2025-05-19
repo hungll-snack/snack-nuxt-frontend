@@ -7,6 +7,11 @@
     scrollable
   >
     <v-card v-if="restaurant" class="modal-card">
+      <div class="modal-bookmark-icon" @click="toggleScrap">
+        <v-icon size="30" color="orange">
+          {{ isScrapped ? 'mdi-bookmark' : 'mdi-bookmark-outline' }}
+        </v-icon>
+      </div>
       <v-card-title class="modal-title">
         {{ restaurant.name }}
       </v-card-title>
@@ -44,6 +49,14 @@ const router = useRouter()
 
 const restaurant = computed(() => restaurantStore.selectedRestaurant)
 const dialogWidth = computed(() => (window.innerWidth <= 480 ? '90vw' : '600'))
+
+const isScrapped = computed(() => 
+  restaurantStore.isRestaurantScrapped(restaurant.value.id)
+)
+
+const toggleScrap = async () => {
+  await restaurantStore.toggleScrap(restaurant.value.id)
+}
 
 watch(
   () => props.show,
@@ -153,6 +166,13 @@ const handleFindFriend = () => {
   background: linear-gradient(to right, #ffb74d, #ff7043);
 }
 
+.bookmark-btn {
+  margin-left: auto;
+  margin-right: 8px;
+  font-size: 18px;
+  color: #ff9800;
+}
+
 /* ✅ 모바일 대응 */
 @media (max-width: 480px) {
   
@@ -203,6 +223,15 @@ const handleFindFriend = () => {
     margin: 0 auto;
     border-radius: 20px !important;
   }
+
+  .modal-bookmark-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+    z-index: 10;
+  }
+
 }
 
 /* ✅ 모달 배경 전체 흐림 효과 */

@@ -53,9 +53,14 @@
               </div>
               <div class="address">📍 {{ r.address }}</div>
             </div>
-            <div class="button-group">
+            <div class="button-row">
               <button class="friend-btn" @click.stop="handleFindFriend(r)">
                 밥 친구 모임 ({{ r.friendCount || 0 }})
+              </button>
+              <button class="bookmark-icon" @click.stop="toggleScrap(r)">
+                <v-icon size="24" color="orange">
+                  {{ restaurantStore.isRestaurantScrapped(r.id) ? 'mdi-bookmark' : 'mdi-bookmark-outline' }}
+                </v-icon>
               </button>
             </div>
           </div>
@@ -82,6 +87,7 @@ const keyword = ref('')
 const selectedAreas = ref<string[]>([])
 const showModal = ref(false)
 const areaFilterExpanded = ref(true)
+const scrappedIds = ref<number[]>([])
 
 const areas = [
   '종로구', '중구', '용산구', '성동구', '광진구',
@@ -138,7 +144,12 @@ const areaCounts = computed(() => {
 onMounted(async () => {
   await restaurantStore.loadAllRestaurants()
   await restaurantStore.loadBoardCounts()
+  await restaurantStore.loadScraps()
 })
+
+const toggleScrap = async (restaurant: Restaurant) => {
+  await restaurantStore.toggleScrap(restaurant.id)
+}
 </script>
 
 <style scoped>
@@ -258,13 +269,11 @@ onMounted(async () => {
   color: #777;
   margin-bottom: 12px;
 }
-.button-group {
+.button-row {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 120px;
-  align-items: flex-end;
-  justify-content: flex-start;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 .friend-btn {
   font-size: 13px;
@@ -280,5 +289,13 @@ onMounted(async () => {
 .friend-btn:hover {
   transform: scale(1.05);
   background: #e0e0e0;
+}
+.bookmark-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
 }
 </style>
