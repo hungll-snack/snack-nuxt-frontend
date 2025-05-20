@@ -69,13 +69,14 @@
     }
   }
   
-  // ✅ Toss Payments 위젯 초기화
+  
   onMounted(async () => {
     const clientKey = config.public.TOSS_CLIENT_KEY
     if (!clientKey) {
       console.error("❌ Toss client key 누락됨")
       return
     }
+    //콘솔로그 
   
     paymentWidget.value = await loadPaymentWidget(clientKey, ANONYMOUS)
     paymentMethodWidget.value = paymentWidget.value.renderPaymentMethods(
