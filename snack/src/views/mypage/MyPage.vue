@@ -77,7 +77,7 @@
           <li>
             <span class="label">주소</span>
             <span v-if="!isEditing">{{
-              accountStore.address || '미기입'
+              accountStore.address || 'N'
             }}</span>
             <input
               v-if="isEditing"
@@ -91,9 +91,7 @@
           </li>
           <li>
             <span class="label">가입 일자</span
-            ><span>{{
-              new Date(accountStore.accountRegister).toLocaleDateString()
-            }}</span>
+            ><span>{{ formatDate(accountStore.accountRegister) }}</span>
           </li>
         </ul>
 
@@ -368,6 +366,7 @@ const cancelSubscription = async () => {
 
 onMounted(async () => {
   await accountStore.getAccount()
+  await accountStore.loadAccount()
   await subscribeStore.getSubscribeStatus()
   const orderId = localStorage.getItem('orderId')
   if (orderId) {
@@ -377,6 +376,21 @@ onMounted(async () => {
     console.error('❌ Order ID가 로컬스토리지에서 확인되지 않았습니다.')
   }
 })
+
+// 가입일자 포맷 함수
+const formatDate = (rawDate: string) => {
+  if (!rawDate) return ""
+  const isoDate = rawDate.replace(" ", "T")
+  const date = new Date(isoDate)
+  if (isNaN(date.getTime())) return "미기입"
+
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const day = String(date.getDate()).padStart(2, "0")
+
+  return `${year}.${month}.${day}`  // ✅ YYYY.MM.DD 형식
+}
+
 </script>
 
 <style scoped>
