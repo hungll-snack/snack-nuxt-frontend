@@ -7,13 +7,40 @@
     <div class="desktop-menu">
       <button @click="navigateTo('/restaurants/all')">맛집 찾기</button>
       <button @click="navigateTo('/board/all')">밥 친구 찾기</button>
-      <!-- <button @click="showAppDownloadModal = true">앱 다운로드</button> -->
     </div>
 
-    <div class="menu-toggle" @click="toggleMenu">
-      <span></span>
-      <span></span>
-      <span></span>
+    <!-- 데스크탑 알림 + 마이페이지 아이콘 -->
+    <div class="desktop-right">
+      <div
+        v-if="isAuthenticated"
+        class="auth-icon alarm-icon"
+        @click="toggleAlarmModal"
+      >
+        <v-icon class="gradient-icon">mdi-bell-outline</v-icon>
+        <span v-if="unreadCount > 0" class="alarm-badge">{{ unreadCount }}</span>
+      </div>
+      <div class="auth-icon desktop-auth" @click="handleAuthClick">
+        <v-icon class="gradient-icon">
+          {{ isAuthenticated ? 'mdi-account-circle' : 'mdi-account-circle-outline' }}
+        </v-icon>
+      </div>
+    </div>
+
+    <!-- 모바일 메뉴버튼 + 알림버튼 (순서 반전) -->
+    <div class="mobile-right">
+      <div class="menu-toggle" @click="toggleMenu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div
+        v-if="isAuthenticated"
+        class="auth-icon alarm-icon"
+        @click="toggleAlarmModal"
+      >
+        <v-icon class="gradient-icon">mdi-bell-outline</v-icon>
+        <span v-if="unreadCount > 0" class="alarm-badge">{{ unreadCount }}</span>
+      </div>
     </div>
 
     <transition name="fade">
@@ -25,18 +52,12 @@
         </div>
         <button @click="navigateTo('/restaurants/all')">맛집 찾기</button>
         <button @click="navigateTo('/board/all')">밥 친구 찾기</button>
-        <!-- <button @click="showAppDownloadModal = true">앱 다운로드</button> -->
       </div>
     </transition>
 
-    <div class="auth-icon desktop-auth" @click="handleAuthClick">
-      <v-icon class="gradient-icon">
-        {{ isAuthenticated ? 'mdi-account-circle' : 'mdi-account-circle-outline' }}
-      </v-icon>
-    </div>
-
     <AppDownloadModal :show="showAppDownloadModal" @update:show="showAppDownloadModal = $event" />
     <UserModal :show="showUserModal" @update:show="showUserModal = $event" @logout="confirmLogout" />
+    <AlarmModal :show="showAlarmModal" @update:show="showAlarmModal = $event" />
   </header>
 </template>
 
@@ -45,16 +66,21 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import AppDownloadModal from '@/views/appdown/AppDownloadModal.vue'
 import UserModal from '@/views/layout/userModal/userModal.vue'
+import AlarmModal from '@/views/layout/alarmModal/alarmModal.vue'
 import { useAuthStore } from '@/store/auth/authStore'
+import { useAccountAlarmStore } from '@/store/account_alarm/alarmStore'
 import hungllLogo from '@/assets/images/logo/hungle_full_big.png'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const alarmStore = useAccountAlarmStore()
 
 const isAuthenticated = computed(() => authStore.isAuthenticated)
+const unreadCount = computed(() => alarmStore.unreadCount)
 const showAppDownloadModal = ref(false)
 const showUserModal = ref(false)
 const showMenu = ref(false)
+const showAlarmModal = ref(false)
 
 const goHome = () => router.push('/')
 const toggleMenu = () => (showMenu.value = !showMenu.value)
@@ -80,6 +106,13 @@ const confirmLogout = () => {
   }
 }
 
+const toggleAlarmModal = () => {
+  showAlarmModal.value = !showAlarmModal.value
+  if (showAlarmModal.value) {
+    alarmStore.fetchAlarms()
+  }
+}
+
 const dropdownRef = ref<HTMLElement | null>(null)
 const navRef = ref<HTMLElement | null>(null)
 
@@ -95,11 +128,21 @@ const handleClickOutside = (e: MouseEvent) => {
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
+  if (isAuthenticated.value) {
+    alarmStore.fetchAlarms()
+  }
 })
 
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
 })
+
+watch(isAuthenticated, (val) => {
+  if (val) {
+    alarmStore.fetchAlarms()
+  }
+})
+
 </script>
 
 <style scoped>
@@ -151,7 +194,6 @@ onBeforeUnmount(() => {
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  margin-left: auto;
   cursor: pointer;
 }
 .menu-toggle span {
@@ -200,7 +242,6 @@ onBeforeUnmount(() => {
   transform: scale(1.03);
 }
 
-
 .auth-icon {
   cursor: pointer;
   display: flex;
@@ -226,7 +267,26 @@ onBeforeUnmount(() => {
 }
 
 .desktop-auth {
-  margin-left: auto;
+  margin-left: 12px;
+}
+
+.alarm-icon {
+  position: relative;
+  margin-left: 12px;
+}
+
+.alarm-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #f31515;
+  color: white;
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-weight: bold;
+  line-height: 1;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
 }
 
 .fade-enter-active,
@@ -239,10 +299,27 @@ onBeforeUnmount(() => {
   transform: translateY(-10px);
 }
 
+.desktop-right {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.mobile-right {
+  display: none;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
 @media (max-width: 1024px) {
   .desktop-menu,
-  .desktop-auth {
+  .desktop-right {
     display: none;
+  }
+  .mobile-right {
+    display: flex;
   }
   .menu-toggle {
     display: flex;
