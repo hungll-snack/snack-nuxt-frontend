@@ -12,6 +12,7 @@ export interface Restaurant {
   longitude: number
   closed?: string
   friendCount?: number
+  created_at: string
 }
 
 interface BoardCountResponse {

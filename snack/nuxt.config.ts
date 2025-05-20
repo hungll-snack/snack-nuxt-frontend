@@ -37,6 +37,16 @@ export default defineNuxtConfig({
           href: 'https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap',
         },
       ],
+      script: [
+        {
+          innerHTML: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NJ8WW36F');`,
+          type: 'text/javascript'
+        }
+      ],
       meta: [
         { property: 'og:title', content: 'HUNGLL - 인증 맛집 & 밥친구 찾기 서비스' },
         { property: 'og:description', content: '취향을 기억하는 AI 추천! 서울 맛집과 밥친구를 연결해드립니다.' },
