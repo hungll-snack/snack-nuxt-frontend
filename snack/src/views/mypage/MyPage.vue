@@ -36,15 +36,24 @@
               <p v-if="nicknameCheckResult === false" class="error-msg">이미 사용 중인 닉네임입니다.</p>
             </div>
           </li>
-          <li><span class="label">성별</span><span>{{ accountStore.gender || '미기입' }}</span></li>
-          <li><span class="label">나이</span><span>{{ accountStore.age || '미기입' }}</span></li>
-          <li><span class="label">생년월일</span><span>{{ accountStore.birth || '미기입' }}</span></li>
-          <li><span class="label">이메일</span><span>{{ accountStore.email || '미기입' }}</span></li>
-          <li><span class="label">전화번호</span>
-            <span v-if="!isEditing">{{ accountStore.phoneNum || '미기입' }}</span>
-            <input 
-              v-if="isEditing" 
-              v-model="phoneNum" 
+          <li v-if="accountStore.gender">
+            <span class="label">성별</span><span>{{ accountStore.gender }}</span>
+          </li>
+          <li v-if="accountStore.age">
+            <span class="label">나이</span><span>{{ accountStore.age }}</span>
+          </li>
+          <li v-if="accountStore.birth">
+            <span class="label">생년월일</span><span>{{ accountStore.birth }}</span>
+          </li>
+          <li v-if="accountStore.email">
+            <span class="label">이메일</span><span>{{ accountStore.email }}</span>
+          </li>
+          <li v-if="accountStore.phoneNum">
+            <span class="label">전화번호</span>
+            <span v-if="!isEditing">{{ accountStore.phoneNum }}</span>
+            <input
+              v-if="isEditing && accountStore.accountPath === 'Google'"
+              v-model="phoneNum"
               @input="formatPhoneNumber"
               maxlength="13"
               placeholder="01012345678"
@@ -54,7 +63,14 @@
             <span v-if="!isEditing">{{ accountStore.address || '미기입' }}</span>
             <input v-if="isEditing" v-model="address" placeholder="예: 서울특별시 강남구 테헤란로 123" />
           </li>
+          <li><span class="label">가입 경로</span><span>{{ accountStore.accountPath }}</span></li>
+          <li><span class="label">가입 일자</span><span>{{ new Date(accountStore.accountRegister).toLocaleDateString() }}</span></li>
         </ul>
+        <div class="profile-footer">
+          <v-btn v-if="!isEditing" class="edit-btn" flat @click="toggleEdit">수정하기</v-btn>
+          <v-btn v-if="isEditing" class="save-btn" flat :disabled="!isModified" @click="saveProfile">저장하기</v-btn>
+          <v-btn v-if="isEditing" class="cancel-btn" flat @click="toggleEdit">취소</v-btn>
+        </div>
 
         <div class="scrap-header">알림 설정</div>
         <ul class="info-list">
@@ -72,12 +88,22 @@
           </li>
         </ul>
 
-        
-        <div class="profile-footer">
-          <v-btn v-if="!isEditing" class="edit-btn" flat @click="toggleEdit">수정하기</v-btn>
-          <v-btn v-if="isEditing" class="save-btn" flat :disabled="!isModified" @click="saveProfile">저장하기</v-btn>
-          <v-btn v-if="isEditing" class="cancel-btn" flat @click="toggleEdit">취소</v-btn>
+        <div class="scrap-header">구독 및 결제
+          <button v-if="!subscribeStore.isSubscribed" class="subscribe-btn" @click="navigateToSubscribe">헝글패스 구독하기</button>
         </div>
+
+        <div v-if="subscribeStore.isSubscribed" class="subscribe-info">
+          <p><strong>구독 상태:</strong> 구독중</p>
+          <p><strong>구독 상품:</strong> {{ subscribeStore.planType }}</p>
+          <p><strong>결제 금액:</strong> {{ paymentsStore.paymentInfo?.amount || 'N' }}</p>
+          <p><strong>결제 방법:</strong> {{ paymentsStore.paymentInfo?.method || 'N' }}</p>
+          <p><strong>결제 날짜:</strong> {{ paymentsStore.paymentInfo?.paidAt || 'N' }}</p>
+          <p><strong>만료 기한:</strong> {{ subscribeStore.endDate }}</p>
+          <a v-if="paymentsStore.paymentInfo?.receiptUrl" :href="paymentsStore.paymentInfo.receiptUrl" target="_blank">영수증 보기</a>
+          <button class="cancel-btn" @click="cancelSubscription">구독 취소</button>
+        </div>
+
+        <p v-else>현재 구독 중이 아닙니다.</p>
       </div>
 
       <div v-if="selectedMenu === 'scrap'" class="scrap-wrapper">
@@ -133,17 +159,23 @@ import { accountRepository } from '@/repository/account/accountRepository'
 import { useAuthStore } from '@/store/auth/authStore'
 import { useAdminStore } from '@/store/admin/adminStore'
 import { useRestaurantsStore } from '@/store/restaurants/restaurantsStore'
+import { useSubscribeStore } from '@/store/subscribe/subscribeStore'
+import { usePaymentsStore } from '@/store/payments/paymentsStore'
+import type { PaymentInfo } from '@/store/payments/paymentsStore'
 
 const accountStore = useAccountStore()
 const authStore = useAuthStore()
 const adminStore = useAdminStore()
 const router = useRouter()
 const restaurantStore = useRestaurantsStore()
+const subscribeStore = useSubscribeStore()
+const paymentsStore = usePaymentsStore()
 
 const selectedMenu = ref<'profile' | 'scrap'>('profile')
 const isEditing = ref(false)
 const isModified = ref(false) 
 const nicknameCheckResult = ref<null | boolean>(null)
+const paymentInfo = ref<PaymentInfo | null>(null)
 
 //수정 가능한 프로필 필드
 const nickname = ref(accountStore.nickname)
@@ -303,6 +335,28 @@ const handleWithdraw = async () => {
 const goToRestaurantAll = () => {
   router.push('/restaurants/all')
 }
+
+const navigateToSubscribe = () => {
+  router.push('/subscribe/select')
+}
+
+const cancelSubscription = async () => {
+  await subscribeStore.cancelSubscribe()
+  alert('구독이 취소되었습니다.')
+}
+
+// 구독 및 결제 정보 로드
+onMounted(async () => {
+  await subscribeStore.getSubscribeStatus();
+  const orderId = localStorage.getItem('orderId');
+  if (orderId) {
+    await paymentsStore.getPaymentInfo(orderId);
+    paymentInfo.value = paymentsStore.paymentInfo; 
+  } else {
+    console.error('❌ Order ID가 로컬스토리지에서 확인되지 않았습니다.');
+  }
+})
+
 </script>
 
 <style scoped>
@@ -379,21 +433,25 @@ const goToRestaurantAll = () => {
   color: white;
 }
 
-.edit-btn {
+.edit-btn,
+.save-btn,
+.cancel-btn  {
+  margin-top: 5px;
   background: linear-gradient(135deg, #ff9800, #ff5722);
   color: white;
   border-radius: 999px;
-  padding: 10px 24px;
-  font-size: 13px;
-  font-weight: 600;
+  padding: 6px 16px;
+  font-size: 12px;
+  font-weight: 500;
 }
 
 .profile-footer {
-  margin-top: auto;
+  margin-top: 0; 
+  margin-bottom: 24px;
   display: flex;
   justify-content: center;
+  gap: 8px;
 }
-
 .withdraw-btn {
   background: #f2f2f2;
   color: #c62828;
@@ -689,4 +747,20 @@ const goToRestaurantAll = () => {
   transform: translateX(7px); 
   color: #666;
 }
+
+.subscribe-btn {
+  background-color: #ff9800;
+  color: #fff;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+  font-weight: bold;
+  font-size: 12px;
+}
+.subscribe-btn:hover {
+  background-color: #e65100;
+}
+
 </style>
