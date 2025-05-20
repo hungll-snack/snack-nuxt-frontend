@@ -18,11 +18,15 @@ export default defineNuxtConfig({
       noExternal: ['vuetify'],
     },
     optimizeDeps: {
-      include: ['fast-xml-parser'],
+      include: ['fast-xml-parser','@tosspayments/payment-widget-sdk'],
     },
     plugins: [vuetify()],
+    build: {
+      rollupOptions: {
+        external: ['@tosspayments/payment-widget-sdk']
+      }
+    }
   },
-  
 
   app: {
     head: {
@@ -44,13 +48,23 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-NJ8WW36F');`,
-          type: 'text/javascript'
-        }
+          type: 'text/javascript',
+        },
       ],
       meta: [
-        { property: 'og:title', content: 'HUNGLL - 인증 맛집 & 밥친구 찾기 서비스' },
-        { property: 'og:description', content: '취향을 기억하는 AI 추천! 서울 맛집과 밥친구를 연결해드립니다.' },
-        { property: 'og:image', content: 'https://hungll.com/og/hungle_hgl.png' },
+        {
+          property: 'og:title',
+          content: 'HUNGLL - 인증 맛집 & 밥친구 찾기 서비스',
+        },
+        {
+          property: 'og:description',
+          content:
+            '취향을 기억하는 AI 추천! 서울 맛집과 밥친구를 연결해드립니다.',
+        },
+        {
+          property: 'og:image',
+          content: 'https://hungll.com/og/hungle_hgl.png',
+        },
         { property: 'og:url', content: 'https://hungll.com/' },
         { property: 'og:type', content: 'website' },
         { name: 'twitter:card', content: 'summary_large_image' }, // (선택) 트위터용 카드
@@ -67,7 +81,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
       AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
       AWS_BUCKET_NAME: process.env.AWS_BUCKET_NAME,
-      
     },
   },
 
