@@ -8,15 +8,15 @@ const getAxios = () => {
 
 export const restaurantsRepository = {
   async fetchAllRestaurants() {
-    const { data } = await createAxiosInstance().get('/restaurant/list')
+    const { data } = await getAxios().get('/restaurant/list')
     return data
   },
   async searchRestaurants(keyword: string) {
-    const { data } = await createAxiosInstance().get(`/restaurant/search?keyword=${encodeURIComponent(keyword)}`)
+    const { data } = await getAxios().get(`/restaurant/search?keyword=${encodeURIComponent(keyword)}`)
     return data
   },
   async fetchRestaurantBoardCounts() {
-    const { data } = await createAxiosInstance().get('/board/count')
+    const { data } = await getAxios().get('/board/count')
     return Array.isArray(data.data) ? data.data : [] // ✅ 안전하게 배열만 반환
   },
   async getMyScraps() {
