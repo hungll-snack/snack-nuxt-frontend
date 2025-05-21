@@ -1,7 +1,7 @@
 <template>
   <section class="actions-monitor-wrapper">
     <h2 class="section-title">GitHub Actions 모니터링</h2>
-    <p class="section-sub">HUNGLL 프로젝트의 실시간 CI/CD 상태를 확인할 수 있어요.</p>
+    <p class="section-sub">헝글(HUNGLL) 프로젝트의 실시간 CI/CD 상태를 확인할 수 있어요.</p>
 
     <!-- 🟧 커스텀 버튼 UI -->
     <div class="repo-tabs">
