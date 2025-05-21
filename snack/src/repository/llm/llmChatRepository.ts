@@ -26,7 +26,7 @@ export const llmChatRepository = {
       method: 'POST',
       headers: {
         ...getHeaders(),
-        'Accept': 'text/plain',
+        'Accept': 'text/event-stream',
       },
       body: JSON.stringify({ query })
     })
