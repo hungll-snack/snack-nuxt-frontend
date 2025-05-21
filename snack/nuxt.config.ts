@@ -1,6 +1,7 @@
 import vuetify from 'vite-plugin-vuetify'
 import { defineNuxtConfig } from 'nuxt/config'
 
+
 export default defineNuxtConfig({
   srcDir: 'src',
 
@@ -9,6 +10,8 @@ export default defineNuxtConfig({
   build: {
     transpile: ['vuetify', '@aws-sdk/client-s3'],
   },
+
+
 
   vite: {
     define: {
@@ -71,7 +74,34 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       ],
     },
   },
+  modules: ['@nuxtjs/sitemap'],
 
+  // @ts-expect-error: 타입 무시
+  sitemap: {
+    siteUrl: 'https://hungll.com',
+    gzip: true,
+    trailingSlash: false,
+    exclude: [
+      '/admin/**',
+      '/[provider]-oauth/**',
+      '/common/error',
+      '/common/404'
+    ],
+    routes: async () => [
+      '/',
+      '/login',
+      '/mypage',
+      '/restaurants/all',
+      '/board/all',
+      '/board/create',
+      '/policy/privacy',
+      '/policy/terms-info',
+      '/subscribe/select',
+      '/payments',
+      '/subscribe/select',
+      '/prefer'
+    ]
+  },
   runtimeConfig: {
     public: {
       MAIN_API_URL: process.env.NUXT_PUBLIC_MAIN_API_URL,
@@ -83,6 +113,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       AWS_BUCKET_NAME: process.env.AWS_BUCKET_NAME,
     },
   },
+
+  
 
   compatibilityDate: '2025-04-04',
 })
