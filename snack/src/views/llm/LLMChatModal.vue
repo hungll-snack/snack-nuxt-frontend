@@ -95,8 +95,10 @@ const sendMessage = async () => {
 
   try {
     await llmChatRepository.streamChat(query, (chunk) => {
+      console.log('💬 chunk', chunk)
       chatStore.updateBotStreaming(chunk)
       scrollToBottom()
+      
     })
 
     chatStore.commitBotMessage()
