@@ -1,33 +1,65 @@
-import { createAxiosInstance } from '@/common/utils/axiosInstance';
+import { createAxiosInstance } from '@/common/utils/axiosInstance'
 
 export const subscribeRepository = {
-  // ✅ 구독 상태 조회
-  async getSubscribeStatus(userToken: string, accountId: string) {
-    const axios = createAxiosInstance(userToken, accountId);
-    const response = await axios.get(`/subscribe/status?subscriberId=${accountId}`);
+  async getSubscribeStatus(): Promise<any | null> {
+    const token = localStorage.getItem('userToken') || ''
+    const accountId = localStorage.getItem('account_id') || ''
+    const axios = createAxiosInstance(token, accountId)
 
-    return response.data;
+    try {
+      const { data } = await axios.get(`/subscribe/status?subscriberId=${accountId}`)
+      return data
+    } catch (error: any) {
+      if (error.response?.status === 204) return null 
+      throw error
+    }
   },
 
-  // ✅ 구독 생성
-  async createSubscribe(userToken: string, accountId: string, planType: string, endDate: string) {
-    const axios = createAxiosInstance(userToken, accountId);
-    const response = await axios.post('/subscribe/create', {
+  async cancelSubscribe() {
+    const token = localStorage.getItem('userToken') || ''
+    const accountId = localStorage.getItem('account_id') || ''
+    const axios = createAxiosInstance(token, accountId)
+
+    const { data } = await axios.post('/subscribe/cancel', {
       subscriberId: accountId,
-      subscribeId: planType,
-      endDate: endDate,
-    });
+    })
 
-    return response.data;
+    return data
   },
 
-  // ✅ 구독 취소
-  async cancelSubscribe(userToken: string, accountId: string) {
-    const axios = createAxiosInstance(userToken, accountId);
-    const response = await axios.post('/subscribe/cancel', {
-      subscriberId: accountId,
-    });
+  async renewScheduledSubscriptions() {
+    const token = localStorage.getItem('userToken') || ''
+    const accountId = localStorage.getItem('account_id') || ''
+    const axios = createAxiosInstance(token, accountId)
 
-    return response.data;
+    const { data } = await axios.post('/subscribe/renew')
+    return data.message
   },
-};
+
+  async deactivateExpiredSubscriptions() {
+    const token = localStorage.getItem('userToken') || ''
+    const accountId = localStorage.getItem('account_id') || ''
+    const axios = createAxiosInstance(token, accountId)
+
+    const { data } = await axios.post('/subscribe/deactivate')
+    return data.message
+  },
+
+  async getSubscribeHistory() {
+    const token = localStorage.getItem('userToken') || ''
+    const accountId = localStorage.getItem('account_id') || ''
+    const axios = createAxiosInstance(token, accountId)
+
+    const { data } = await axios.get(`/subscribe/history?subscriberId=${accountId}`)
+    return data.history
+  },
+
+  async getSubscribeList() {
+    const token = localStorage.getItem('userToken') || ''
+    const accountId = localStorage.getItem('account_id') || ''
+    const axios = createAxiosInstance(token, accountId)
+
+    const { data } = await axios.get('/subscribe/list')
+    return data
+  },
+}
