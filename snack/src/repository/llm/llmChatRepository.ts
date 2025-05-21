@@ -24,7 +24,10 @@ export const llmChatRepository = {
     const aiBaseUrl = getAIBaseUrl()
     const response = await fetch(`${aiBaseUrl}/llm/search`, {
       method: 'POST',
-      headers: getHeaders(),
+      headers: {
+        ...getHeaders(),
+        'Accept': 'text/event-stream',
+      },
       body: JSON.stringify({ query })
     })
 

@@ -5,7 +5,7 @@
       <v-icon class="greeting-icon" size="36">mdi-emoticon-happy-outline</v-icon>
       <h2 class="greeting-text">안녕하세요, <strong>{{ nickname }}</strong> 님 👋</h2>
       <p class="greeting-subtext">
-        HUNGLL 운영에 필요한 주요 기능들을 아래에서 바로 접근하실 수 있어요.
+        헝글(HUNGLL) 운영에 필요한 주요 기능들을 아래에서 바로 접근하실 수 있어요.
       </p>
     </section>
 

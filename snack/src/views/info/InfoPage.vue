@@ -61,6 +61,31 @@ import BoardIntroSection from '@/views/info/BoardIntroSection.vue'
 import TeamSection from '@/views/info/TeamSection.vue'
 import SurveyPopup from '@/views/info/SurveyPopup.vue'
 
+useHead({
+  title: '헝글(HUNGLL) - 인증 맛집 & 밥친구 찾기 서비스',
+  meta: [
+    {
+      name: 'description',
+      content: 'AI 기반 맛집 추천과 밥친구 매칭, 헝글(HUNGLL)에서 나에게 딱 맞는 식당과 사람을 찾아보세요.',
+    },
+    {
+      name: 'keywords',
+      content: '맛집 추천, 밥약, 밥친구, 헝글, AI 추천, 밥친구 찾기, 서울 식당,밥약, 헝글 서비스',
+    },
+    // Open Graph
+    { property: 'og:title', content: '헝글(HUNGLL) - 인증 맛집 & 밥친구 찾기 서비스' },
+    { property: 'og:description', content: '서울의 인증 맛집을 AI가 추천하고, 함께 밥먹을 친구도 연결해드립니다.' },
+    { property: 'og:image', content: 'https://hungll.com/og/hungle_hgl.png' },
+    { property: 'og:url', content: 'https://hungll.com/' },
+    { property: 'og:type', content: 'website' },
+    // Twitter
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:title', content: '헝글(HUNGLL) - 맛집 추천 & 밥친구 연결' },
+    { name: 'twitter:description', content: 'AI가 추천하고, 사람과 연결하는 헝글 서비스로 새로운 식사 경험을 시작하세요.' },
+    { name: 'twitter:image', content: 'https://hungll.com/og/hungle_hgl.png' },
+  ]
+})
+
 const sectionIndex = ref(0)
 const introSectionRef = ref<HTMLElement | null>(null)
 const hungllSectionRef = ref<HTMLElement | null>(null)

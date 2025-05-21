@@ -1,10 +1,22 @@
 <script setup lang="ts">
 import { ref, computed, defineProps, defineEmits } from 'vue'
 import ReportModal from '@/views/report/ReportModal.vue'
+import { useAccountStore } from '@/store/account/accountStore'
 
 const props = defineProps<{ comment: any; level: number }>()
 const emit = defineEmits(['reply', 'delete', 'edit'])
 
+const accountStore = useAccountStore()
+
+const isAuthor = computed(() => {
+  return props.comment.author_account_id === accountStore.accountId
+})
+
+const isAdmin = computed(() => {
+  return localStorage.getItem('isAdmin') === 'true'
+})
+
+const level = computed(() => props.level || 0)
 const showReplyInput = ref(false)
 const replyContent = ref('')
 const isEditing = ref(false)
@@ -91,15 +103,15 @@ const reportComment = () => {
       ·
       <span class="comment-time">{{ comment.created_at }}</span>
       <span
-        v-if="!comment.is_author && !comment.is_deleted"
+        v-if="!isAuthor && !comment.is_deleted"
         class="report-btn"
         @click="reportComment"
       >신고</span>
     </div>
 
     <div class="action-buttons">
-      <button v-if="(comment.is_author || comment.is_admin) && !comment.is_deleted" class="action-btn edit-btn" @click="startEdit">수정</button>
-      <button v-if="(comment.is_author || comment.is_admin) && !comment.is_deleted" class="action-btn delete-btn" @click="confirmDelete">삭제</button>
+      <button v-if="(isAuthor || isAdmin) && !comment.is_deleted" class="action-btn edit-btn" @click="startEdit">수정</button>
+      <button v-if="(isAuthor || isAdmin) && !comment.is_deleted" class="action-btn delete-btn" @click="confirmDelete">삭제</button>
       <button v-if="!comment.is_deleted && !comment.parent_id" class="action-btn reply-btn" @click="toggleReply">답글</button>
     </div>
 
