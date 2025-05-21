@@ -140,6 +140,7 @@
 
         <div class="scrap-header">
           구독 및 결제
+          <span class="notice">(현재 테스트 중이며 실제 서비스 운영이 아닙니다)</span>
           <button
             v-if="!subscribeStore.isSubscribed"
             class="subscribe-btn"
@@ -149,37 +150,32 @@
           </button>
         </div>
 
-        <div v-if="subscribeStore.isSubscribed" class="subscribe-info">
-          <p><strong>구독 상태:</strong> 구독중</p>
-          <p><strong>구독 상품:</strong> {{ subscribeStore.planType }}</p>
-          <p>
-            <strong>결제 금액:</strong>
-            {{ paymentsStore.paymentInfo?.amount || 'N' }}
-          </p>
-          <p>
-            <strong>결제 방법:</strong>
-            {{ paymentsStore.paymentInfo?.method || 'N' }}
-          </p>
-          <p>
-            <strong>결제 날짜:</strong>
-            {{ paymentsStore.paymentInfo?.paidAt || 'N' }}
-          </p>
-          <p><strong>만료 기한:</strong> {{ subscribeStore.endDate }}</p>
-          <a
-            v-if="paymentsStore.paymentInfo?.receiptUrl"
-            :href="paymentsStore.paymentInfo.receiptUrl"
-            target="_blank"
-            >영수증 보기</a
-          >
+        <div v-if="subscribeStore.isSubscribed">
+          <ul class="info-list">
+            <li><span class="label">구독 상태</span><span>구독중</span></li>
+            <li><span class="label">구독 상품</span><span>{{ subscribeStore.planName }}</span></li>
+            <li><span class="label">만료일</span><span>{{ formatDate(subscribeStore.endDate) }}</span></li>
+            <li><span class="label">결제 금액</span><span>{{ paymentsStore.paymentInfo?.amountWithCurrency || 'N/A' }}</span></li>
+            <li><span class="label">결제 방법</span><span>{{ paymentsStore.paymentInfo?.method || 'N/A' }}</span></li>
+            <li><span class="label">결제 일자</span><span>{{ formatDate(paymentsStore.paymentInfo?.approvedAt || '') || 'N/A' }}</span></li>
+            <li v-if="paymentsStore.paymentInfo?.receipt_url">
+              <span class="label">영수증</span>
+              <span>
+                <a :href="paymentsStore.paymentInfo.receipt_url" target="_blank" style="color: #ff6f00; font-weight: 600;">
+                  영수증 보기
+                </a>
+              </span>
+            </li>
+          </ul>
+
           <button class="cancel-btn" @click="cancelSubscription">
-            구독 취소
+            구독 해지
           </button>
         </div>
-
-        <p class="none-subscribe">현재 구독 중이 아닙니다.</p>
-      </div>
-
-      <div v-if="selectedMenu === 'scrap'">
+        <p v-else class="none-subscribe">현재 구독 중이 아닙니다.</p>
+        </div>
+      
+        <div v-if="selectedMenu === 'scrap'">
         <MyScrapList />
       </div>
     </main>
@@ -364,20 +360,6 @@ const cancelSubscription = async () => {
   alert('구독이 취소되었습니다.')
 }
 
-onMounted(async () => {
-  await accountStore.getAccount()
-  await accountStore.loadAccount()
-  await subscribeStore.getSubscribeStatus()
-  const orderId = localStorage.getItem('orderId')
-  if (orderId) {
-    await paymentsStore.getPaymentInfo(orderId)
-    paymentInfo.value = paymentsStore.paymentInfo
-  } else {
-    console.error('❌ Order ID가 로컬스토리지에서 확인되지 않았습니다.')
-  }
-})
-
-// 가입일자 포맷 함수
 const formatDate = (rawDate: string) => {
   if (!rawDate) return ""
   const isoDate = rawDate.replace(" ", "T")
@@ -388,8 +370,18 @@ const formatDate = (rawDate: string) => {
   const month = String(date.getMonth() + 1).padStart(2, "0")
   const day = String(date.getDate()).padStart(2, "0")
 
-  return `${year}.${month}.${day}`  // ✅ YYYY.MM.DD 형식
+  return `${year}.${month}.${day}`  
 }
+
+onMounted(async () => {
+  await accountStore.getAccount()
+  await accountStore.loadAccount()
+  await subscribeStore.loadSubscribeStatus()
+  const storedPayment = localStorage.getItem('paymentInfo')
+  if (storedPayment) {
+    paymentsStore.paymentInfo = JSON.parse(storedPayment)
+  }
+})
 
 </script>
 
@@ -796,4 +788,17 @@ const formatDate = (rawDate: string) => {
   font-size: 12px;
   color: #999;  
 }
+
+.d-flex {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.notice {
+  font-size: 12px;
+  color: #999;
+  font-weight: normal;
+}
+
 </style>
