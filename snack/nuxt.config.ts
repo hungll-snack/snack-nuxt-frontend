@@ -67,7 +67,7 @@ export default defineNuxtConfig({
       meta: [
         {
           property: 'og:title',
-          content: 'HUNGLL - 인증 맛집 & 밥친구 찾기 서비스',
+          content: '헝글(HUNGLL) - 인증 맛집 & 밥친구 찾기 서비스',
         },
         {
           property: 'og:description',

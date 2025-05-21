@@ -9,7 +9,7 @@
 
     <p class="description gradient-text">
       서울의 인증된 맛집을 취향 기반으로 추천하고,<br />
-      나와 맞는 밥친구까지 연결해주는 트렌디한 AI 서비스, <strong>HUNGLL</strong>
+      나와 맞는 밥친구까지 연결해주는 트렌디한 AI 서비스, <strong>헝글(HUNGLL)</strong>
     </p>
     <br>
     <br>
