@@ -18,14 +18,14 @@ export default defineNuxtConfig({
       noExternal: ['vuetify'],
     },
     optimizeDeps: {
-      include: ['fast-xml-parser','@tosspayments/payment-widget-sdk'],
+      include: ['fast-xml-parser', '@tosspayments/payment-widget-sdk'],
     },
     plugins: [vuetify()],
     build: {
       rollupOptions: {
-        external: ['@tosspayments/payment-widget-sdk']
-      }
-    }
+        external: ['@tosspayments/payment-widget-sdk'],
+      },
+    },
   },
 
   app: {
@@ -44,10 +44,23 @@ export default defineNuxtConfig({
       script: [
         {
           innerHTML: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NJ8WW36F');`,
+          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+          })(window,document,'script','dataLayer','GTM-K35DKXLF');`,
+          type: 'text/javascript',
+        },
+        {
+          src: 'https://www.googletagmanager.com/gtag/js?id=G-1WZKVN0BMG',
+          async: true,
+        },
+        {
+          innerHTML: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-1WZKVN0BMG');
+          `,
           type: 'text/javascript',
         },
       ],
@@ -82,14 +95,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       '/admin/**',
       '/[provider]-oauth/**',
       '/common/error',
-      '/common/404'
+      '/common/404',
     ],
     routes: [
       {
         url: '/',
         changefreq: 'daily',
         priority: 1.0,
-        lastmod: new Date().toISOString()
+        lastmod: new Date().toISOString(),
       },
       { url: '/login', changefreq: 'monthly', priority: 0.4 },
       { url: '/mypage', changefreq: 'weekly', priority: 0.3 },
@@ -100,8 +113,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       { url: '/policy/terms-info', changefreq: 'yearly', priority: 0.2 },
       { url: '/subscribe/select', changefreq: 'monthly', priority: 0.5 },
       { url: '/payments', changefreq: 'monthly', priority: 0.5 },
-      { url: '/prefer', changefreq: 'monthly', priority: 0.6 }
-    ]
+      { url: '/prefer', changefreq: 'monthly', priority: 0.6 },
+    ],
   },
 
   runtimeConfig: {
