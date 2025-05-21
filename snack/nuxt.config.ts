@@ -81,6 +81,7 @@ export default defineNuxtConfig({
         { property: 'og:url', content: 'https://hungll.com/' },
         { property: 'og:type', content: 'website' },
         { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'naver-site-verification', content: 'd3ea9de3d958a25bdf06e1aec7db4df25f4f4223' }
       ],
     },
   },
