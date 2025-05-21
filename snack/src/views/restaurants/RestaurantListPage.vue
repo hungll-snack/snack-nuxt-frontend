@@ -392,4 +392,37 @@ const toggleScrap = async (restaurant: Restaurant) => {
   display: flex;
   align-items: center;
 }
+/* 기존 위치 고정 스타일 */
+.button-row {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* 모바일 뷰 대응 */
+@media (max-width: 700px) {
+  .button-row {
+    position: static; /* 절대 위치 해제 */
+    margin-top: -8px;
+    margin-bottom: 0;
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  .restaurant-card {
+    padding-right: 16px; /* 기존 우측 padding 제거 */
+  }
+
+  .restaurant-name {
+    font-size: 15px;
+  }
+
+  .address {
+    font-size: 12px;
+  }
+}
+
 </style>
