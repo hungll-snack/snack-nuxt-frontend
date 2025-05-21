@@ -1,7 +1,6 @@
 import vuetify from 'vite-plugin-vuetify'
 import { defineNuxtConfig } from 'nuxt/config'
 
-
 export default defineNuxtConfig({
   srcDir: 'src',
 
@@ -10,8 +9,6 @@ export default defineNuxtConfig({
   build: {
     transpile: ['vuetify', '@aws-sdk/client-s3'],
   },
-
-
 
   vite: {
     define: {
@@ -70,13 +67,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         },
         { property: 'og:url', content: 'https://hungll.com/' },
         { property: 'og:type', content: 'website' },
-        { name: 'twitter:card', content: 'summary_large_image' }, // (선택) 트위터용 카드
+        { name: 'twitter:card', content: 'summary_large_image' },
       ],
     },
   },
+
   modules: ['@nuxtjs/sitemap'],
 
-  // @ts-expect-error: 타입 무시
   sitemap: {
     siteUrl: 'https://hungll.com',
     gzip: true,
@@ -87,21 +84,26 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       '/common/error',
       '/common/404'
     ],
-    routes: async () => [
-      '/',
-      '/login',
-      '/mypage',
-      '/restaurants/all',
-      '/board/all',
-      '/board/create',
-      '/policy/privacy',
-      '/policy/terms-info',
-      '/subscribe/select',
-      '/payments',
-      '/subscribe/select',
-      '/prefer'
+    routes: [
+      {
+        url: '/',
+        changefreq: 'daily',
+        priority: 1.0,
+        lastmod: new Date().toISOString()
+      },
+      { url: '/login', changefreq: 'monthly', priority: 0.4 },
+      { url: '/mypage', changefreq: 'weekly', priority: 0.3 },
+      { url: '/restaurants/all', changefreq: 'daily', priority: 0.9 },
+      { url: '/board/all', changefreq: 'daily', priority: 0.9 },
+      { url: '/board/create', changefreq: 'weekly', priority: 0.6 },
+      { url: '/policy/privacy', changefreq: 'yearly', priority: 0.2 },
+      { url: '/policy/terms-info', changefreq: 'yearly', priority: 0.2 },
+      { url: '/subscribe/select', changefreq: 'monthly', priority: 0.5 },
+      { url: '/payments', changefreq: 'monthly', priority: 0.5 },
+      { url: '/prefer', changefreq: 'monthly', priority: 0.6 }
     ]
   },
+
   runtimeConfig: {
     public: {
       MAIN_API_URL: process.env.NUXT_PUBLIC_MAIN_API_URL,
@@ -115,8 +117,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       TOSS_CLIENT_KEY: process.env.CLIENT_KEY,
     },
   },
-
-  
 
   compatibilityDate: '2025-04-04',
 })
