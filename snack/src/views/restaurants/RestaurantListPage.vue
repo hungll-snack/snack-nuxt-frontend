@@ -16,7 +16,10 @@
             <div class="filter-group">
               <div class="filter-header">
                 <h4 class="filter-title">서울시</h4>
-                <button class="toggle-filter-btn" @click="areaFilterExpanded = !areaFilterExpanded">
+                <button
+                  class="toggle-filter-btn"
+                  @click="areaFilterExpanded = !areaFilterExpanded"
+                >
                   {{ areaFilterExpanded ? '필터 접기 ⬆' : '필터 펼치기 ⬇' }}
                 </button>
               </div>
@@ -25,7 +28,10 @@
                 <button
                   v-for="area in areas"
                   :key="area"
-                  :class="['filter-button', selectedAreas.includes(area) ? 'selected' : '']"
+                  :class="[
+                    'filter-button',
+                    selectedAreas.includes(area) ? 'selected' : '',
+                  ]"
                   @click="toggleArea(area)"
                 >
                   {{ area }} ({{ areaCounts[area] || 0 }})
@@ -34,7 +40,9 @@
 
               <div v-if="selectedAreas.length > 0" class="selected-summary">
                 <span>선택된 지역: {{ selectedAreas.join(', ') }}</span>
-                <button class="reset-btn" @click="selectedAreas = []">초기화</button>
+                <button class="reset-btn" @click="selectedAreas = []">
+                  초기화
+                </button>
               </div>
             </div>
           </div>
@@ -59,7 +67,11 @@
               </button>
               <button class="bookmark-icon" @click.stop="toggleScrap(r)">
                 <v-icon size="24" color="orange">
-                  {{ restaurantStore.isRestaurantScrapped(r.id) ? 'mdi-bookmark' : 'mdi-bookmark-outline' }}
+                  {{
+                    restaurantStore.isRestaurantScrapped(r.id)
+                      ? 'mdi-bookmark'
+                      : 'mdi-bookmark-outline'
+                  }}
                 </v-icon>
               </button>
             </div>
@@ -79,6 +91,31 @@ import { useRestaurantsStore } from '@/store/restaurants/restaurantsStore'
 import RestaurantModal from '@/views/restaurants/RestaurantModal.vue'
 import type { Restaurant } from '@/store/restaurants/restaurantsStore'
 import { useRouter } from 'vue-router'
+useHead({
+  title: '서울 맛집 찾기 - HUNGLL',
+  meta: [
+    {
+      name: 'description',
+      content:
+        '서울 전 지역의 인증된 맛집을 헝글 AI가 추천해드립니다. 사용자 선호도를 바탕으로 최적의 식당을 찾아보세요.',
+    },
+    {
+      name: 'keywords',
+      content:
+        '헝글, 서울 맛집, AI 추천 맛집, 헝글 맛집 리스트, 맛집, 혼밥, 밥친구, 식사 모임, 서울 곱창, 서울 와인 맛집, 맛집 찾기, 맛집 추천, 맛집 찾기 서비스', 
+    },
+    { property: 'og:title', content: '서울 맛집 찾기 - HUNGLL' },
+    {
+      property: 'og:description',
+      content:
+        '내 취향에 맞는 서울 맛집을 한눈에 확인하고 밥친구까지 연결하세요.',
+    },
+    { property: 'og:image', content: 'https://hungll.com/og/hungle_hgl.png' },
+    { property: 'og:url', content: 'https://hungll.com/restaurants/all' },
+    { property: 'og:type', content: 'website' },
+    { name: 'twitter:card', content: 'summary_large_image' },
+  ],
+})
 
 const restaurantStore = useRestaurantsStore()
 const router = useRouter()
@@ -90,16 +127,36 @@ const areaFilterExpanded = ref(true)
 const scrappedIds = ref<number[]>([])
 
 const areas = [
-  '종로구', '중구', '용산구', '성동구', '광진구',
-  '동대문구', '중랑구', '성북구', '강북구', '도봉구',
-  '노원구', '은평구', '서대문구', '마포구', '양천구',
-  '강서구', '구로구', '금천구', '영등포구', '동작구',
-  '관악구', '서초구', '강남구', '송파구', '강동구'
+  '종로구',
+  '중구',
+  '용산구',
+  '성동구',
+  '광진구',
+  '동대문구',
+  '중랑구',
+  '성북구',
+  '강북구',
+  '도봉구',
+  '노원구',
+  '은평구',
+  '서대문구',
+  '마포구',
+  '양천구',
+  '강서구',
+  '구로구',
+  '금천구',
+  '영등포구',
+  '동작구',
+  '관악구',
+  '서초구',
+  '강남구',
+  '송파구',
+  '강동구',
 ]
 
 const toggleArea = (area: string) => {
   selectedAreas.value.includes(area)
-    ? selectedAreas.value = selectedAreas.value.filter(a => a !== area)
+    ? (selectedAreas.value = selectedAreas.value.filter((a) => a !== area))
     : selectedAreas.value.push(area)
 }
 
@@ -125,21 +182,23 @@ const handleFindFriend = (r: Restaurant) => {
 
 const filteredRestaurants = computed(() => {
   return restaurantStore.restaurantList.filter((r) => {
-    return selectedAreas.value.length === 0 || selectedAreas.value.some(area => r.address.includes(area))
+    return (
+      selectedAreas.value.length === 0 ||
+      selectedAreas.value.some((area) => r.address.includes(area))
+    )
   })
 })
 
 const areaCounts = computed(() => {
   const counts: Record<string, number> = {}
-  restaurantStore.restaurantList.forEach(r => { 
-    const match = areas.find(area => r.address.includes(area))
+  restaurantStore.restaurantList.forEach((r) => {
+    const match = areas.find((area) => r.address.includes(area))
     if (match) {
       counts[match] = (counts[match] || 0) + 1
     }
   })
   return counts
 })
-
 
 onMounted(async () => {
   await restaurantStore.loadAllRestaurants()
@@ -151,7 +210,7 @@ const toggleScrap = async (restaurant: Restaurant) => {
   const accountId = localStorage.getItem('account_id')
   const userToken = localStorage.getItem('userToken')
 
-  if(!accountId || !userToken) {
+  if (!accountId || !userToken) {
     alert('로그인 후 이용할 수 있습니다 😊')
     return
   }
@@ -160,9 +219,12 @@ const toggleScrap = async (restaurant: Restaurant) => {
 </script>
 
 <style scoped>
-.search-col { padding-left: 8px; }
+.search-col {
+  padding-left: 8px;
+}
 .restaurant-list-wrapper {
-  padding: 16px; height: 100%;
+  padding: 16px;
+  height: 100%;
   background: #ffffff;
   border-radius: 16px;
   overflow-y: auto;
@@ -176,7 +238,9 @@ const toggleScrap = async (restaurant: Restaurant) => {
   border-radius: 999px;
   font-size: 14px;
   background-color: #fff;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 .search-input:focus {
   outline: none;
@@ -259,7 +323,9 @@ const toggleScrap = async (restaurant: Restaurant) => {
   justify-content: space-between;
   align-items: flex-start;
   gap: 16px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 .restaurant-card:hover {
   transform: translateY(-2px);
@@ -291,7 +357,9 @@ const toggleScrap = async (restaurant: Restaurant) => {
   cursor: pointer;
   background: #f5f5f5;
   color: #333;
-  transition: transform 0.2s ease, background 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
 }
 .friend-btn:hover {
   transform: scale(1.05);
