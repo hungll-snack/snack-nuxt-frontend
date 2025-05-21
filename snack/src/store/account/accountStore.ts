@@ -49,7 +49,6 @@ export const useAccountStore = defineStore('account', {
       }
     },
 
-
     async getAccount() {
       try {
         const profile = await accountRepository.getProfileInfo()
@@ -58,6 +57,14 @@ export const useAccountStore = defineStore('account', {
       } catch (error) {
         console.error('❌ getAccount 실패:', error)
         throw error
+      }
+    },
+    async loadAccount() {
+      try {
+        const account = await accountRepository.getAccountInfo()
+        this.setAccount(account)
+      } catch (error) {
+        console.error('❌ 계정 정보 로드 실패:', error)
       }
     },
 

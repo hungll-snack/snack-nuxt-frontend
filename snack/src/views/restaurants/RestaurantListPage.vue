@@ -148,6 +148,13 @@ onMounted(async () => {
 })
 
 const toggleScrap = async (restaurant: Restaurant) => {
+  const accountId = localStorage.getItem('account_id')
+  const userToken = localStorage.getItem('userToken')
+
+  if(!accountId || !userToken) {
+    alert('로그인 후 이용할 수 있습니다 😊')
+    return
+  }
   await restaurantStore.toggleScrap(restaurant.id)
 }
 </script>
