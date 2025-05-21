@@ -3,6 +3,7 @@ import { defineNuxtConfig } from 'nuxt/config'
 
 export default defineNuxtConfig({
   srcDir: 'src',
+  ssr: true,
 
   css: ['vuetify/styles', '@mdi/font/css/materialdesignicons.css'],
 
