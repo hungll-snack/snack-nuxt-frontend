@@ -63,9 +63,9 @@
             <span class="label">이메일</span
             ><span>{{ accountStore.email }}</span>
           </li>
-          <li v-if="accountStore.phoneNum">
+          <li v-if="accountStore.accountPath === 'Google' || accountStore.phoneNum">
             <span class="label">전화번호</span>
-            <span v-if="!isEditing">{{ accountStore.phoneNum }}</span>
+            <span v-if="!isEditing">{{ accountStore.phoneNum || 'N' }}</span>
             <input
               v-if="isEditing && accountStore.accountPath === 'Google'"
               v-model="phoneNum"
