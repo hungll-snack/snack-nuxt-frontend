@@ -1,14 +1,14 @@
 <template>
   <v-app>
     <!-- Google Tag Manager (noscript) -->
-    <noscript>
-      <iframe
-        src="https://www.googletagmanager.com/ns.html?id=GTM-NJ8WW36F"
+    <noscript
+      ><iframe
+        src="https://www.googletagmanager.com/ns.html?id=GTM-K35DKXLF"
         height="0"
         width="0"
-        style="display:none;visibility:hidden"
-      ></iframe>
-    </noscript>
+        style="display: none; visibility: hidden"
+      ></iframe
+    ></noscript>
     <!-- End Google Tag Manager (noscript) -->
     <NavigationBar />
     <div class="page-content">
@@ -32,7 +32,6 @@ onMounted(() => {
   authStore.initializeAuth()
 })
 </script>
-
 
 <style scoped>
 .page-content {
