@@ -1,6 +1,6 @@
 <template>
   <div class="policy-container">
-    <h1>HUNGLL 개인정보 처리방침</h1>
+    <h1>HUNGLL(헝글) 개인정보 처리방침</h1>
     <div v-html="privacyText"></div>
   </div>
 </template>

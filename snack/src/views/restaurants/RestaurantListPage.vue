@@ -92,7 +92,7 @@ import RestaurantModal from '@/views/restaurants/RestaurantModal.vue'
 import type { Restaurant } from '@/store/restaurants/restaurantsStore'
 import { useRouter } from 'vue-router'
 useHead({
-  title: '서울 맛집 찾기 - HUNGLL',
+  title: '서울 맛집 찾기 - 헝글(HUNGLL)',
   meta: [
     {
       name: 'description',
@@ -104,7 +104,7 @@ useHead({
       content:
         '헝글, 서울 맛집, AI 추천 맛집, 헝글 맛집 리스트, 맛집, 혼밥, 밥친구, 식사 모임, 서울 곱창, 서울 와인 맛집, 맛집 찾기, 맛집 추천, 맛집 찾기 서비스', 
     },
-    { property: 'og:title', content: '서울 맛집 찾기 - HUNGLL' },
+    { property: 'og:title', content: '서울 맛집 찾기 - 헝글(HUNGLL)' },
     {
       property: 'og:description',
       content:
