@@ -1,5 +1,5 @@
 export const childProtectionText = `
-<strong>HUNGLL 아동 보호 정책</strong><br /><br />
+<strong>헝글(HUNGLL) 아동 보호 정책</strong><br /><br />
 
 헝글(HUNGLL)은 아동 성적 학대 및 착취(CSAE) 콘텐츠를 엄격히 금지합니다.<br /><br />
 

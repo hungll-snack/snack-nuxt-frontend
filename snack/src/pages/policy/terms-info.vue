@@ -1,6 +1,6 @@
 <template>
   <div class="policy-container">
-    <h1>HUNGLL 이용 약관</h1>
+    <h1>HUNGLL(헝글) 이용 약관</h1>
     <div v-html="termsText"></div>
   </div>
 </template>
