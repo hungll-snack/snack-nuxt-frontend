@@ -129,7 +129,7 @@ export default defineNuxtConfig({
       AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
       AWS_BUCKET_NAME: process.env.AWS_BUCKET_NAME,
       TOSS_SECRET_KEY: process.env.TOSS_SECRET_KEY,
-      TOSS_CLIENT_KEY: process.env.CLIENT_KEY,
+      TOSS_CLIENT_KEY: process.env.TOSS_CLIENT_KEY,
     },
   },
 

@@ -103,6 +103,8 @@ useHead({
       name: 'keywords',
       content:
         '헝글, 밥친구찾기, 서울맛집, AI 추천 맛집, 헝글맛집 리스트, 서울맛집 리스트, 혼밥, 밥친구, 식사 모임, 서울 곱창, 서울 와인 맛집, 맛집 찾기, 맛집 추천, 맛집 찾기 서비스', 
+
+
     },
     { property: 'og:title', content: '서울 맛집 찾기 - 헝글(HUNGLL)' },
     {
@@ -314,12 +316,15 @@ const toggleScrap = async (restaurant: Restaurant) => {
   color: #333;
 }
 .restaurant-card {
+  position: relative; /* 버튼 고정 위치 기준 */
   background: #ffffff;
   padding: 16px;
+  padding-right: 130px; /* 우측 요소 침범 방지 */
   border-radius: 12px;
   border: 1px solid #eee;
   margin-bottom: 16px;
   display: flex;
+  flex-direction: column; /* 내부 레이아웃 위→아래 */
   justify-content: space-between;
   align-items: flex-start;
   gap: 16px;
@@ -342,12 +347,28 @@ const toggleScrap = async (restaurant: Restaurant) => {
   color: #777;
   margin-bottom: 12px;
 }
-.button-row {
+
+/* .button-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
+} */
+
+.button-row {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
+
+.flex-1 {
+  flex: 1;
+  min-width: 0;
+}
+
 .friend-btn {
   font-size: 13px;
   font-weight: 600;
@@ -373,4 +394,37 @@ const toggleScrap = async (restaurant: Restaurant) => {
   display: flex;
   align-items: center;
 }
+/* 기존 위치 고정 스타일 */
+.button-row {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* 모바일 뷰 대응 */
+@media (max-width: 700px) {
+  .button-row {
+    position: static; /* 절대 위치 해제 */
+    margin-top: -8px;
+    margin-bottom: 0;
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  .restaurant-card {
+    padding-right: 16px; /* 기존 우측 padding 제거 */
+  }
+
+  .restaurant-name {
+    font-size: 15px;
+  }
+
+  .address {
+    font-size: 12px;
+  }
+}
+
 </style>

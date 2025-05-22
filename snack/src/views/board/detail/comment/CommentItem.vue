@@ -16,7 +16,6 @@ const isAdmin = computed(() => {
   return localStorage.getItem('isAdmin') === 'true'
 })
 
-const level = computed(() => props.level || 0)
 const showReplyInput = ref(false)
 const replyContent = ref('')
 const isEditing = ref(false)
@@ -91,11 +90,11 @@ const reportComment = () => {
 </script>
 
 <template>
-  <div :class="`pl-${level * 4}`" class="comment-text">
+  <div :class="`pl-${props.level * 4}`" class="comment-text">
     <div class="comment-content">
       <span v-if="comment.is_deleted" class="text-gray-400 italic">메세지가 삭제되었습니다</span>
       <span v-else-if="!isEditing">{{ comment.content }}</span>
-      <textarea v-else v-model="editContent" rows="2" class="edit-textarea" />
+      <textarea v-else v-model="editContent" rows="2" class="edit-textarea" maxlength="500" />
     </div>
 
     <div class="comment-meta">
@@ -120,7 +119,7 @@ const reportComment = () => {
     </div>
 
     <div v-if="showReplyInput" class="reply-input-wrapper">
-      <textarea v-model="replyContent" rows="2" class="reply-textarea" placeholder="답글을 입력해주세요" />
+      <textarea v-model="replyContent" rows="2" class="reply-textarea" placeholder="답글을 입력해주세요"  maxlength="500" />
       <div class="reply-action">
         <button @click="submitReply" class="submit-btn">답글 등록</button>
       </div>
@@ -130,7 +129,7 @@ const reportComment = () => {
       v-for="reply in visibleReplies"
       :key="reply.comment_id"
       :comment="reply"
-      :level="level + 1"
+      :level="props.level + 1"
       @reply="$emit('reply', $event)"
       @delete="$emit('delete', $event)"
       @edit="$emit('edit', $event)"

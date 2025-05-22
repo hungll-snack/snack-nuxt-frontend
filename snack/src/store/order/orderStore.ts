@@ -1,30 +1,16 @@
-import { defineStore } from 'pinia';
-import { orderRepository } from '@/repository/order/orderRepository';
+import { defineStore } from 'pinia'
+import { orderRepository } from '@/repository/order/orderRepository'
 
 export const useOrderStore = defineStore('orderStore', {
   state: () => ({
-    orders: [] as any[],
+    orderId: null as number | null,
   }),
-
   actions: {
-    async createOrder(planType: string, price: number) {
-      try {
-        const orderId = await orderRepository.createOrder(planType, price);
-        return orderId;
-      } catch (error) {
-        console.error('주문 생성 오류:', error);
-        return null;
-      }
+    async createOrder(subscribeId: number, price: number) {
+      const id = await orderRepository.createOrder(subscribeId, price)
+      this.orderId = id
+      localStorage.setItem('orderInfoId', String(id))
+      return id
     },
-
-    async completeOrder(orderId: string) {
-      try {
-        const success = await orderRepository.completeOrder(orderId);
-        return success;
-      } catch (error) {
-        console.error('주문 완료 오류:', error);
-        return false;
-      }
-    },
-  }
-});
+  },
+})
