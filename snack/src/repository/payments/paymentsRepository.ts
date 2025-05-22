@@ -1,25 +1,19 @@
-import { createAxiosInstance } from '@/common/utils/axiosInstance';
+import { createAxiosInstance } from '@/common/utils/axiosInstance'
 
 export const paymentsRepository = {
-  // ✅ 결제 처리 API 호출
-  async processPayment(userToken: string, paymentKey: string, orderId: string, amount: number) {
-    const axios = createAxiosInstance(userToken);
-    const { data } = await axios.post('/payments/process', {
-      userToken,
+  async processPayment(paymentKey: string, orderId: string, amount: number, orderInfoId: number) {
+    const token = localStorage.getItem('userToken') || ''
+    const accountId = localStorage.getItem('account_id') || ''
+    const axios = createAxiosInstance(token, accountId)
+
+    const response = await axios.post('/payments/process', {
+      userToken: token,
       paymentKey,
       orderId,
       amount,
-      orderInfoId: orderId,
-    });
+      orderInfoId,
+    })
 
-    return data;
+    return response.data
   },
-
-  // ✅ 결제 정보 조회 API 호출
-  async getPaymentInfo(orderId: string) {
-    const token = localStorage.getItem('userToken') || '';
-    const axios = createAxiosInstance(token);
-    const { data } = await axios.get(`/payments/info?orderId=${orderId}`);
-    return data;
-  },
-};
+}

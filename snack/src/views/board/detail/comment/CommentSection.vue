@@ -6,7 +6,7 @@
     <div class="comment-input-wrapper">
       <input
         v-model="newComment"
-        maxlength="50"
+        maxlength="500"
         placeholder="댓글을 입력하세요"
         class="comment-input"
         @keyup.enter="submitComment"

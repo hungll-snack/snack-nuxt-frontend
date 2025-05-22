@@ -45,7 +45,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import jena from '@/assets/images/team/jena.jpg'
-import junhee from '@/assets/images/team/junhee.jpg'
+import junhee from '@/assets/images/team/junhee.jpeg'
 import seungil from '@/assets/images/team/seungil.jpg'
 import goeun from '@/assets/images/team/goeun.jpg'
 import hyeonseo from '@/assets/images/team/hyeonseo.jpeg'
@@ -56,8 +56,8 @@ const visibleCards = ref<boolean[]>([])
 onMounted(() => {
   visibleCards.value = teamMembers.map(() => false)
   const observer = new IntersectionObserver(
-    entries => {
-      entries.forEach(entry => {
+    (entries) => {
+      entries.forEach((entry) => {
         const index = Number((entry.target as HTMLElement).dataset.index)
         visibleCards.value[index] = entry.isIntersecting
       })
@@ -74,11 +74,36 @@ onMounted(() => {
 })
 
 const teamMembers = [
-  { name: '유제나', role: '팀장', image: jena, github: 'https://github.com/denalog' },
-  { name: '조준희', role: '팀원', image: junhee, github: 'https://github.com/codelego8' },
-  { name: '손승일', role: '팀원', image: seungil, github: 'https://github.com/ajeseung' },
-  { name: '주고은', role: '팀원', image: goeun, github: 'https://github.com/goeun-ju' },
-  { name: '정현서', role: '팀원', image: hyeonseo, github: 'https://github.com/jungs0914' },
+  {
+    name: '유제나',
+    role: '팀장',
+    image: jena,
+    github: 'https://github.com/denalog',
+  },
+  {
+    name: '조준희',
+    role: '팀원',
+    image: junhee,
+    github: 'https://github.com/codelego8',
+  },
+  {
+    name: '손승일',
+    role: '팀원',
+    image: seungil,
+    github: 'https://github.com/ajeseung',
+  },
+  {
+    name: '주고은',
+    role: '팀원',
+    image: goeun,
+    github: 'https://github.com/goeun-ju',
+  },
+  {
+    name: '정현서',
+    role: '팀원',
+    image: hyeonseo,
+    github: 'https://github.com/jungs0914',
+  },
 ]
 
 const descriptionLines = [
