@@ -1,6 +1,6 @@
 <template>
   <div class="policy-container">
-    <h1>HUNGLL(헝글) 아동 보호 정책</h1>
+    <h1>헝글(HUNGLL) 아동 보호 정책</h1>
     <div v-html="childProtectionText"></div>
   </div>
 </template>
