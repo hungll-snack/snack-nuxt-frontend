@@ -24,7 +24,7 @@ import { ref } from 'vue'
 import SearchSection from './SearchSection.vue'
 import TableSection from './TableSection.vue'
 useHead({
-  title: '밥친구 모집 게시판 - 헝글(HUNGLL)',
+  title: '헝글- 밥친구 찾기 게시판 & 밥친구 찾기 사이트',
   meta: [
     {
       name: 'description',
@@ -34,7 +34,7 @@ useHead({
       name: 'keywords',
       content: '헝글, 밥친구, 밥약, 식사메이트, 밥약, 혼밥탈출, 식사모임, 맛집모임',
     },
-    { property: 'og:title', content: '밥친구 모집 게시판 - 헝글(HUNGLL)' },
+    { property: 'og:title', content: '헝글 - 밥친구 찾기 게시판' },
     { property: 'og:description', content: '서울 어디서든 밥친구를 찾을 수 있는 헝글 게시판! 편하게 모임을 만들고 함께 맛집을 즐겨보세요.' },
     { property: 'og:image', content: 'https://hungll.com/og/hungle_hgl.png' },
     { property: 'og:url', content: 'https://hungll.com/board/all' },

@@ -68,12 +68,12 @@ export default defineNuxtConfig({
       meta: [
         {
           property: 'og:title',
-          content: '헝글(HUNGLL) - 인증 맛집 & 밥친구 찾기 서비스',
+          content: '헝글 - 서울 맛집 & 서울 밥친구 찾기 서비스',
         },
         {
           property: 'og:description',
           content:
-            '취향을 기억하는 AI 추천! 서울 맛집과 밥친구를 연결해드립니다.',
+            '당신의 취향에 맞는 서울 맛집과 밥친구를 헝글 AI가 연결해드립니다.',
         },
         {
           property: 'og:image',

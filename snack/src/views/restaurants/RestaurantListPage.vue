@@ -92,23 +92,25 @@ import RestaurantModal from '@/views/restaurants/RestaurantModal.vue'
 import type { Restaurant } from '@/store/restaurants/restaurantsStore'
 import { useRouter } from 'vue-router'
 useHead({
-  title: '서울 맛집 찾기 - 헝글(HUNGLL)',
+  title: '헝글 - 서울 맛집 찾기 & 밥친구 찾기',
   meta: [
     {
       name: 'description',
       content:
-        '서울 전 지역의 인증된 맛집을 헝글 AI가 추천해드립니다. 사용자 선호도를 바탕으로 최적의 식당을 찾아보세요.',
+        '서울 전 지역의 인증된 맛집을 헝글 AI가 추천해드립니다. 당신의 선호도를 바탕으로 최적의 식당을 찾아보세요.',
     },
     {
       name: 'keywords',
       content:
-        '헝글, 서울 맛집, AI 추천 맛집, 헝글 맛집 리스트, 맛집, 혼밥, 밥친구, 식사 모임, 서울 곱창, 서울 와인 맛집, 맛집 찾기, 맛집 추천, 맛집 찾기 서비스',
+        '헝글, 밥친구찾기, 서울맛집, AI 추천 맛집, 헝글맛집 리스트, 서울맛집 리스트, 혼밥, 밥친구, 식사 모임, 서울 곱창, 서울 와인 맛집, 맛집 찾기, 맛집 추천, 맛집 찾기 서비스', 
+
+
     },
     { property: 'og:title', content: '서울 맛집 찾기 - 헝글(HUNGLL)' },
     {
       property: 'og:description',
       content:
-        '내 취향에 맞는 서울 맛집을 한눈에 확인하고 밥친구까지 연결하세요.',
+        '혼밥은 이제 그만! 서울 맛집을 한눈에 확인하고 밥친구까지 찾아보세요.',
     },
     { property: 'og:image', content: 'https://hungll.com/og/hungle_hgl.png' },
     { property: 'og:url', content: 'https://hungll.com/restaurants/all' },
