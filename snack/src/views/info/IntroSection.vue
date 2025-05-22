@@ -8,8 +8,8 @@
     <h1 class="hook-text" v-html="typedText"></h1>
 
     <p class="description gradient-text">
-      서울의 인증된 맛집을 취향 기반으로 추천하고,<br />
-      나와 맞는 밥친구까지 연결해주는 트렌디한 AI 서비스, <strong>헝글(HUNGLL)</strong>
+      헝글과 대화하며 당신의 취향에 맞는 식당을 추천받으세요!,<br />
+      나와 맞는 밥친구까지 찾아주는 트렌디한 AI 서비스, <strong>헝글(HUNGLL)</strong>
     </p>
     <br>
     <br>
@@ -31,7 +31,7 @@
 import { ref, onMounted } from 'vue'
 
 const messages = [
-  '서울의 인증 맛집,<br/> 헝글이 추천해요.',
+  '서울의 인증된 맛집 리스트,<br/> 헝글이 추천해요.',
   '당신에게 꼭 맞는 맛집을<br/> 헝글이 찾아드립니다.',
   '당신의 취향을 기억하는<br/> 스마트한 헝글!',
   '헝글에서 밥친구를 만드세요!',
