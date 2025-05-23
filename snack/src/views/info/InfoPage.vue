@@ -11,18 +11,20 @@
         alt="배경 로고"
       />
     </div>
-
     <div ref="introSectionRef">
       <IntroSection @next="scrollToHungll" />
     </div>
+    <div ref="introSectionRef">
+      <ASection />
+    </div>
     <div ref="hungllSectionRef">
-      <HungllIntroSection />
+      <BSection />
     </div>
     <div ref="whySectionRef">
-      <WhySection />
+      <CSection />
     </div>
     <div ref="boardSectionRef">
-      <BoardIntroSection />
+      <DSection />
     </div>
     <div ref="teamSectionRef">
       <TeamSection />
@@ -54,10 +56,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import IntroSection from '@/views/info/IntroSection.vue'
-import HungllIntroSection from '@/views/info/HungllIntroSection.vue'
-import WhySection from '@/views/info/WhySection.vue'
-import BoardIntroSection from '@/views/info/BoardIntroSection.vue'
+import IntroSection from '~/views/info/IntroSection.vue'
+import ASection from '@/views/info/ASection.vue'
+import BSection from '@/views/info/BSection.vue'
+import CSection from '@/views/info/CSection.vue'
+import DSection from '@/views/info/DSection.vue'
 import TeamSection from '@/views/info/TeamSection.vue'
 import SurveyPopup from '@/views/info/SurveyPopup.vue'
 
