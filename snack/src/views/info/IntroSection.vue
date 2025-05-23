@@ -3,17 +3,15 @@
     <div class="logo-wrapper">
       <img src="@/assets/images/logo/hungle_full_big.png" alt="HUNGLL 로고" class="logo" />
     </div>
-    <br>
-
+    <br />
     <h1 class="hook-text" v-html="typedText"></h1>
 
     <p class="description gradient-text">
-      헝글과 대화하며 당신의 취향에 맞는 식당을 추천받으세요!,<br />
+      헝글과 대화하며 당신의 취향에 맞는 식당을 추천받으세요!<br />
       나와 맞는 밥친구까지 찾아주는 트렌디한 AI 서비스, <strong>헝글(HUNGLL)</strong>
     </p>
-    <br>
-    <br>
-    <br>
+    <br /><br /><br />
+
     <div class="flip-card-button" @click="copyEmail">
       <div class="flip-card-inner" :class="{ flipped: isHovered }" @mouseenter="isHovered = true" @mouseleave="isHovered = false">
         <div class="flip-card-front">헝글 팀에 문의하기</div>
@@ -27,45 +25,67 @@
   </section>
 </template>
 
+
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 
 const messages = [
-  '서울의 인증된 맛집 리스트,<br/> 헝글이 추천해요.',
-  '당신에게 꼭 맞는 맛집을<br/> 헝글이 찾아드립니다.',
-  '당신의 취향을 기억하는<br/> 스마트한 헝글!',
-  '헝글에서 밥친구를 만드세요!',
+  '<span class="highlight-text">서울의 인증된 맛집</span> 리스트, 헝글이 추천해요.',
+  '<span class="highlight-text">당신에게 꼭 맞는 맛</span>집을 헝글이 찾아드립니다.',
+  '<span class="highlight-text">당신의 취향을 기억</span>하는 스마트한 헝글!',
+  '<span class="highlight-text">헝글에서 밥친구</span>를 만드세요!',
 ]
-
 
 const typedText = ref('')
 const currentMessageIndex = ref(0)
-const typingSpeed = 80
-const eraseSpeed = 40
+const typingSpeed = 50
 const delayBetween = 1500
+
+function extractVisibleCharacters(html: string): string[] {
+  const div = document.createElement('div')
+  div.innerHTML = html
+
+  const result: string[] = []
+  const traverse = (node: Node) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      result.push(...(node.textContent || '').split(''))
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      result.push(`<${(node as Element).tagName.toLowerCase()}${getAttrs(node as Element)}>`)
+
+      node.childNodes.forEach(traverse)
+
+      result.push(`</${(node as Element).tagName.toLowerCase()}>`)
+    }
+  }
+
+  const getAttrs = (el: Element) =>
+    [...el.attributes]
+      .map((attr) => ` ${attr.name}="${attr.value}"`)
+      .join('')
+
+  div.childNodes.forEach(traverse)
+  return result
+}
 
 const typeLoop = async () => {
   const message = messages[currentMessageIndex.value]
-  const plainText = message.replace(/<[^>]*>/g, '') // 태그 제거
+  const chars = extractVisibleCharacters(message)
 
-  for (let i = 0; i <= plainText.length; i++) {
-    const sliced = plainText.slice(0, i)
-    typedText.value = sliced + '<span class="cursor">|</span>'
+  for (let i = 0; i <= chars.length; i++) {
+    typedText.value = chars.slice(0, i).join('') + '<span class="cursor">|</span>'
     await new Promise(resolve => setTimeout(resolve, typingSpeed))
   }
 
   await new Promise(resolve => setTimeout(resolve, delayBetween))
 
-  for (let i = plainText.length; i >= 0; i--) {
-    const sliced = plainText.slice(0, i)
-    typedText.value = sliced + '<span class="cursor">|</span>'
-    await new Promise(resolve => setTimeout(resolve, eraseSpeed))
+  for (let i = chars.length; i >= 0; i--) {
+    typedText.value = chars.slice(0, i).join('') + '<span class="cursor">|</span>'
+    await new Promise(resolve => setTimeout(resolve, typingSpeed / 2))
   }
 
   currentMessageIndex.value = (currentMessageIndex.value + 1) % messages.length
   typeLoop()
 }
-
 
 onMounted(() => {
   typeLoop()
@@ -84,6 +104,7 @@ const copyEmail = async () => {
   }
 }
 </script>
+
 
 <style scoped>
 .intro-section {
@@ -243,5 +264,12 @@ const copyEmail = async () => {
     line-height: 1.6;
   }
 }
+.highlight-text {
+  background: linear-gradient(to top, #ff9800 40%, #ff1744 40%);
+  font-weight: 700;
+  padding: 0 2px;
+  color: #000; /* 강조한 텍스트도 검정 */
+}
+
 
 </style>

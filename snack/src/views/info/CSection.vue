@@ -40,7 +40,21 @@
 import { ref, onMounted } from 'vue'
 
 const sectionRef = ref<HTMLElement | null>(null)
-const isVisible = ref([false, false, false]) // WHY, heading, sub 순서
+const isVisible = ref([false, false, false])
+let timeoutIds: ReturnType<typeof setTimeout>[] = []
+
+const triggerAnimations = () => {
+  isVisible.value = [false, false, false]
+  timeoutIds.forEach(id => clearTimeout(id))
+  timeoutIds = []
+
+  for (let i = 0; i < isVisible.value.length; i++) {
+    const timeoutId = setTimeout(() => {
+      isVisible.value[i] = true
+    }, i * 500) //
+    timeoutIds.push(timeoutId)
+  }
+}
 
 onMounted(() => {
   const targets = sectionRef.value?.querySelectorAll('.slide-up')
@@ -49,17 +63,21 @@ onMounted(() => {
   const observer = new IntersectionObserver(
     entries => {
       entries.forEach(entry => {
-        const index = Array.from(targets).indexOf(entry.target as HTMLElement)
-        if (entry.isIntersecting && index !== -1) {
-          isVisible.value[index] = true
+        if (!entry.isIntersecting) {
+          isVisible.value = [false, false, false]
+          timeoutIds.forEach(id => clearTimeout(id))
+          return
         }
+
+        triggerAnimations()
       })
     },
     { threshold: 0.5 }
   )
 
-  targets.forEach(el => observer.observe(el))
+  if (sectionRef.value) observer.observe(sectionRef.value)
 })
+
 </script>
 
 <style scoped>

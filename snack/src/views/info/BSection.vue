@@ -1,6 +1,9 @@
 <template>
   <section class="hungll-chat-section" ref="sectionRef">
-    <div class="chat-card" :class="{ 'visible': cardVisible }">
+    <div class="chat-card" :class="{ visible: cardVisible }">
+      <p class="chat-guide-text">※ 헝글 챗을 사용했을 때의 예시입니다 ※</p>
+      <br />
+
       <div class="chat-wrapper">
         <transition-group name="chat" tag="div" class="chat-list">
           <div
@@ -20,20 +23,24 @@
           v-model="inputValue"
           type="text"
           class="chat-input"
-          placeholder="헝글에게 추천받아보세요 ✨"
+          placeholder="우측 하단의 헝글 챗을 이용해보세요 ✨"
           @keyup.enter="handleSubmit"
         />
       </div>
     </div>
 
-    <HungllIntroModal v-if="showModal" @close="handleCloseModal" @confirm="handleConfirmModal" />
+    <BSectionAlert
+      v-if="showModal"
+      @close="handleCloseModal"
+      @confirm="handleConfirmModal"
+    />
   </section>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import HungllIntroModal from './HungllIntroModal.vue'
+import BSectionAlert from './BSectionAlert.vue'
 
 const sectionRef = ref<HTMLElement | null>(null)
 const visibleMessages = ref<{ sender: string; text: string }[]>([])
@@ -49,7 +56,10 @@ const messages = [
   { sender: 'bot', text: '현재 서울은 흐리고, 저녁 시간이네요.' },
   { sender: 'bot', text: '🍶 막걸리에 파전 한 판 어때요?' },
   { sender: 'bot', text: '🍗 아니면 치킨에 시원한 맥주도 추천해요!' },
-  { sender: 'bot', text: '현재 주변 헝글 친구들은 치맥을 가장 많이 검색하고있어요 👌' },
+  {
+    sender: 'bot',
+    text: '현재 주변 헝글 친구들은 치맥을 가장 많이 검색하고있어요 👌',
+  },
 ]
 
 const playChatAnimation = () => {
@@ -83,28 +93,36 @@ const handleConfirmModal = () => {
 
 onMounted(() => {
   const observer = new IntersectionObserver(
-    entries => {
-      entries.forEach(entry => {
+    (entries) => {
+      entries.forEach((entry) => {
+        cardVisible.value = entry.isIntersecting
         if (entry.isIntersecting) {
-          cardVisible.value = true     
           playChatAnimation()
         }
       })
     },
     { threshold: 0.5 }
   )
-  if (sectionRef.value) observer.observe(sectionRef.value)
+
+  if (sectionRef.value) {
+    observer.observe(sectionRef.value)
+  }
 })
-
 </script>
-
 
 <style scoped>
 .hungll-chat-section {
-  padding: 100px 20px;
+  padding: 0 40px;
   background: transparent;
   display: flex;
   justify-content: center;
+}
+.chat-guide-text {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 12px;
+  text-align: center;
+  font-weight: 400;
 }
 
 .chat-card {
@@ -114,19 +132,24 @@ onMounted(() => {
   border: 1px solid #eee;
   max-width: 680px;
   width: 100%;
+  max-width: 400px;
   padding: 40px 24px;
   display: flex;
   flex-direction: column;
   min-height: 550px;
-  transform: translateY(100px);
+  transform: perspective(1000px) rotateX(90deg);
   opacity: 0;
-  transition: all 0.8s ease;
-
+  transform-origin: bottom center;
+  transition:
+    transform 0.8s ease,
+    opacity 0.8s ease;
 }
+
 .chat-card.visible {
-  transform: translateY(0);
+  transform: perspective(1000px) rotateX(0deg);
   opacity: 1;
 }
+
 /* 채팅 리스트 */
 .chat-wrapper {
   flex: 1;
