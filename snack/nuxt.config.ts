@@ -123,7 +123,6 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    KAKAO_JAVASCRIPT_KEY: process.env.KAKAO_JAVASCRIPT_APP_KEY,
     AWS_REGION: process.env.AWS_REGION,
     AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
     AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
@@ -131,6 +130,7 @@ export default defineNuxtConfig({
     TOSS_SECRET_KEY: process.env.TOSS_SECRET_KEY,
     AI_BASE_URL: process.env.NUXT_PUBLIC_AI_BASE_URL,
     public: {
+      KAKAO_JAVASCRIPT_KEY: process.env.KAKAO_JAVASCRIPT_APP_KEY,
       MAIN_API_URL: process.env.NUXT_PUBLIC_MAIN_API_URL,
       TOSS_CLIENT_KEY: process.env.TOSS_CLIENT_KEY,
     },
