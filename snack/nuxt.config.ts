@@ -82,7 +82,10 @@ export default defineNuxtConfig({
         { property: 'og:url', content: 'https://hungll.com/' },
         { property: 'og:type', content: 'website' },
         { name: 'twitter:card', content: 'summary_large_image' },
-        { name: 'naver-site-verification', content: 'd3ea9de3d958a25bdf06e1aec7db4df25f4f4223' }
+        {
+          name: 'naver-site-verification',
+          content: 'd3ea9de3d958a25bdf06e1aec7db4df25f4f4223',
+        },
       ],
     },
   },
@@ -120,15 +123,15 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    KAKAO_JAVASCRIPT_KEY: process.env.KAKAO_JAVASCRIPT_APP_KEY,
+    AWS_REGION: process.env.AWS_REGION,
+    AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
+    AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
+    AWS_BUCKET_NAME: process.env.AWS_BUCKET_NAME,
+    TOSS_SECRET_KEY: process.env.TOSS_SECRET_KEY,
+    AI_BASE_URL: process.env.NUXT_PUBLIC_AI_BASE_URL,
     public: {
       MAIN_API_URL: process.env.NUXT_PUBLIC_MAIN_API_URL,
-      AI_BASE_URL: process.env.NUXT_PUBLIC_AI_BASE_URL,
-      KAKAO_JAVASCRIPT_KEY: process.env.KAKAO_JAVASCRIPT_APP_KEY,
-      AWS_REGION: process.env.AWS_REGION,
-      AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
-      AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
-      AWS_BUCKET_NAME: process.env.AWS_BUCKET_NAME,
-      TOSS_SECRET_KEY: process.env.TOSS_SECRET_KEY,
       TOSS_CLIENT_KEY: process.env.TOSS_CLIENT_KEY,
     },
   },
