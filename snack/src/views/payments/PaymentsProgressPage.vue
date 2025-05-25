@@ -33,12 +33,9 @@ let widget: any = null
 let paymentMethods: any = null
  
 onMounted(async () => {
-  console.log('🟢 PaymentsPage mounted') // ✅ 클라이언트 콘솔에서 확인 가능
-  console.log('🔑 Toss Key:', clientKey)
   
   await nextTick()
 
-  // Toss 위젯 로드
   widget = await loadPaymentWidget(clientKey, ANONYMOUS)
   paymentMethods = await widget.renderPaymentMethods(
     '#payment-method',
