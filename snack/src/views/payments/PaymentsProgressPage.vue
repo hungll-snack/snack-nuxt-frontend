@@ -21,15 +21,12 @@
 import { onMounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { useRuntimeConfig } from 'nuxt/app'
-import { loadPaymentWidget, ANONYMOUS } from '@tosspayments/payment-widget-sdk'
 import { nanoid } from 'nanoid'
-
+import { loadPaymentWidget, ANONYMOUS } from '@tosspayments/payment-widget-sdk'
 
 const route = useRoute()
 const config = useRuntimeConfig()
 const clientKey = config.public.TOSS_CLIENT_KEY
-
-
 const amount = Number(route.query.amount || 0)
 
 let widget: any = null
@@ -40,12 +37,15 @@ onMounted(async () => {
   console.log('🔑 Toss Key:', clientKey)
   
   await nextTick()
+
+  // Toss 위젯 로드
   widget = await loadPaymentWidget(clientKey, ANONYMOUS)
   paymentMethods = await widget.renderPaymentMethods(
     '#payment-method',
     { value: amount },
     { variantKey: 'DEFAULT' }
   )
+
   await widget.renderAgreement('#agreement', { variantKey: 'AGREEMENT' })
 })
 

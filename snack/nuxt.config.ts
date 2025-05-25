@@ -16,17 +16,14 @@ export default defineNuxtConfig({
       'process.env.DEBUG': false,
     },
     ssr: {
-      noExternal: ['vuetify'],
+      noExternal: [
+        'vuetify',
+      '@tosspayments/payment-widget-sdk'],
     },
     optimizeDeps: {
-      include: ['fast-xml-parser', '@tosspayments/payment-widget-sdk'],
+      include: ['fast-xml-parser', ],
     },
     plugins: [vuetify()],
-    build: {
-      rollupOptions: {
-        external: ['@tosspayments/payment-widget-sdk'],
-      },
-    },
   },
 
   app: {
