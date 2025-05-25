@@ -148,6 +148,14 @@
           >
             헝글패스 구독하기
           </button>
+          
+          <button
+            v-if="subscribeStore.isSubscribed"
+            class="subscribe-btn gray"
+            @click="cancelSubscription"
+          >
+            구독 해지
+          </button>
         </div>
 
         <div v-if="subscribeStore.isSubscribed">
@@ -167,10 +175,6 @@
               </span>
             </li>
           </ul>
-
-          <button class="cancel-btn" @click="cancelSubscription">
-            구독 해지
-          </button>
         </div>
         <p v-else class="none-subscribe">현재 구독 중이 아닙니다.</p>
         </div>
@@ -781,9 +785,12 @@ onMounted(async () => {
   font-weight: bold;
   font-size: 10px;
 }
-.subscribe-btn:hover {
-  background-color: #e65100;
+
+.subscribe-btn.gray {
+  background-color: #ccc;
+  color: white;
 }
+
 .none-subscribe{
   font-size: 12px;
   color: #999;  
@@ -800,5 +807,6 @@ onMounted(async () => {
   color: #999;
   font-weight: normal;
 }
+
 
 </style>

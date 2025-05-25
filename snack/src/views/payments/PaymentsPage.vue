@@ -1,98 +1,124 @@
 <template>
-  <div class="wrapper">
-    <div class="box_section">
-      <div class="summary">
-        <h3>주문 정보</h3>
-        <p>주문 상품: {{ route.query.planName || '헝글 패스' }}</p>
-        <p>결제 금액: {{ amount.toLocaleString() }}원</p>
-      </div>
-      <div id="payment-method"></div>
-      <div id="agreement"></div>
-      <v-btn
-        :disabled="!inputEnabled"
-        @click="requestPayment"
-        class="button"
-        id="payment-button"
-        style="margin: 30px"
-      >
+  <div class="payment-wrapper">
+    <div class="payment-box">
+      <h2>-결제-</h2>
+
+      <p class="summary">
+        결제 금액: {{ amount.toLocaleString() }}원
+      </p>
+
+      <div id="payment-method" class="toss-widget" />
+      <div id="agreement" class="toss-widget" />
+
+      <button @click="requestPayment" class="pay-button">
         결제하기
-      </v-btn>
+      </button>
     </div>
   </div>
 </template>
 
-<script setup>
-import { loadPaymentWidget, ANONYMOUS } from "@tosspayments/payment-widget-sdk"
-import { useRuntimeConfig } from "nuxt/app"
-import { nanoid } from "nanoid"
-import { onMounted, ref } from "vue"
-import { useRoute } from "vue-router"
-import { useAccountStore } from '@/store/account/accountStore'
+<script setup lang="ts">
+import { onMounted, nextTick } from 'vue'
+import { useRoute } from 'vue-router'
+import { useRuntimeConfig } from 'nuxt/app'
+import { loadPaymentWidget, ANONYMOUS } from '@tosspayments/payment-widget-sdk'
+import { nanoid } from 'nanoid'
 
-const config = useRuntimeConfig()
+
 const route = useRoute()
+const config = useRuntimeConfig()
+const clientKey = config.public.TOSS_CLIENT_KEY
 
-const paymentWidget = ref(null)
-const paymentMethodWidget = ref(null)
-const clientKey = ref(config.public.TOSS_CLIENT_KEY)
-const customerKey = ref(null)
-const amount = ref(route.query.amount ? Number(route.query.amount) : 0)
-const inputEnabled = ref(false)
-const accountStore = useAccountStore()
 
-async function requestPayment() {
-  try {
-    if (paymentWidget.value) {
-      await paymentWidget.value.requestPayment({
-        orderId: nanoid(),
-        orderName: route.query.planName || 'Hungll Pass', 
-        customerName: accountStore.name || accountStore.nickname || '헝글 유저',
-        customerEmail: accountStore.email || 'test@example.com',
-        customerMobilePhone:  '01012345678',
-        successUrl: `${window.location.origin}/payments/success`,
-        failUrl: `${window.location.origin}/payments/fail`,
-      })
-    }
-  } catch (error) {
-    console.error(error)
-  }
-}
+const amount = Number(route.query.amount || 0)
 
+let widget: any = null
+let paymentMethods: any = null
+ 
 onMounted(async () => {
-  paymentWidget.value = await loadPaymentWidget(clientKey.value, ANONYMOUS)
-  paymentMethodWidget.value = paymentWidget.value.renderPaymentMethods(
-    "#payment-method",
-    { value: amount.value },
-    { variantKey: "DEFAULT" }
+  console.log('🟢 PaymentsPage mounted') // ✅ 클라이언트 콘솔에서 확인 가능
+  console.log('🔑 Toss Key:', clientKey)
+  
+  await nextTick()
+  widget = await loadPaymentWidget(clientKey, ANONYMOUS)
+  paymentMethods = await widget.renderPaymentMethods(
+    '#payment-method',
+    { value: amount },
+    { variantKey: 'DEFAULT' }
   )
-  paymentWidget.value.renderAgreement("#agreement", { variantKey: "AGREEMENT" })
-  paymentMethodWidget.value.on("ready", () => {
-    inputEnabled.value = true
-  })
+  await widget.renderAgreement('#agreement', { variantKey: 'AGREEMENT' })
 })
+
+const requestPayment = async () => {
+  if (!paymentMethods?.getSelectedPaymentMethod()) {
+    alert('❗ 결제 수단을 선택해 주세요.')
+    return
+  }
+
+  await widget.requestPayment({
+    orderId: nanoid(),
+    orderName: '헝글패스',
+    customerName: '헝글',
+    customerEmail: 'hungll@test.com',
+    customerMobilePhone: '01012345678',
+    successUrl: `${window.location.origin}/payments/success`,
+    failUrl: `${window.location.origin}/payments/fail`
+  })
+}
 </script>
 
 <style scoped>
-.wrapper {
+.payment-wrapper {
   display: flex;
   justify-content: center;
-  padding-top: 60px;
-}
-.box_section {
-  width: 600px;
-}
-.summary {
-  text-align: center;
-  margin-bottom: 24px;
-}
-.summary h3 {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 8px;
-}
-.summary p {
-  margin: 4px 0;
-  font-size: 14px;
+  align-items: center;
+  padding: 60px 20px;
+  min-height: 100vh;
+  background-color: #fdfdfd;
 }
 
+.payment-box {
+  width: 100%;
+  max-width: 500px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+  padding: 32px;
+  text-align: center;
+}
+
+h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.summary {
+  margin-bottom: 24px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  line-height: 1.6;
+}
+
+.toss-widget {
+  margin-bottom: 24px;
+  min-height: 100px;
+}
+
+.pay-button {
+  padding: 12px 32px;
+  font-size: 16px;
+  border-radius: 8px;
+  background-color: #ff6600;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+.pay-button:hover {
+  background-color: #e85c00;
+}
 </style>
