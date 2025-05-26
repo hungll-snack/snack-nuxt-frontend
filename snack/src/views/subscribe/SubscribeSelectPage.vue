@@ -64,7 +64,7 @@ const handleSubscribe = async () => {
   try {
     await orderStore.createOrder(selectedSubscribe.value.id, selectedSubscribe.value.price)
     router.push({
-      path: '/payments',
+      path: '/payments/progress',
       query: {
         amount: selectedSubscribe.value.price,
       },
