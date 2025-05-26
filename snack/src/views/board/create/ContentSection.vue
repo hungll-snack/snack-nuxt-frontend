@@ -1,7 +1,7 @@
 <template>
   <div class="section-card">
     <h2 class="section-title">
-      📝 목임 소개 작성
+      📝 모임 소개 작성
       <span class="reset-icon" @click="resetAll">🔄</span>
     </h2>
 
@@ -60,7 +60,7 @@
     <!-- 제목 입력 -->
     <div class="input-wrapper">
       <label class="input-label">
-        목임 제목
+        모임 제목
         <span v-if="isTitleInvalid" style="color: red; font-size: 12px; margin-left: 8px">* 필수항목</span>
       </label>
       <input v-model="title" class="search-input" placeholder="제목을 입력하세요" />
@@ -69,7 +69,7 @@
     <!-- 소개 입력 -->
     <div class="input-wrapper">
       <label class="input-label">
-        목임 소개
+        모임 소개
         <span v-if="isContentInvalid" style="color: red; font-size: 12px; margin-left: 8px">* 필수항목</span>
       </label>
       <textarea
