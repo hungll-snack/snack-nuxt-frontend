@@ -16,17 +16,14 @@ export default defineNuxtConfig({
       'process.env.DEBUG': false,
     },
     ssr: {
-      noExternal: ['vuetify'],
+      noExternal: [
+        'vuetify',
+      '@tosspayments/payment-widget-sdk'],
     },
     optimizeDeps: {
-      include: ['fast-xml-parser', '@tosspayments/payment-widget-sdk'],
+      include: ['fast-xml-parser', ],
     },
     plugins: [vuetify()],
-    build: {
-      rollupOptions: {
-        external: ['@tosspayments/payment-widget-sdk'],
-      },
-    },
   },
 
   app: {
@@ -128,10 +125,10 @@ export default defineNuxtConfig({
     AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
     AWS_BUCKET_NAME: process.env.AWS_BUCKET_NAME,
     TOSS_SECRET_KEY: process.env.TOSS_SECRET_KEY,
-    AI_BASE_URL: process.env.NUXT_PUBLIC_AI_BASE_URL,
     public: {
       KAKAO_JAVASCRIPT_KEY: process.env.KAKAO_JAVASCRIPT_APP_KEY,
       MAIN_API_URL: process.env.NUXT_PUBLIC_MAIN_API_URL,
+      AI_BASE_URL: process.env.NUXT_PUBLIC_AI_BASE_URL,
       TOSS_CLIENT_KEY: process.env.TOSS_CLIENT_KEY,
     },
   },
