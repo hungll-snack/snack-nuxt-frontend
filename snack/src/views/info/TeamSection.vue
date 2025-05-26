@@ -27,14 +27,20 @@
           <div class="flip-card-front">
             <img :src="member.image" :alt="member.name" />
             <p class="member-name">
-              <span v-if="member.role === '팀장'" class="team-leader">[팀장]</span> {{ member.name }}
+              <span v-if="member.role === '팀장'" class="team-leader"
+                >[팀장]</span
+              >
+              {{ member.name }}
             </p>
           </div>
           <div class="flip-card-back">
-            <p>GitHub</p>
-            <a :href="member.github" target="_blank">
-              👉 {{ member.github.replace('https://github.com/', '@') }}
-            </a>
+            <p>
+              GitHub 👉
+              <a :href="member.github" target="_blank">
+                {{ member.github.replace('https://github.com/', '@') }}
+              </a>
+            </p>
+            <p class="member-description">{{ member.description }}</p>
           </div>
         </div>
       </div>
@@ -79,30 +85,46 @@ const teamMembers = [
     role: '팀장',
     image: jena,
     github: 'https://github.com/denalog',
+    description: `기획, API 설계, UI/UX 디자인  
+프론트 도메인 전체 설계 및 주구현  
+CICD 파이프라인 구축 및 배포  
+도메인 구입 및 AWS 연결  
+게시글 자동 생성 프롬프트 설계`,
   },
   {
     name: '조준희',
     role: '팀원',
     image: junhee,
     github: 'https://github.com/codelego8',
+    description: `OAuth API 개발  
+Admin 관련 API 개발 (신고, 사용자 관리)  
+앱 사용자 인증, 심사 대응`,
   },
   {
     name: '손승일',
     role: '팀원',
     image: seungil,
     github: 'https://github.com/ajeseung',
+    description: `Django · FastAPI 주 개발  
+LLM 기반 챗봇 구현  
+카카오맵/마이페이지 스크래핑  
+백엔드 배포 및 서버 운영`,
   },
   {
     name: '주고은',
     role: '팀원',
     image: goeun,
     github: 'https://github.com/goeun-ju',
+    description: `결제 UI 및 마이페이지 구현  
+앱 사용자 게시판 CRUD`,
   },
   {
     name: '정현서',
     role: '팀원',
     image: hyeonseo,
     github: 'https://github.com/jungs0914',
+    description: `보드 도메인 및 사용자 알림 개발  
+크롤링 데이터 수집 및 정제`,
   },
 ]
 
@@ -247,31 +269,86 @@ const descriptionLines = [
   color: red;
   font-weight: bold;
 }
+.flip-card {
+  width: 140px;
+  height: 240px;
+  perspective: 1000px;
+  opacity: 0;
+  transition: transform 0.4s ease;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s ease;
+  transform-style: preserve-3d;
+}
+
+.flip-card:hover .flip-card-inner {
+  transform: rotateY(180deg) scale(2);
+  z-index: 10;
+}
+
 .flip-card-back {
-  background-color: rgba(255, 153, 0, 0);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(8px);
+  width: 200px;
+  height: 350px;
+  background-color: rgba(20, 20, 20, 0);
+  backdrop-filter: blur(6px);
   transform: rotateY(180deg);
-  padding: 20px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: #ffad1e;
+  justify-content: flex-start;
+  align-items: flex-start;
+  color: #000000;
+  font-size: 13px;
+  overflow-y: auto;
+  height: 100%;
 }
+
 .flip-card-back p {
   font-weight: bold;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
+  color: #ffcc70;
 }
+
 .flip-card-back a {
-  color: #ffad1e;
-  font-size: 13px;
+  color: #ffc04d;
+  font-size: 12.5px;
   font-weight: bold;
   text-decoration: underline;
+  word-break: break-all;
 }
+
 .flip-card-back a:hover {
-  color: #ff6600c2;
+  color: #ff974d;
 }
+
+.flip-card-back ul {
+  padding-left: 20px;
+  margin-top: 6px;
+}
+
+.flip-card-back li {
+  text-align: left;
+  line-height: 1.5;
+  margin-bottom: 4px;
+  color: #fff5e0;
+}
+
+@media (max-width: 640px) {
+  .flip-card {
+    width: 120px;
+    height: 210px;
+  }
+
+  .flip-card:hover .flip-card-inner {
+    transform: rotateY(180deg) scale(1.25);
+  }
+}
+
 @media (max-width: 1024px) {
   .section-title {
     font-size: 38px;
@@ -333,5 +410,24 @@ const descriptionLines = [
   backdrop-filter: blur(6px);
   background: rgba(255, 255, 255, 0.2);
   z-index: 1;
+}
+.member-role {
+  font-weight: bold;
+  font-size: 14px;
+  color: #ff9240;
+  margin-bottom: 6px;
+}
+
+.member-description {
+  font-size: 12.5px;
+  line-height: 1.5;
+  margin-bottom: 12px;
+  color: #fff5e1;
+  text-align: left;
+  white-space: pre-wrap;
+}
+.flip-card:hover .flip-card-inner {
+  transform: rotateY(180deg) scale(1.25);
+  z-index: 10;
 }
 </style>
